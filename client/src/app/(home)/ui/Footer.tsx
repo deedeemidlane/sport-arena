@@ -1,5 +1,5 @@
-import React from 'react';
-import { Facebook, Instagram, Twitter } from 'lucide-react';
+import React from "react";
+import { Facebook, Instagram, Mail, Phone, Twitter } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -7,29 +7,62 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="font-heading font-bold text-lg mb-4">SportCourt</h3>
+            <h3 className="font-heading font-bold text-lg mb-4">SportArena</h3>
             <p className="text-gray-600">
-              Book your favorite sports courts with ease. Play more, worry less.
+              180 Đình Thôn, Phường Mỹ Đình 1, Quận Nam Từ Liêm, Thành phố Hà
+              Nội
             </p>
+            <div className="flex gap-1 items-center mt-2 text-gray-600 font-semibold">
+              <Phone className="h-5 w-5" />
+              <span>0982471940</span>
+            </div>
+            <div className="flex gap-1 items-center mt-2 text-gray-600 font-semibold">
+              <Mail className="h-5 w-5" />
+              <span>sportarena@gmail.com</span>
+            </div>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-4">Quick Links</h4>
+            <h4 className="font-heading font-semibold mb-4">Liên kết</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-600 hover:text-primary">About Us</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-primary">How It Works</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-primary">Support</a></li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  Về chúng tôi
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  Chính sách
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  Hỗ trợ
+                </a>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-4">Sports</h4>
+            <h4 className="font-heading font-semibold mb-4">Môn thể thao</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-600 hover:text-primary">Football</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-primary">Volleyball</a></li>
-              <li><a href="#" className="text-gray-600 hover:text-primary">Pickle Ball</a></li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  Bóng đá
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  Cầu lông
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary">
+                  Pickle Ball
+                </a>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-heading font-semibold mb-4">Follow Us</h4>
+            <h4 className="font-heading font-semibold mb-4">Theo dõi</h4>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-600 hover:text-primary">
                 <Facebook className="h-5 w-5" />
@@ -44,7 +77,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t border-gray-200 mt-8 pt-8 text-center text-gray-600">
-          <p>&copy; 2024 SportCourt. All rights reserved.</p>
+          <p>&copy; 2025 SportArena. All rights reserved.</p>
         </div>
       </div>
     </footer>

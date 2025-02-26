@@ -29,7 +29,7 @@ const courts = [
   {
     id: 4,
     name: 'Riverside Courts',
-    image: 'https://images.unsplash.com/photo-1560159007-ed1baa5b6221?auto=format&fit=crop&w=400&h=300&q=80',
+    image: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=400&h=300&q=80',
     openTime: '07:00 - 21:00',
     location: 'Riverside District',
     rating: 4.7,
@@ -39,10 +39,10 @@ const courts = [
 const CourtList = () => {
   return (
     <div className="container mx-auto py-12">
-      <h2 className="text-3xl font-heading font-bold mb-8">Available Courts</h2>
+      <h2 className="text-3xl font-heading font-bold mb-8">Danh sách sân tập</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {courts.map((court) => (
-          <div key={court.id} className="glass-effect rounded-xl overflow-hidden card-hover">
+          <div key={court.id} className="glass-effect rounded-xl overflow-hidden card-hover shadow">
             <div className="relative h-48">
               <img
                 src={court.image}

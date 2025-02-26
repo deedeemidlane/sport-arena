@@ -1,33 +1,28 @@
-import React from 'react';
+import React from "react";
 import {
   Carousel as CarouselComponent,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from "@/components/ui/carousel";
 
 const images = [
   {
-    url: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1600&h=600&q=80',
-    title: 'Premium Sports Facilities',
-    subtitle: 'Book your next game in our world-class courts',
+    url: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1600&h=600&q=80",
+    title: "Hệ thống đặt sân tập hàng đầu Việt Nam",
+    subtitle: "Được ưa chuộng bởi hàng triệu người chơi",
   },
   {
-    url: 'https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1600&h=600&q=80',
-    title: 'Multiple Sports Available',
-    subtitle: 'Football, Volleyball, Pickle Ball and more',
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1628891890467-b79de81a0c66?auto=format&fit=crop&w=1600&h=600&q=80',
-    title: 'Easy Booking Process',
-    subtitle: 'Reserve your court in minutes',
+    url: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1600&h=600&q=80",
+    title: "Quy trình đặt sân tập đơn giản và nhanh chóng",
+    subtitle: "Đặt sân tập mong muốn chỉ trong vài bước",
   },
 ];
 
 const Carousel = () => {
   return (
-    <div className="w-full mt-16">
+    <div className="w-full">
       <CarouselComponent className="relative">
         <CarouselContent>
           {images.map((image, index) => (
@@ -39,8 +34,12 @@ const Carousel = () => {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white">
-                  <h2 className="text-4xl font-heading font-bold mb-4">{image.title}</h2>
-                  <p className="text-xl">{image.subtitle}</p>
+                  <h2 className="text-4xl font-heading font-bold mb-4 text-center max-md:max-w-[500px] px-10">
+                    {image.title}
+                  </h2>
+                  <p className="text-xl text-center max-md:max-w-[400px] px-5">
+                    {image.subtitle}
+                  </p>
                 </div>
               </div>
             </CarouselItem>

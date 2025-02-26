@@ -1,35 +1,47 @@
-
-import React from 'react';
+import React from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Search as SearchIcon } from 'lucide-react';
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import {
+  Building2,
+  Dribbble,
+  MapPin,
+  Search as SearchIcon,
+} from "lucide-react";
 
 const Search = () => {
   return (
-    <div className="container mx-auto py-12">
-      <div className="glass-effect rounded-xl p-6 flex gap-4 items-end">
-        <div className="flex-1">
+    <div className="container mx-auto pt-12">
+      <div className="glass-effect rounded-xl p-6 md:flex gap-4 items-end border-2 border-gray-200 shadow-md">
+        <div className="flex-1 max-md:mb-2">
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder="Select sport" />
+              <div className="flex items-center gap-2">
+                <Dribbble className="h-4 w-4" />
+                <div className="h-4 border-r border-gray-300"></div>
+                <SelectValue placeholder="Chọn môn thể thao" />
+              </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="football">Football</SelectItem>
-              <SelectItem value="volleyball">Volleyball</SelectItem>
+              <SelectItem value="football">Bóng đá</SelectItem>
+              <SelectItem value="badminton">Cầu lông</SelectItem>
               <SelectItem value="pickleball">Pickle Ball</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <div className="flex-1">
+        <div className="flex-1 max-md:mb-2">
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder="Select province" />
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4" />
+                <div className="h-4 border-r border-gray-300"></div>
+                <SelectValue placeholder="Chọn tỉnh/thành phố" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="province1">Province 1</SelectItem>
@@ -38,10 +50,14 @@ const Search = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex-1">
+        <div className="flex-1 max-md:mb-2">
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder="Select district" />
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <div className="h-4 border-r border-gray-300"></div>
+                <SelectValue placeholder="Chọn quận/huyện" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="district1">District 1</SelectItem>
@@ -50,9 +66,9 @@ const Search = () => {
             </SelectContent>
           </Select>
         </div>
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button className="bg-primary hover:bg-primary/90 max-md:w-full">
           <SearchIcon className="h-4 w-4 mr-2" />
-          Search
+          Tìm kiếm
         </Button>
       </div>
     </div>
