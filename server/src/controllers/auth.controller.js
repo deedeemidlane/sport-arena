@@ -4,12 +4,14 @@ import generateToken from "../utils/generateToken.js";
 
 export const createAccount = async (req, res) => {
   try {
-    const { username, password, name, role, shopId } = req.body;
+    const { phone, password, name, role, gender, verified } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { username } });
+    const user = await prisma.user.findUnique({ where: { phone } });
 
     if (user) {
-      return res.status(400).json({ error: "Tên đăng nhập đã tồn tại" });
+      return res
+        .status(400)
+        .json({ error: "Số điện thoại đã được sử dụng cho tài khoản khác" });
     }
 
     const salt = await bcryptjs.genSalt(10);
@@ -17,21 +19,23 @@ export const createAccount = async (req, res) => {
 
     const newUser = await prisma.user.create({
       data: {
-        username,
+        phone,
         password: hashedPassword,
         name,
         role,
-        shopId,
+        gender,
+        verified,
       },
     });
 
     if (newUser) {
       res.status(201).json({
         id: newUser.id,
-        username: newUser.username,
+        phone: newUser.phone,
         name: newUser.name,
         role: newUser.role,
-        shopId: newUser.shopId,
+        gender: newUser.gender,
+        verified: newUser.verified,
       });
     } else {
       res.status(400).json({ error: "Dữ liệu không hợp lệ" });
@@ -44,8 +48,8 @@ export const createAccount = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = await prisma.user.findUnique({ where: { username } });
+    const { phone, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { phone } });
 
     if (!user) {
       return res.status(400).json({ error: "Tài khoản không tồn tại" });
@@ -59,7 +63,7 @@ export const login = async (req, res) => {
 
     const payload = {
       id: user.id,
-      username: user.username,
+      phone: user.phone,
       name: user.name,
       role: user.role,
       shopId: user.shopId,

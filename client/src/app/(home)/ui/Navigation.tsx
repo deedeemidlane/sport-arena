@@ -63,7 +63,7 @@ const Navigation = () => {
 
         {/* Desktop Avatar Dropdown */}
         <div className="hidden md:flex items-center">
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="p-2 rounded-lg hover:bg-gray-100 cursor-pointer flex items-center gap-1">
                 <Avatar className="h-7 w-7 border-2 border-primary">
@@ -93,7 +93,10 @@ const Navigation = () => {
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
+          <Link href="/login">
+            <Button>Đăng nhập</Button>
+          </Link>
         </div>
 
         {/* Mobile Navigation */}
