@@ -1,4 +1,6 @@
-import { CircleUser, Menu, Store } from "lucide-react";
+"use client";
+
+import { CircleUser, Menu, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
-export default function AdminPage({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       {/* Sidebar */}
@@ -29,8 +32,8 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
                 href="#"
                 className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
               >
-                <Store className="h-4 w-4" />
-                Danh sách cửa hàng{" "}
+                <User className="h-4 w-4" />
+                Quản lý tài khoản
               </a>
             </nav>
           </div>
@@ -38,7 +41,7 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+        <header className="flex h-14 items-center justify-between md:justify-end gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
           {/* Sidebar responsive */}
           <Sheet>
             <SheetTrigger asChild>
@@ -52,6 +55,7 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
+              <DialogTitle></DialogTitle>
               <nav className="grid gap-2 text-lg font-medium">
                 <a
                   href="#"
@@ -64,8 +68,8 @@ export default function AdminPage({ children }: { children: React.ReactNode }) {
                   href="#"
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
                 >
-                  <Store className="h-4 w-4" />
-                  Danh sách cửa hàng{" "}
+                  <User className="h-4 w-4" />
+                  Quản lý tài khoản
                 </a>
               </nav>
             </SheetContent>
