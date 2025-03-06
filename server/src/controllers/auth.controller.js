@@ -2,9 +2,12 @@ import prisma from "../db/prisma.js";
 import bcryptjs from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 
-export const createAccount = async (req, res) => {
+export const createOwnerAccount = async (req, res) => {
   try {
-    const { phone, password, name, role, gender, verified } = req.body;
+    const { phone, password, name, role, gender } = req.body;
+
+    console.log(req.body);
+    return;
 
     const user = await prisma.user.findUnique({ where: { phone } });
 
@@ -24,7 +27,6 @@ export const createAccount = async (req, res) => {
         name,
         role,
         gender,
-        verified,
       },
     });
 
@@ -35,7 +37,6 @@ export const createAccount = async (req, res) => {
         name: newUser.name,
         role: newUser.role,
         gender: newUser.gender,
-        verified: newUser.verified,
       });
     } else {
       res.status(400).json({ error: "Dữ liệu không hợp lệ" });

@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  createAccount,
+  createOwnerAccount,
   getUser,
   login,
   logout,
@@ -9,9 +9,8 @@ import protectRoute from "../middleware/protectRoute.js";
 
 const router = express.Router();
 
+router.post("/owner/create-account", createOwnerAccount);
 router.get("/user", protectRoute, getUser);
-router.post("/create-account", createAccount);
-
 router.post("/login", login);
 router.post("/logout", logout);
 

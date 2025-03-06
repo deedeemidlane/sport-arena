@@ -21,6 +21,11 @@ import { User } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { userSchema, UserSchema } from "../schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTransition } from "react";
+import toast from "react-hot-toast";
+import { createOwnerAccount } from "../action";
+import { redirect } from "next/navigation";
+import { Spinner } from "flowbite-react";
 
 export default function OwnerForm() {
   const {
@@ -33,8 +38,20 @@ export default function OwnerForm() {
     mode: "onBlur",
   });
 
+  const [pending, startTransition] = useTransition();
+
   const onSubmit = (data: UserSchema) => {
     console.log(data);
+
+    startTransition(async () => {
+      try {
+        await createOwnerAccount(data);
+        toast.success("Đăng ký tài khoản chủ sân thành công");
+        redirect("/login");
+      } catch (error: any) {
+        toast.error(error.message);
+      }
+    });
   };
   return (
     <Card>
@@ -145,8 +162,8 @@ export default function OwnerForm() {
               )}
             </div>
           </div>
-          <Button type="submit" className="w-full mt-6">
-            Tạo tài khoản
+          <Button type="submit" className="w-full mt-6" disabled={pending}>
+            {pending ? <Spinner size="sm" /> : "Tạo tài khoản"}
           </Button>
         </form>
       </CardContent>
