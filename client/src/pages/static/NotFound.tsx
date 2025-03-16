@@ -1,4 +1,4 @@
-export default function NotFoundPage() {
+export const NotFoundPage = () => {
   return (
     <section className="bg-white min-h-[90vh] flex items-center">
       <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
@@ -22,4 +22,4 @@ export default function NotFoundPage() {
       </div>
     </section>
   );
-}
+};

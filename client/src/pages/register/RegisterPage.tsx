@@ -4,11 +4,11 @@ import { OwnerForm, PlayerForm } from "./ui";
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center sm:p-6 md:p-10">
-      <div className="w-full max-w-lg">
+    <div className="flex min-h-svh w-full items-center justify-center">
+      <div className="w-full max-w-lg py-5">
         <div className="flex flex-col gap-6">
           <Card>
-            <CardHeader className="mb-4">
+            <CardHeader className="mb-2">
               <a href="/" className="flex items-center gap-2">
                 <img src="/logo.png" alt="Logo" className="w-5 h-5" />
                 <span className="text-md font-heading font-bold text-primary">

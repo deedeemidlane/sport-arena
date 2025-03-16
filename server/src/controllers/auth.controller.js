@@ -1,57 +1,183 @@
 import prisma from "../db/prisma.js";
 import bcryptjs from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
+import { sendVerificationEamil } from "../helpers/sendVerificationEmail.js";
 
 export const createOwnerAccount = async (req, res) => {
   try {
-    const { phone, password, name, gender } = req.body;
+    const { phone, email, password, name, gender } = req.body;
 
     console.log(req.body);
     // return;
 
-    const user = await prisma.user.findUnique({ where: { phone } });
+    const userWithDuplicatePhone = await prisma.user.findUnique({
+      where: { phone },
+    });
+    const userWithDuplicateEmail = await prisma.user.findUnique({
+      where: { email },
+    });
 
-    if (user) {
+    if (userWithDuplicatePhone) {
       return res
         .status(400)
         .json({ error: "Số điện thoại đã được sử dụng cho tài khoản khác" });
     }
 
+    if (userWithDuplicateEmail) {
+      return res
+        .status(400)
+        .json({ error: "Email đã được sử dụng cho tài khoản khác" });
+    }
+
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
+
+    let randomVerificationCode = Math.random().toString().slice(2, 8);
+
+    while (
+      await prisma.user.findFirst({
+        where: { verificationCode: randomVerificationCode },
+      })
+    ) {
+      randomVerificationCode = Math.random().toString().slice(2, 8);
+    }
 
     const newUser = await prisma.user.create({
       data: {
         phone,
+        email,
         password: hashedPassword,
         name,
         role: "OWNER",
         gender,
-        verified: true,
+        verificationCode: randomVerificationCode,
       },
     });
 
     if (newUser) {
+      sendVerificationEamil(email, name, newUser.verificationCode);
       res.status(201).json({
-        id: newUser.id,
-        phone: newUser.phone,
-        name: newUser.name,
-        role: newUser.role,
-        gender: newUser.gender,
+        message:
+          "Đăng ký tài khoản chủ sân thành công! Vui lòng xác thực email của bạn.",
       });
     } else {
       res.status(400).json({ error: "Dữ liệu không hợp lệ" });
     }
   } catch (error) {
-    console.log("Error in createAccount controller: ", error.message);
+    console.log("Error in createOwnerAccount controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const createCustomerAccount = async (req, res) => {
+  try {
+    const { phone, email, password, name, gender } = req.body;
+
+    console.log(req.body);
+    // return;
+
+    const userWithDuplicatePhone = await prisma.user.findUnique({
+      where: { phone },
+    });
+    const userWithDuplicateEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (userWithDuplicatePhone) {
+      return res
+        .status(400)
+        .json({ error: "Số điện thoại đã được sử dụng cho tài khoản khác" });
+    }
+
+    if (userWithDuplicateEmail) {
+      return res
+        .status(400)
+        .json({ error: "Email đã được sử dụng cho tài khoản khác" });
+    }
+
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(password, salt);
+
+    let randomVerificationCode = Math.random().toString().slice(2, 8);
+
+    while (
+      await prisma.user.findFirst({
+        where: { verificationCode: randomVerificationCode },
+      })
+    ) {
+      randomVerificationCode = Math.random().toString().slice(2, 8);
+    }
+
+    const newUser = await prisma.user.create({
+      data: {
+        phone,
+        email,
+        password: hashedPassword,
+        name,
+        role: "CUSTOMER",
+        gender,
+        verificationCode: randomVerificationCode,
+      },
+    });
+
+    if (newUser) {
+      sendVerificationEamil(email, name, newUser.verificationCode);
+      res.status(201).json({
+        message:
+          "Đăng ký tài khoản người chơi thành công! Vui lòng xác thực email của bạn.",
+      });
+    } else {
+      res.status(400).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in createCustomerAccount controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    const user = await prisma.user.findFirst({
+      where: { verificationCode: code },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Mã xác thực không đúng. Vui lòng thử lại!",
+      });
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        verified: true,
+        verificationCode: null,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Xác thực email thành công! Vui lòng đăng nhập lại.",
+    });
+  } catch (error) {
+    console.log("Error in verifyEmail controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };
 
 export const login = async (req, res) => {
   try {
-    const { phone, password } = req.body;
-    const user = await prisma.user.findUnique({ where: { phone } });
+    const { username, password } = req.body;
+    let user = await prisma.user.findUnique({ where: { phone: username } });
+
+    if (!user) {
+      user = await prisma.user.findUnique({ where: { email: username } });
+    }
 
     if (!user) {
       return res.status(400).json({ error: "Tài khoản không tồn tại" });
@@ -63,12 +189,18 @@ export const login = async (req, res) => {
       return res.status(400).json({ error: "Mật khẩu không đúng" });
     }
 
+    if (!user.verified) {
+      sendVerificationEamil(user.email, user.name, user.verificationCode);
+      // return res.status(401).json({ error: "Vui lòng xác thực tài khoản" });
+    }
+
     const payload = {
       id: user.id,
       phone: user.phone,
       name: user.name,
       role: user.role,
       shopId: user.shopId,
+      verified: user.verified,
     };
 
     const token = generateToken(payload, res);
@@ -76,16 +208,6 @@ export const login = async (req, res) => {
     res.status(200).json({ token: token, payload: payload });
   } catch (error) {
     console.log("Error in login controller: ", error.message);
-    res.status(500).json({ error: "Lỗi hệ thống" });
-  }
-};
-
-export const logout = async (req, res) => {
-  try {
-    res.cookie("jwt", "", { maxAge: 0 });
-    res.status(200).json({ message: "Đăng xuất thành công" });
-  } catch (error) {
-    console.log("Error in logout controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };

@@ -1,11 +1,9 @@
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -15,17 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from "@/components/common";
 import { userSchema, UserSchema } from "../schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
-import { Spinner } from "@/components/common/Spinner";
+import useCreateOwnerAccount from "@/hooks/authentication/useCreateOwnerAccount";
 
 export const OwnerForm = () => {
-  const navigate = useNavigate();
+  const [termAgreement, setTermAgreement] = useState(false);
 
   const {
     control,
@@ -34,34 +28,18 @@ export const OwnerForm = () => {
     formState: { errors },
   } = useForm<UserSchema>({
     resolver: zodResolver(userSchema),
-    mode: "onBlur",
   });
 
-  const [pending, startTransition] = useTransition();
+  const { loading, createOwnerAccount } = useCreateOwnerAccount();
 
   const onSubmit = (data: UserSchema) => {
     console.log(data);
-    // return;
-
-    startTransition(async () => {
-      try {
-        // await createOwnerAccount(data);
-        toast.success("Đăng ký tài khoản chủ sân thành công");
-        await navigate("/login");
-      } catch (error: any) {
-        console.log("Error in OwnerForm: ", error);
-        toast.error(error.message);
-      }
-    });
+    createOwnerAccount(data);
   };
   return (
     <Card>
       <CardHeader>
         <CardTitle>Tài khoản chủ sân</CardTitle>
-        <CardDescription className="text-blue-500 font-semibold">
-          Để quá trình đăng ký diễn ra thuận lợi, vui lòng đảm bảo các thông tin
-          bạn cung cấp là chính xác.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -75,9 +53,31 @@ export const OwnerForm = () => {
                 id="phone"
                 type="text"
                 placeholder="Nhập số điện thoại"
+                className={
+                  errors.phone &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.phone && (
                 <p className="text-red-500 text-sm">{errors.phone.message}</p>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">
+                Email <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                {...register("email")}
+                id="email"
+                type="text"
+                placeholder="Nhập email"
+                className={
+                  errors.email &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
               )}
             </div>
             <div className="grid gap-2">
@@ -89,6 +89,10 @@ export const OwnerForm = () => {
                 id="name"
                 type="text"
                 placeholder="Nhập họ tên"
+                className={
+                  errors.name &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.name && (
                 <p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -104,7 +108,12 @@ export const OwnerForm = () => {
                 name="gender"
                 render={({ field: { onChange, value } }) => (
                   <Select onValueChange={onChange} value={value}>
-                    <SelectTrigger>
+                    <SelectTrigger
+                      className={
+                        errors.gender &&
+                        "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                      }
+                    >
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
                         <div className="h-4 border-r border-gray-300"></div>
@@ -137,6 +146,10 @@ export const OwnerForm = () => {
                 id="password"
                 type="password"
                 placeholder="Nhập mật khẩu"
+                className={
+                  errors.password &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.password && (
                 <p className="text-red-500 text-sm">
@@ -155,6 +168,10 @@ export const OwnerForm = () => {
                 id="confirmPassword"
                 type="password"
                 placeholder="Nhập lại mật khẩu"
+                className={
+                  errors.confirmPassword &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm">
@@ -162,9 +179,45 @@ export const OwnerForm = () => {
                 </p>
               )}
             </div>
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="termAgreement"
+                className="mt-1"
+                checked={termAgreement}
+                onCheckedChange={() => {
+                  setTermAgreement(!termAgreement);
+                }}
+              />
+              <label
+                htmlFor="termAgreement"
+                className="text-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Tôi đồng ý với{" "}
+                <a
+                  href="/term-of-service"
+                  className="font-medium text-blue-500 hover:underline"
+                  target="_blank"
+                >
+                  Điều khoản sử dụng
+                </a>{" "}
+                và{" "}
+                <a
+                  href="/privacy-policy"
+                  className="font-medium text-blue-500 hover:underline"
+                  target="_blank"
+                >
+                  Chính sách bảo mật
+                </a>{" "}
+                của hệ thống
+              </label>
+            </div>
           </div>
-          <Button type="submit" className="w-full mt-6" disabled={pending}>
-            {pending ? <Spinner /> : "Tạo tài khoản"}
+          <Button
+            type="submit"
+            className="w-full mt-6"
+            disabled={loading || !termAgreement}
+          >
+            {loading ? <Spinner /> : "Tạo tài khoản"}
           </Button>
         </form>
       </CardContent>

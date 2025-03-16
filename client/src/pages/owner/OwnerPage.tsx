@@ -2,7 +2,6 @@ import { PiCourtBasketball } from "react-icons/pi";
 import { useAuthContext } from "@/context/AuthContext";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
-import { Menu } from "lucide-react";
 import { Header, Sidebar } from "@/components/common";
 
 const sidebarOptions = [
@@ -10,11 +9,6 @@ const sidebarOptions = [
     url: "/owner",
     name: "Quản lý sân tập",
     icon: <PiCourtBasketball className="h-5 w-5" />,
-  },
-  {
-    url: "/admin/hello",
-    name: "Hello world",
-    icon: <Menu className="h-5 w-5" />,
   },
 ];
 

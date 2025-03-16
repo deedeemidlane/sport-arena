@@ -5,7 +5,12 @@ import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import AdminPage from "./pages/admin";
 import OwnerPage from "./pages/owner";
-import NotFoundPage from "./not-found";
+import {
+  NotFoundPage,
+  PrivacyPolicyPage,
+  TermOfServicePage,
+} from "./pages/static";
+import VerificationPage from "./pages/verification/VerificationPage";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -17,10 +22,13 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/verification" element={<VerificationPage />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/owner">
         <Route index element={<OwnerPage />} />
       </Route>
+      <Route path="/term-of-service" element={<TermOfServicePage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

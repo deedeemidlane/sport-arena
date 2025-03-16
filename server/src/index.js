@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import authRoutes from "./routes/auth.route.js";
+import adminRoutes from "./routes/admin.route.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to Sport Arena API" });

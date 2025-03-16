@@ -57,16 +57,18 @@ enum SportType {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  phone     String   @unique
-  password  String
-  role      Role
-  name      String
-  gender    Gender
-  avatarUrl String?
-  verified  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  phone            String   @unique
+  email            String   @unique
+  password         String
+  role             Role
+  name             String
+  gender           Gender
+  avatarUrl        String?
+  verified         Boolean  @default(false)
+  verificationCode String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   sportFields   SportField[]
   bookings      Booking[]

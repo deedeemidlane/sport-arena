@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthContext } from "@/context/AuthContext";
-import { getToken, removeToken } from "@/services/token";
+import { removeToken } from "@/services/token";
 
 const useLogout = () => {
   const [loading, setLoading] = useState(false);
@@ -10,20 +10,6 @@ const useLogout = () => {
   const logout = async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/auth/logout`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + getToken(),
-          },
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error);
-      }
-
       removeToken();
 
       setAuthUser(null);

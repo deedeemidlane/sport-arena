@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,8 +14,13 @@ import { User } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { userSchema, UserSchema } from "../schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from "@/components/common";
+import useCreateCustomerAccount from "@/hooks/authentication/useCreateCustomerAccount";
 
 export const PlayerForm = () => {
+  const [termAgreement, setTermAgreement] = useState(false);
+
   const {
     control,
     register,
@@ -22,11 +28,13 @@ export const PlayerForm = () => {
     formState: { errors },
   } = useForm<UserSchema>({
     resolver: zodResolver(userSchema),
-    mode: "onBlur",
   });
+
+  const { loading, createCustomerAccount } = useCreateCustomerAccount();
 
   const onSubmit = (data: UserSchema) => {
     console.log(data);
+    createCustomerAccount(data);
   };
 
   return (
@@ -46,9 +54,31 @@ export const PlayerForm = () => {
                 id="phone"
                 type="text"
                 placeholder="Nhập số điện thoại"
+                className={
+                  errors.phone &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.phone && (
                 <p className="text-red-500 text-sm">{errors.phone.message}</p>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">
+                Email <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                {...register("email")}
+                id="email"
+                type="text"
+                placeholder="Nhập email"
+                className={
+                  errors.email &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
               )}
             </div>
             <div className="grid gap-2">
@@ -60,6 +90,10 @@ export const PlayerForm = () => {
                 id="name"
                 type="text"
                 placeholder="Nhập họ tên"
+                className={
+                  errors.name &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.name && (
                 <p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -75,7 +109,12 @@ export const PlayerForm = () => {
                 name="gender"
                 render={({ field: { onChange, value } }) => (
                   <Select onValueChange={onChange} value={value}>
-                    <SelectTrigger>
+                    <SelectTrigger
+                      className={
+                        errors.gender &&
+                        "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                      }
+                    >
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
                         <div className="h-4 border-r border-gray-300"></div>
@@ -108,6 +147,10 @@ export const PlayerForm = () => {
                 id="password"
                 type="password"
                 placeholder="Nhập mật khẩu"
+                className={
+                  errors.password &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.password && (
                 <p className="text-red-500 text-sm">
@@ -126,6 +169,10 @@ export const PlayerForm = () => {
                 id="confirmPassword"
                 type="password"
                 placeholder="Nhập lại mật khẩu"
+                className={
+                  errors.confirmPassword &&
+                  "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                }
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-sm">
@@ -133,9 +180,45 @@ export const PlayerForm = () => {
                 </p>
               )}
             </div>
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="termAgreement"
+                className="mt-1"
+                checked={termAgreement}
+                onCheckedChange={() => {
+                  setTermAgreement(!termAgreement);
+                }}
+              />
+              <label
+                htmlFor="termAgreement"
+                className="text-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Tôi đồng ý với{" "}
+                <a
+                  href="/term-of-service"
+                  className="font-medium text-blue-500 hover:underline"
+                  target="_blank"
+                >
+                  Điều khoản sử dụng
+                </a>{" "}
+                và{" "}
+                <a
+                  href="/privacy-policy"
+                  className="font-medium text-blue-500 hover:underline"
+                  target="_blank"
+                >
+                  Chính sách bảo mật
+                </a>{" "}
+                của hệ thống
+              </label>
+            </div>
           </div>
-          <Button type="submit" className="w-full mt-6">
-            Tạo tài khoản
+          <Button
+            type="submit"
+            className="w-full mt-6"
+            disabled={loading || !termAgreement}
+          >
+            {loading ? <Spinner /> : "Tạo tài khoản"}
           </Button>
         </form>
       </CardContent>

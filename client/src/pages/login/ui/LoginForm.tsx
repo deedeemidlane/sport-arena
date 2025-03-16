@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userLoginSchema, UserLoginSchema } from "../schema";
-import { Spinner } from "@/components/common/Spinner";
+import { Spinner } from "@/components/common";
 import useLogin from "@/hooks/authentication/useLogin";
 
 export const LoginForm = () => {
@@ -43,19 +43,21 @@ export const LoginForm = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="phone">Số điện thoại</Label>
+                <Label htmlFor="username">Email / Số điện thoại</Label>
                 <Input
-                  {...register("phone")}
-                  id="phone"
+                  {...register("username")}
+                  id="username"
                   type="text"
-                  placeholder="Nhập số điện thoại"
+                  placeholder="Nhập email hoặc số điện thoại"
                   className={
-                    errors.phone &&
+                    errors.username &&
                     "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
                   }
                 />
-                {errors.phone && (
-                  <p className="text-sm text-red-500">{errors.phone.message}</p>
+                {errors.username && (
+                  <p className="text-sm text-red-500">
+                    {errors.username.message}
+                  </p>
                 )}
               </div>
               <div className="grid gap-2">
