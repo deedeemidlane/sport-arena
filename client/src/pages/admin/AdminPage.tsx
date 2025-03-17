@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { MoreHorizontal, User } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
@@ -26,6 +26,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils/helperFunctions";
+import useGetUsers from "@/hooks/admin/useGetUsers";
+import { IUser } from "@/types/User";
+import { Badge } from "@/components/ui/badge";
 
 const sidebarOptions = [
   {
@@ -46,6 +49,19 @@ export default function AdminPage() {
     }
   }, [authUser]);
 
+  const { loading, getUsers } = useGetUsers();
+
+  const [users, setUsers] = useState<IUser[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const fetchedUsers = await getUsers();
+      setUsers(fetchedUsers);
+    };
+
+    fetchUsers();
+  }, []);
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       {/* Sidebar */}
@@ -55,77 +71,105 @@ export default function AdminPage() {
         <Header options={sidebarOptions} />
 
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 sm:pt-4 md:gap-8">
-          {/* <Card x-chunk="dashboard-06-chunk-0">
+          <Card>
             <CardHeader>
-              <CardTitle>Danh sách nhân viên</CardTitle>
+              <CardTitle>Danh sách tài khoản</CardTitle>
               <CardDescription>
-                Quản lý tài khoản nhân viên tại đây.
+                Theo dõi các tài khoản đã đăng ký trên hệ thống.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {getStaffsLoading ? (
-                <div className="w-full text-center">
+              {loading ? (
+                <div className="w-full flex justify-center">
                   <Spinner />
                 </div>
               ) : (
-                <>
-                  <Card>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-center w-[50px] hidden sm:table-cell">
-                            STT
-                          </TableHead>
-                          <TableHead>Tên nhân viên</TableHead>
-                          <TableHead>Tên đăng nhập</TableHead>
-                          <TableHead className="hidden md:table-cell">
-                            Ngày tạo
-                          </TableHead>
-                          <TableHead>
-                            <span className="sr-only">Actions</span>
-                          </TableHead>
+                <Card className="py-0 rounded-md overflow-auto relative">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="hidden w-[100px] sm:table-cell">
+                          <span className="sr-only">Image</span>
+                        </TableHead>
+                        <TableHead>Họ tên</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Số điện thoại</TableHead>
+                        <TableHead>Loại tài khoản</TableHead>
+                        <TableHead className="hidden md:table-cell">
+                          Ngày tạo
+                        </TableHead>
+                        <TableHead className="hidden lg:table-cell">
+                          Trạng thái
+                        </TableHead>
+                        <TableHead>
+                          <span className="sr-only">Actions</span>
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user, index) => (
+                        <TableRow key={index} className="py-4">
+                          <TableCell className="hidden sm:table-cell pl-4">
+                            <img
+                              alt="Ảnh đại diện User"
+                              className="aspect-square rounded-md object-cover"
+                              height="64"
+                              src="/placeholder.svg"
+                              width="64"
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {user.name}
+                          </TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>{user.phone}</TableCell>
+                          <TableCell>
+                            {user.role === "CUSTOMER" ? (
+                              <span className="text-blue-500 font-semibold">
+                                Người chơi
+                              </span>
+                            ) : (
+                              <span className="text-rose-500 font-semibold">
+                                Chủ sân
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {formatDate(user.createdAt)}
+                          </TableCell>
+                          <TableCell className="hidden lg:table-cell">
+                            {user.verified ? (
+                              <Badge variant="active">Đã xác thực email</Badge>
+                            ) : (
+                              <Badge variant="destructive">Chưa xác thực</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  aria-haspopup="true"
+                                  size="icon"
+                                  variant="ghost"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Toggle menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                                <DropdownMenuItem>Xóa</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {staffs.map((staff, index) => (
-                          <TableRow key={staff.id}>
-                            <TableCell className="hidden sm:table-cell text-center">
-                              {index + 1}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {staff.name}
-                            </TableCell>
-                            <TableCell>{staff.username}</TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              {formatDate(staff.createdAt)}
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    aria-haspopup="true"
-                                    size="icon"
-                                    variant="ghost"
-                                  >
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">Toggle menu</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
-                                  <DropdownMenuItem>Xóa</DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </Card>
-                </>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Card>
               )}
             </CardContent>
-          </Card> */}
+          </Card>
         </main>
       </div>
     </div>
