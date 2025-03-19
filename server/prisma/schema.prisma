@@ -78,10 +78,10 @@ model User {
 
 model SportField {
   id           Int       @id @default(autoincrement())
+  ownerId      Int
   sportType    SportType
   name         String
   numOfFields  Int
-  ownerId      Int
   address      String
   ward         String
   district     String

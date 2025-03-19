@@ -9,7 +9,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    switch (authUser?.role) {
+    if (typeof authUser === "string") return;
+    switch (authUser.role) {
       case "ADMIN":
         navigate("/admin");
         break;

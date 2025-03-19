@@ -17,17 +17,17 @@ type TAuthUser = {
 };
 
 const AuthContext = createContext<{
-  authUser: TAuthUser | null;
-  setAuthUser: Dispatch<SetStateAction<TAuthUser | null>>;
+  authUser: TAuthUser | string;
+  setAuthUser: Dispatch<SetStateAction<TAuthUser | string>>;
   isLoading: boolean;
 }>({
-  authUser: null,
+  authUser: "",
   setAuthUser: () => {},
   isLoading: true,
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
-  const [authUser, setAuthUser] = useState<TAuthUser | null>(null);
+  const [authUser, setAuthUser] = useState<TAuthUser | string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -51,6 +51,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
         setAuthUser(data);
       } catch (error) {
+        setAuthUser("unauthorized");
         console.log(error);
       } finally {
         setIsLoading(false);

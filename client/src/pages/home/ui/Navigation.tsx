@@ -46,8 +46,6 @@ const sports = [
 export const Navigation = () => {
   const { authUser } = useAuthContext();
 
-  console.log(authUser);
-
   const { logout } = useLogout();
 
   return (
@@ -76,7 +74,7 @@ export const Navigation = () => {
 
         {/* Desktop Avatar Dropdown */}
         <div className="hidden md:flex items-center">
-          {authUser ? (
+          {typeof authUser !== "string" ? (
             <>
               {authUser.role === "CUSTOMER" ? (
                 <DropdownMenu>

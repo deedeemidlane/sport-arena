@@ -12,7 +12,7 @@ const useLogout = () => {
     try {
       removeToken();
 
-      setAuthUser(null);
+      setAuthUser("unauthorized");
     } catch (error: any) {
       console.error(error.message);
       toast.error(error.message);

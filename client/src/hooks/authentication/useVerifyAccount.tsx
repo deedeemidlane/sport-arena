@@ -1,12 +1,10 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-// import { useAuthContext } from "@/context/AuthContext";
 
 const useVerifyAccount = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  // const { setAuthUser } = useAuthContext();
 
   const verifyAccount = async ({ code }: { code: string }) => {
     try {
@@ -27,10 +25,6 @@ const useVerifyAccount = () => {
 
       toast.success(data.message);
       navigate("/login");
-
-      // localStorage.setItem("token", data.token);
-
-      // setAuthUser(data.payload);
     } catch (error: any) {
       toast.error(error.message);
     } finally {

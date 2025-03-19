@@ -47,13 +47,10 @@ export const Header = ({
         <SheetContent side="left" className="">
           <DialogTitle></DialogTitle>
           <SheetHeader>
-            <a
-              href="#"
-              className="flex items-center gap-2 text-lg font-semibold"
-            >
+            <div className="flex items-center gap-2 text-lg font-semibold">
               <img src="/logo.png" className="h-6 w-6" />
               <span className="">Trang quản lý</span>
-            </a>
+            </div>
           </SheetHeader>
           <nav className="grid gap-2 px-2 text-sm font-medium lg:px-4">
             {options.map((option, index) => (
@@ -82,7 +79,9 @@ export const Header = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>{authUser?.name}</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {typeof authUser !== "string" && authUser.name}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Hỗ trợ</DropdownMenuItem>
           <DropdownMenuItem onClick={logout}>Đăng xuất</DropdownMenuItem>

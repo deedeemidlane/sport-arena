@@ -44,7 +44,10 @@ export default function AdminPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authUser?.role !== "ADMIN") {
+    if (
+      authUser === "unauthorized" ||
+      (typeof authUser !== "string" && authUser.role !== "ADMIN")
+    ) {
       navigate("/login");
     }
   }, [authUser]);
@@ -63,14 +66,14 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="min-h-screen w-full md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       {/* Sidebar */}
       <Sidebar options={sidebarOptions} />
 
       <div className="flex flex-col">
         <Header options={sidebarOptions} />
 
-        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 sm:pt-4 md:gap-8">
+        <main className="flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 sm:pt-4 md:gap-8">
           <Card>
             <CardHeader>
               <CardTitle>Danh sách tài khoản</CardTitle>
@@ -107,7 +110,7 @@ export default function AdminPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {users.map((user, index) => (
+                      {users?.map((user, index) => (
                         <TableRow key={index} className="py-4">
                           <TableCell className="hidden sm:table-cell pl-4">
                             <img
