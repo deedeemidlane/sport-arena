@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { MoreHorizontal, User } from "lucide-react";
+import { MoreHorizontal, Trash2, User } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 import { Header, Sidebar, Spinner } from "@/components/common";
 import {
@@ -29,6 +29,8 @@ import { formatDate } from "@/utils/helperFunctions";
 import useGetUsers from "@/hooks/admin/useGetUsers";
 import { IUser } from "@/types/User";
 import { Badge } from "@/components/ui/badge";
+import { ConfirmDeleteAccountModal } from "./ui";
+import useDeleteUser from "@/hooks/admin/useDeleteUser";
 
 const sidebarOptions = [
   {
@@ -52,9 +54,13 @@ export default function AdminPage() {
     }
   }, [authUser]);
 
-  const { loading, getUsers } = useGetUsers();
+  const { loading: getUsersLoading, getUsers } = useGetUsers();
 
   const [users, setUsers] = useState<IUser[]>([]);
+
+  const [selectedUserId, setSelectedUserId] = useState(-1);
+
+  const [toggleReRender, setToggleReRender] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -63,14 +69,20 @@ export default function AdminPage() {
     };
 
     fetchUsers();
-  }, []);
+  }, [toggleReRender]);
+
+  const [openConfirmDeleteModal, setOpentConfirmDeleteModal] = useState(false);
+
+  const { loading: deleteUserLoading, deleteUser } = useDeleteUser();
 
   return (
-    <div className="min-h-screen w-full md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div>
       {/* Sidebar */}
-      <Sidebar options={sidebarOptions} />
+      <aside className="fixed top-0 left-0 z-40 w-64 h-screen">
+        <Sidebar options={sidebarOptions} />
+      </aside>
 
-      <div className="flex flex-col">
+      <div className="md:ml-64 h-auto flex flex-col">
         <Header options={sidebarOptions} />
 
         <main className="flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 sm:pt-4 md:gap-8">
@@ -82,7 +94,7 @@ export default function AdminPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {getUsersLoading ? (
                 <div className="w-full flex justify-center">
                   <Spinner />
                 </div>
@@ -159,9 +171,25 @@ export default function AdminPage() {
                                   <span className="sr-only">Toggle menu</span>
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
-                                <DropdownMenuItem>Xóa</DropdownMenuItem>
+                              <DropdownMenuContent
+                                align="end"
+                                className="min-w-20"
+                              >
+                                <DropdownMenuItem>
+                                  <button
+                                    className="cursor-pointer w-full text-start flex items-center gap-2 text-red-500"
+                                    onClick={() => {
+                                      setSelectedUserId(user.id);
+                                      setOpentConfirmDeleteModal(true);
+                                    }}
+                                  >
+                                    <Trash2
+                                      className="w-4 h-4"
+                                      color="#fb2c36"
+                                    />
+                                    Xoá
+                                  </button>
+                                </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
@@ -173,6 +201,17 @@ export default function AdminPage() {
               )}
             </CardContent>
           </Card>
+
+          <ConfirmDeleteAccountModal
+            open={openConfirmDeleteModal}
+            setOpen={setOpentConfirmDeleteModal}
+            deleteUser={() => {
+              deleteUser(selectedUserId);
+              setOpentConfirmDeleteModal(false);
+              setToggleReRender(!toggleReRender);
+            }}
+            loading={deleteUserLoading}
+          />
         </main>
       </div>
     </div>

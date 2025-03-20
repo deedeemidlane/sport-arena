@@ -26,11 +26,13 @@ export const OwnerPageLayout = () => {
     }
   }, [authUser]);
   return (
-    <div className="min-h-screen w-full md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div>
       {/* Sidebar */}
-      <Sidebar options={sidebarOptions} />
+      <aside className="fixed top-0 left-0 z-40 w-64 h-screen">
+        <Sidebar options={sidebarOptions} />
+      </aside>
 
-      <div className="flex flex-col">
+      <div className="md:ml-64 h-auto flex flex-col">
         <Header options={sidebarOptions} />
 
         <main className="flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 sm:pt-4 md:gap-8">
