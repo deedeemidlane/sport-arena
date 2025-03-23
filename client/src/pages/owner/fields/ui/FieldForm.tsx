@@ -24,6 +24,7 @@ import { Spinner } from "@/components/common";
 import { SPORTS } from "@/constants/sports";
 import useCreateFields from "@/hooks/owner/useCreateField";
 import useUpdateFields from "@/hooks/owner/useUpdateField";
+import { Label } from "@/components/ui/label";
 
 interface IAddressData {
   code: string;
@@ -97,7 +98,7 @@ export const FieldForm = ({
     defaultValues: field ? field : defaultFormValue,
   });
 
-  let isDirty = Object.keys(form.formState.dirtyFields).length > 0;
+  // let isDirty = Object.keys(form.formState.dirtyFields).length > 0;
 
   // Handle province change to update district & ward options
   const handleProvinceChange = (provinceName: string) => {
@@ -118,13 +119,20 @@ export const FieldForm = ({
   const { loading: createFieldLoading, createField } = useCreateFields();
   const { loading: updateFieldLoading, updateField } = useUpdateFields();
 
+  const [image, setImage] = useState<File>();
+
   const onSubmit = async (data: FieldSchema) => {
-    console.log(data);
+    const formData = new FormData();
+
+    if (image) {
+      formData.append("image", image);
+    }
+    formData.append("data", JSON.stringify(data));
 
     if (field && fieldId) {
-      updateField(fieldId, data);
+      updateField(fieldId, formData);
     } else {
-      createField(data);
+      createField(formData);
     }
   };
 
@@ -316,6 +324,24 @@ export const FieldForm = ({
           )}
         />
 
+        {/* Image */}
+        <Label htmlFor="image" className="text-right mb-2">
+          Ảnh minh họa (.jpg, .jpeg, .png)
+        </Label>
+        <input
+          id="image"
+          className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none"
+          type="file"
+          required
+          accept=".jpg,.jpeg,.png"
+          onChange={(e) => {
+            // console.log(e.target.files[0]);
+            if (e.target.files) {
+              setImage(e.target.files[0]);
+            }
+          }}
+        />
+
         {/* Description */}
         <FormField
           control={form.control}
@@ -340,7 +366,7 @@ export const FieldForm = ({
         <Button
           type="submit"
           className="w-full"
-          disabled={createFieldLoading || updateFieldLoading || !isDirty}
+          disabled={createFieldLoading || updateFieldLoading}
         >
           {createFieldLoading || updateFieldLoading ? (
             <Spinner />

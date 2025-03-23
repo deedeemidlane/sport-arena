@@ -15,7 +15,11 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { formatDate, formatPriceInVND } from "@/utils/helperFunctions";
+import {
+  formatDate,
+  formatPriceInVND,
+  getFullImageUrl,
+} from "@/utils/helperFunctions";
 import useGetFields from "@/hooks/owner/useGetFields";
 import { IField } from "@/types/Field";
 import { MoreHorizontal, Plus } from "lucide-react";
@@ -100,13 +104,23 @@ export default function () {
                   fields.map((field, index) => (
                     <TableRow key={index} className="py-4">
                       <TableCell className="hidden sm:table-cell pl-4">
-                        <img
-                          alt="Ảnh đại diện User"
-                          className="aspect-square rounded-md object-cover"
-                          height="64"
-                          src="/placeholder.svg"
-                          width="64"
-                        />
+                        {field.imageUrl ? (
+                          <img
+                            alt="Ảnh minh họa món"
+                            className="aspect-square rounded-md object-cover"
+                            height="64"
+                            src={getFullImageUrl(field.imageUrl)}
+                            width="64"
+                          />
+                        ) : (
+                          <img
+                            alt="Ảnh đại diện User"
+                            className="aspect-square rounded-md object-cover"
+                            height="64"
+                            src="/placeholder.svg"
+                            width="64"
+                          />
+                        )}
                       </TableCell>
                       <TableCell>{field.name}</TableCell>
                       <TableCell>{renderSportType(field.sportType)}</TableCell>

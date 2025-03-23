@@ -29,3 +29,9 @@ export function formatTime(dateString: string) {
   // Format the time as hh:mm:ss
   return `${hours}:${minutes}`;
 }
+
+export function getFullImageUrl(imageUrl: string) {
+  return `http://res.cloudinary.com/${
+    import.meta.env.VITE_CLOUD_NAME
+  }/image/upload/${imageUrl}`;
+}

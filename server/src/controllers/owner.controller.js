@@ -44,7 +44,7 @@ export const getFieldDetail = async (req, res) => {
       where: { id: parseInt(fieldId) },
     });
 
-    console.log(field);
+    // console.log(field);
     // return;
 
     if (field) {
@@ -63,34 +63,30 @@ export const createField = async (req, res) => {
     if (req.payload.role !== "OWNER") {
       return res.status(401).json({ error: "Unauthorized - Not owner token" });
     }
-    console.log("req payload: ", req.payload);
+    console.log("req body: ", req.body);
 
-    console.log("field data: ", req.body);
+    console.log("req file: ", req.file);
 
-    const {
-      sportType,
-      name,
-      numOfFields,
-      address,
-      ward,
-      district,
-      province,
-      pricePerHour,
-      description,
-    } = req.body;
+    const imagePath = req.file.path;
+
+    /* Shorten url:
+      'https://res.cloudinary.com/.../image/upload/v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
+      -> 'v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
+    */
+
+    const imageUrl = imagePath.slice(
+      imagePath.lastIndexOf(
+        "/",
+        imagePath.indexOf("/" + req.file.filename) - 1,
+      ) + 1,
+    );
+    const data = JSON.parse(req.body.data);
 
     const newField = await prisma.sportField.create({
       data: {
         ownerId: req.payload.id,
-        sportType,
-        name,
-        numOfFields,
-        address,
-        ward,
-        district,
-        province,
-        pricePerHour,
-        description,
+        ...data,
+        imageUrl: imageUrl,
       },
     });
 
@@ -117,11 +113,33 @@ export const updateField = async (req, res) => {
 
     console.log("req body: ", req.body);
 
+    // return;
+
+    console.log("req file: ", req.file);
+
+    const imagePath = req.file.path;
+
+    /* Shorten url:
+      'https://res.cloudinary.com/.../image/upload/v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
+      -> 'v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
+    */
+
+    const imageUrl = imagePath.slice(
+      imagePath.lastIndexOf(
+        "/",
+        imagePath.indexOf("/" + req.file.filename) - 1,
+      ) + 1,
+    );
+
     const fieldId = req.params.fieldId;
+    const data = JSON.parse(req.body.data);
 
     const updateField = await prisma.sportField.update({
       where: { id: parseInt(fieldId) },
-      data: req.body,
+      data: {
+        ...data,
+        imageUrl: imageUrl,
+      },
     });
 
     if (updateField) {
