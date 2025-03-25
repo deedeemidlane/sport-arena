@@ -4,7 +4,7 @@ export const getFields = async (req, res) => {
   try {
     const sportFields = await prisma.sportField.findMany({
       include: {
-        owner: true, // Assuming 'user' is the relation name in your Prisma schema
+        owner: true,
       },
     });
 
@@ -21,4 +21,27 @@ export const getFields = async (req, res) => {
   }
 };
 
-export const getFieldDetail = async (req, res) => {};
+export const getFieldDetail = async (req, res) => {
+  try {
+    console.log("req params: ", req.params);
+
+    const fieldId = req.params.fieldId;
+
+    const field = await prisma.sportField.findUnique({
+      where: { id: parseInt(fieldId) },
+      include: { owner: true },
+    });
+
+    // console.log(field);
+    // return;
+
+    if (field) {
+      res.status(200).json(field);
+    } else {
+      res.status(404).json({ error: "Không tìm thấy tài nguyên" });
+    }
+  } catch (error) {
+    console.log("Error in getFieldDetail controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};

@@ -18,6 +18,9 @@ import { OwnerPage, OwnerPageLayout } from "./pages/owner";
 import OwnerFieldsPage from "./pages/owner/fields";
 import CreateFieldPage from "./pages/owner/fields/create";
 import UpdateFieldPage from "./pages/owner/fields/update";
+import FieldsPage from "./pages/home/fields";
+import FieldDetailPage from "./pages/home/fields/[fieldId]";
+import BookingPage from "./pages/home/fields/[fieldId]/booking";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -27,10 +30,17 @@ export default function App() {
   return (
     <Routes>
       <Route index element={<HomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/verification" element={<VerificationPage />} />
-      <Route path="/admin" element={<AdminPage />} />
+      <Route path="fields">
+        <Route index element={<FieldsPage />} />
+        <Route path=":fieldId">
+          <Route index element={<FieldDetailPage />} />
+          <Route path="booking" element={<BookingPage />} />
+        </Route>
+      </Route>
+      <Route path="login" element={<LoginPage />} />
+      <Route path="register" element={<RegisterPage />} />
+      <Route path="verification" element={<VerificationPage />} />
+      <Route path="admin" element={<AdminPage />} />
       <Route path="owner" element={<OwnerPageLayout />}>
         <Route index element={<OwnerPage />} />
         <Route path="fields">
@@ -39,8 +49,8 @@ export default function App() {
           <Route path=":fieldId" element={<UpdateFieldPage />} />
         </Route>
       </Route>
-      <Route path="/term-of-service" element={<TermOfServicePage />} />
-      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="term-of-service" element={<TermOfServicePage />} />
+      <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

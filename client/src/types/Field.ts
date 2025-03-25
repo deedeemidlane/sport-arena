@@ -1,4 +1,4 @@
-import { IUser } from "./User";
+import { defaultUserValue, IUser } from "./User";
 
 export interface IField {
   id: number;
@@ -16,3 +16,20 @@ export interface IField {
   createdAt: string;
   owner: IUser;
 }
+
+export const defaultFieldValue: IField = {
+  id: 0,
+  sportType: "FOOTBALL",
+  name: "",
+  numOfFields: 0,
+  ownerId: 0,
+  address: "",
+  ward: "",
+  district: "",
+  province: "",
+  pricePerHour: 0,
+  imageUrl: "",
+  description: "",
+  createdAt: "",
+  owner: defaultUserValue,
+};

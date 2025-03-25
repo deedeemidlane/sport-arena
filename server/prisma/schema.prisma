@@ -103,6 +103,7 @@ model Booking {
   id           Int           @id @default(autoincrement())
   userId       Int
   sportFieldId Int
+  fieldNo      Int
   bookingDate  DateTime
   startTime    DateTime
   endTime      DateTime

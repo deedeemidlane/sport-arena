@@ -10,3 +10,16 @@ export interface IUser {
   createdAt: string;
   updatedAt: string;
 }
+
+export const defaultUserValue: IUser = {
+  id: 0,
+  name: "",
+  phone: "",
+  email: "",
+  role: "CUSTOMER",
+  gender: "FEMALE",
+  avatarUrl: "",
+  verified: false,
+  createdAt: "",
+  updatedAt: "",
+};

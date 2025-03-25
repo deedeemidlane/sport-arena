@@ -1,14 +1,14 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const useGetFields = () => {
+const useGetFieldDetail = () => {
   const [loading, setLoading] = useState(false);
 
-  const getFields = async () => {
+  const getFieldDetail = async (fieldId: string) => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/guest/fields`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/guest/fields/${fieldId}`,
         { method: "GET" }
       );
 
@@ -25,6 +25,6 @@ const useGetFields = () => {
     }
   };
 
-  return { loading, getFields };
+  return { loading, getFieldDetail };
 };
-export default useGetFields;
+export default useGetFieldDetail;

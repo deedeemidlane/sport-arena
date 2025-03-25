@@ -21,10 +21,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { defaultFormValue, fieldSchema, FieldSchema } from "../schema";
 import { Spinner } from "@/components/common";
-import { SPORTS } from "@/constants/sports";
 import useCreateFields from "@/hooks/owner/useCreateField";
 import useUpdateFields from "@/hooks/owner/useUpdateField";
 import { Label } from "@/components/ui/label";
+import { SPORT_OPTIONS } from "@/constants/sports";
 
 interface IAddressData {
   code: string;
@@ -153,7 +153,7 @@ export const FieldForm = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {SPORTS.map((sport) => (
+                  {SPORT_OPTIONS.map((sport) => (
                     <SelectItem key={sport.value} value={sport.value}>
                       {sport.label}
                     </SelectItem>
