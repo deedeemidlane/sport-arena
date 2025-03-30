@@ -38,6 +38,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
         size="icon"
         onClick={goToPreviousDay}
         className="h-9 w-9 rounded-full p-0"
+        disabled={date.toLocaleDateString() === new Date().toLocaleDateString()}
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -62,6 +63,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
             onSelect={(date) => date && setDate(date)}
             initialFocus
             className="p-3 pointer-events-auto"
+            fromDate={new Date()}
           />
         </PopoverContent>
       </Popover>

@@ -29,7 +29,14 @@ export const getFieldDetail = async (req, res) => {
 
     const field = await prisma.sportField.findUnique({
       where: { id: parseInt(fieldId) },
-      include: { owner: true },
+      include: {
+        owner: true,
+        orders: {
+          include: {
+            bookings: true,
+          },
+        },
+      },
     });
 
     // console.log(field);

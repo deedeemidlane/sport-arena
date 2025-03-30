@@ -21,6 +21,7 @@ import UpdateFieldPage from "./pages/owner/fields/update";
 import FieldsPage from "./pages/home/fields";
 import FieldDetailPage from "./pages/home/fields/[fieldId]";
 import BookingPage from "./pages/home/fields/[fieldId]/booking";
+import OrdersPage from "./pages/owner/orders";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -47,6 +48,9 @@ export default function App() {
           <Route index element={<OwnerFieldsPage />} />
           <Route path="create" element={<CreateFieldPage />} />
           <Route path=":fieldId" element={<UpdateFieldPage />} />
+        </Route>
+        <Route path="orders">
+          <Route index element={<OrdersPage />} />
         </Route>
       </Route>
       <Route path="term-of-service" element={<TermOfServicePage />} />

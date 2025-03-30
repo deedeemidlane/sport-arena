@@ -1,3 +1,4 @@
+import { IOrder } from "./Order";
 import { defaultUserValue, IUser } from "./User";
 
 export interface IField {
@@ -15,6 +16,10 @@ export interface IField {
   description: string;
   createdAt: string;
   owner: IUser;
+  accountNo: string;
+  accountName: string;
+  acqId: string;
+  orders: IOrder[];
 }
 
 export const defaultFieldValue: IField = {
@@ -32,4 +37,8 @@ export const defaultFieldValue: IField = {
   description: "",
   createdAt: "",
   owner: defaultUserValue,
+  accountNo: "",
+  accountName: "",
+  acqId: "",
+  orders: [],
 };

@@ -21,7 +21,13 @@ export const fieldSchema = z.object({
   pricePerHour: z.coerce
     .number()
     .min(1, { message: "Giá thuê phải lớn hơn 0" }),
+  imageUrl: z.string().optional(),
   description: z.string().optional(),
+  accountNo: z.string().min(1, { message: "Vui lòng nhập số tài khoản" }),
+  accountName: z
+    .string()
+    .min(1, { message: "Vui lòng nhập tên chủ tài khoản" }),
+  acqId: z.string().min(1, { message: "Vui lòng chọn ngân hàng" }),
 });
 
 export type FieldSchema = z.infer<typeof fieldSchema>;
@@ -35,5 +41,9 @@ export const defaultFormValue: FieldSchema = {
   ward: "",
   address: "",
   pricePerHour: 0,
+  imageUrl: "",
   description: "",
+  accountNo: "",
+  accountName: "",
+  acqId: "",
 };

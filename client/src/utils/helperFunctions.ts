@@ -30,6 +30,10 @@ export function formatTime(dateString: string) {
   return `${hours}:${minutes}`;
 }
 
+export const formatHour = (hour: number) => {
+  return `${hour.toString().padStart(2, "0")}:00`;
+};
+
 export function getFullImageUrl(imageUrl: string) {
   return `http://res.cloudinary.com/${
     import.meta.env.VITE_CLOUD_NAME

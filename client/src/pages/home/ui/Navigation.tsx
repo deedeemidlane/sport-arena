@@ -51,12 +51,12 @@ export const Navigation = () => {
   return (
     <nav className="bg-white backdrop-blur-md border border-white shadow sticky top-0 w-full z-50 p-4">
       <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2">
           <img src="/logo.png" alt="Logo" className="w-8 h-8" />
           <span className="text-xl md:text-2xl font-heading font-bold text-primary">
             SportArena
           </span>
-        </div>
+        </a>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-10 items-center">
@@ -159,7 +159,7 @@ export const Navigation = () => {
 
               {/* Mobile Profile Options */}
               <div className="mt-4 pt-4 border-t">
-                {authUser ? (
+                {typeof authUser !== "string" ? (
                   <>
                     <a
                       href={"/profile"}

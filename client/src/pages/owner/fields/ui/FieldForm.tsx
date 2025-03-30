@@ -25,10 +25,20 @@ import useCreateFields from "@/hooks/owner/useCreateField";
 import useUpdateFields from "@/hooks/owner/useUpdateField";
 import { Label } from "@/components/ui/label";
 import { SPORT_OPTIONS } from "@/constants/sports";
+import { getFullImageUrl } from "@/utils/helperFunctions";
+import { X } from "lucide-react";
 
 interface IAddressData {
   code: string;
   name: string;
+}
+
+interface IBank {
+  id: number;
+  name: string;
+  bin: string;
+  shortName: string;
+  logo: string;
 }
 
 export const FieldForm = ({
@@ -92,6 +102,24 @@ export const FieldForm = ({
         .catch((error) => console.error("Error when fetching wards:", error));
     }
   }, [selectedDistrict]);
+
+  const [banks, setBanks] = useState<IBank[]>([]);
+
+  useEffect(() => {
+    const fetchBank = async () => {
+      try {
+        const res = await fetch("https://api.vietqr.io/v2/banks");
+        const fetchedBanks = await res.json();
+        setBanks(fetchedBanks.data);
+      } catch (error) {
+        console.log("Error in fetchBank: ", error);
+      }
+    };
+
+    fetchBank();
+  }, []);
+
+  // const [showImage, setShowImage] = useState(!!field);
 
   const form = useForm<FieldSchema>({
     resolver: zodResolver(fieldSchema),
@@ -328,19 +356,38 @@ export const FieldForm = ({
         <Label htmlFor="image" className="text-right mb-2">
           Ảnh minh họa (.jpg, .jpeg, .png)
         </Label>
-        <input
-          id="image"
-          className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none"
-          type="file"
-          required
-          accept=".jpg,.jpeg,.png"
-          onChange={(e) => {
-            // console.log(e.target.files[0]);
-            if (e.target.files) {
-              setImage(e.target.files[0]);
-            }
-          }}
-        />
+        {field?.imageUrl && form.watch("imageUrl") !== "" ? (
+          <>
+            <div className="relative p-0.5 border w-fit">
+              <button
+                type="button"
+                className="absolute bg-gray-400 p-0.5 rounded-full cursor-pointer z-10"
+                onClick={() => {
+                  form.setValue("imageUrl", "");
+                }}
+              >
+                <X color="#fff" />
+              </button>
+              <img
+                src={getFullImageUrl(field.imageUrl)}
+                alt="field image"
+                className=""
+              />
+            </div>
+          </>
+        ) : (
+          <input
+            id="image"
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+            type="file"
+            accept=".jpg,.jpeg,.png"
+            onChange={(e) => {
+              if (e.target.files) {
+                setImage(e.target.files[0]);
+              }
+            }}
+          />
+        )}
 
         {/* Description */}
         <FormField
@@ -356,6 +403,63 @@ export const FieldForm = ({
                   rows={4}
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Banks selection */}
+        <FormField
+          control={form.control}
+          name="acqId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Chọn ngân hàng *</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn ngân hàng" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {banks.map((bank) => (
+                    <SelectItem key={bank.id} value={bank.bin}>
+                      <img src={bank.logo} alt="bank image" className="h-5" />
+                      {bank.shortName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Account number */}
+        <FormField
+          control={form.control}
+          name="accountNo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Số tài khoản *</FormLabel>
+              <FormControl>
+                <Input placeholder="Nhập số tài khoản" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Account name */}
+        <FormField
+          control={form.control}
+          name="accountName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tên chủ tài khoản *</FormLabel>
+              <FormControl>
+                <Input placeholder="Nhập tên chủ tài khoản" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -78,9 +78,7 @@ export default function AdminPage() {
   return (
     <div>
       {/* Sidebar */}
-      <aside className="fixed top-0 left-0 z-40 w-64 h-screen">
-        <Sidebar options={sidebarOptions} />
-      </aside>
+      <Sidebar options={sidebarOptions} />
 
       <div className="md:ml-64 h-auto flex flex-col">
         <Header options={sidebarOptions} />

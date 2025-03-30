@@ -1,5 +1,6 @@
 import { Header, Sidebar } from "@/components/common";
 import { useAuthContext } from "@/context/AuthContext";
+import { ScrollText } from "lucide-react";
 import { useEffect } from "react";
 import { PiCourtBasketball } from "react-icons/pi";
 import { Outlet, useNavigate } from "react-router";
@@ -9,6 +10,11 @@ const sidebarOptions = [
     url: "/owner/fields",
     name: "Quản lý sân tập",
     icon: <PiCourtBasketball className="h-5 w-5" />,
+  },
+  {
+    url: "/owner/orders",
+    name: "Quản lý đơn đặt",
+    icon: <ScrollText className="h-5 w-5" />,
   },
 ];
 
@@ -28,9 +34,7 @@ export const OwnerPageLayout = () => {
   return (
     <div>
       {/* Sidebar */}
-      <aside className="fixed top-0 left-0 z-40 w-64 h-screen">
-        <Sidebar options={sidebarOptions} />
-      </aside>
+      <Sidebar options={sidebarOptions} />
 
       <div className="md:ml-64 h-auto flex flex-col">
         <Header options={sidebarOptions} />

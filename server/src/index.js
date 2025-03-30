@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.route.js";
 import adminRoutes from "./routes/admin.route.js";
 import ownerRoutes from "./routes/owner.route.js";
 import guestRoutes from "./routes/guest.route.js";
+import customerRoutes from "./routes/customer.route.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/owner", ownerRoutes);
 app.use("/api/guest", guestRoutes);
+app.use("/api/customer", customerRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to Sport Arena API" });

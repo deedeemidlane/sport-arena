@@ -1,4 +1,5 @@
 import prisma from "../db/prisma.js";
+import cloudinary from "../configs/cloudinaryConfig.js";
 
 export const getFields = async (req, res) => {
   try {
@@ -67,30 +68,34 @@ export const createField = async (req, res) => {
 
     console.log("req file: ", req.file);
 
-    const imagePath = req.file.path;
+    let newField = undefined;
 
-    /* Shorten url:
-      'https://res.cloudinary.com/.../image/upload/v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
-      -> 'v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
-    */
+    if (req.file) {
+      const imagePath = req.file.path;
 
-    const imageUrl = imagePath.slice(
-      imagePath.lastIndexOf(
-        "/",
-        imagePath.indexOf("/" + req.file.filename) - 1,
-      ) + 1,
-    );
-    const data = JSON.parse(req.body.data);
+      const imageUrl = imagePath.slice(
+        imagePath.lastIndexOf(
+          "/",
+          imagePath.indexOf("/" + req.file.filename) - 1,
+        ) + 1,
+      );
+      const data = JSON.parse(req.body.data);
 
-    const newField = await prisma.sportField.create({
-      data: {
-        ownerId: req.payload.id,
-        ...data,
-        imageUrl: imageUrl,
-      },
-    });
-
-    console.log("new field: ", newField);
+      newField = await prisma.sportField.create({
+        data: {
+          ownerId: req.payload.id,
+          ...data,
+          imageUrl: imageUrl,
+        },
+      });
+    } else {
+      newField = await prisma.sportField.create({
+        data: {
+          ownerId: req.payload.id,
+          ...data,
+        },
+      });
+    }
 
     if (newField) {
       res.status(201).json({ message: "Thêm sân thành công!" });
@@ -110,45 +115,121 @@ export const updateField = async (req, res) => {
     }
 
     console.log("req params: ", req.params);
-
     console.log("req body: ", req.body);
-
-    // return;
-
     console.log("req file: ", req.file);
 
-    const imagePath = req.file.path;
-
-    /* Shorten url:
-      'https://res.cloudinary.com/.../image/upload/v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
-      -> 'v1725527707/insorder-menu/uxicwxymg6pruk9ersmj.webp'
-    */
-
-    const imageUrl = imagePath.slice(
-      imagePath.lastIndexOf(
-        "/",
-        imagePath.indexOf("/" + req.file.filename) - 1,
-      ) + 1,
-    );
-
     const fieldId = req.params.fieldId;
+
+    const currentField = await prisma.sportField.findFirst({
+      where: { id: parseInt(fieldId) },
+    });
+    const currentImageUrl = currentField.imageUrl;
+
     const data = JSON.parse(req.body.data);
 
-    const updateField = await prisma.sportField.update({
-      where: { id: parseInt(fieldId) },
-      data: {
-        ...data,
-        imageUrl: imageUrl,
-      },
-    });
+    let updatedField = undefined;
+    let imageUrl = undefined;
 
-    if (updateField) {
-      res.status(201).json({ message: "Cập nhật thông tin sân thành công!" });
+    if (req.file) {
+      const imagePath = req.file.path;
+
+      imageUrl = imagePath.slice(
+        imagePath.lastIndexOf(
+          "/",
+          imagePath.indexOf("/" + req.file.filename) - 1,
+        ) + 1,
+      );
+
+      updatedField = await prisma.sportField.update({
+        where: { id: parseInt(fieldId) },
+        data: { ...data, imageUrl: imageUrl },
+      });
+    } else {
+      updatedField = await prisma.sportField.update({
+        where: { id: parseInt(fieldId) },
+        data: { ...data },
+      });
+    }
+
+    if (updatedField) {
+      console.log("updatedField: ", updatedField);
+
+      if (updatedField.imageUrl === "") {
+        const imagePublicId = currentImageUrl.substring(
+          currentImageUrl.indexOf("/") + 1,
+          currentImageUrl.lastIndexOf("."),
+        );
+
+        await cloudinary.uploader.destroy(imagePublicId);
+      }
+
+      res.status(200).json({ message: "Cập nhật thông tin sân thành công!" });
     } else {
       res.status(400).json({ error: "Dữ liệu không hợp lệ" });
     }
   } catch (error) {
     console.log("Error in getFieldDetail controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const getOrders = async (req, res) => {
+  try {
+    if (req.payload.role !== "OWNER") {
+      return res.status(401).json({ error: "Unauthorized - Not owner token" });
+    }
+
+    const orders = await prisma.order.findMany({
+      where: {
+        sportField: {
+          ownerId: req.payload.id,
+        },
+      },
+      include: {
+        sportField: true,
+        bookings: true,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    if (orders) {
+      res.status(200).json({ orders });
+    } else {
+      res.status(404).json({ error: "Không tìm thấy đơn hàng nào" });
+    }
+  } catch (error) {
+    console.log("Error in getFields controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const updateOrderStatus = async (req, res) => {
+  try {
+    if (req.payload.role !== "OWNER") {
+      return res.status(401).json({ error: "Unauthorized - Not owner token" });
+    }
+
+    console.log("req params: ", req.params);
+    console.log("req body: ", req.body);
+
+    const updatedOrder = await prisma.order.update({
+      where: { id: parseInt(req.params.orderId) },
+      data: { status: req.body.status },
+    });
+
+    if (updatedOrder) {
+      if (updatedOrder.status === "CONFIRMED") {
+        res.status(200).json({ message: "Đã xác nhận đơn đặt!" });
+      } else {
+        res.status(200).json({ message: "Đã huỷ đơn đặt!" });
+      }
+    } else {
+      res.status(400).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in updateOrderStatus controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };

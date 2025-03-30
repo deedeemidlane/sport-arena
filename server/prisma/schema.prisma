@@ -19,7 +19,7 @@ enum Gender {
   OTHER
 }
 
-enum BookingStatus {
+enum OrderStatus {
   PENDING
   CONFIRMED
   CANCELED
@@ -71,7 +71,7 @@ model User {
   updatedAt        DateTime @updatedAt
 
   sportFields   SportField[]
-  bookings      Booking[]
+  orders        Order[]
   reviews       Review[]
   matchRequests MatchRequest[]
 }
@@ -89,43 +89,59 @@ model SportField {
   pricePerHour Int
   imageUrl     String?
   description  String?
+  accountNo    String
+  accountName  String
+  acqId        String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
   owner         User             @relation(fields: [ownerId], references: [id])
-  bookings      Booking[]
+  orders        Order[]
   reviews       Review[]
   promotions    Promotion[]
   fieldServices FieldsServices[]
 }
 
 model Booking {
-  id           Int           @id @default(autoincrement())
-  userId       Int
-  sportFieldId Int
-  fieldNo      Int
-  bookingDate  DateTime
-  startTime    DateTime
-  endTime      DateTime
-  status       BookingStatus
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  fieldNo     Int
+  bookingDate String
+  startTime   Int
+  price       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Order Order @relation(fields: [orderId], references: [id])
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  sportFieldId  Int
+  customerName  String
+  customerPhone String
+  proofImageUrl String
+  status        OrderStatus
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   user       User       @relation(fields: [userId], references: [id])
   sportField SportField @relation(fields: [sportFieldId], references: [id])
+  bookings   Booking[]
   payments   Payment[]
 }
 
 model Payment {
   id        Int           @id @default(autoincrement())
-  bookingId Int
+  orderId   Int
   amount    Int
   method    PaymentMethod
   status    PaymentStatus
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
-  booking Booking @relation(fields: [bookingId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
 }
 
 model Review {

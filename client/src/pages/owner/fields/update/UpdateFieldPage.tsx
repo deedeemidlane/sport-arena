@@ -5,18 +5,22 @@ import { useParams } from "react-router";
 import useGetFieldDetail from "@/hooks/owner/useGetFieldDetail";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/common";
+import { FieldSchema } from "../schema";
 
 export default function UpdateFieldPage() {
   const params = useParams();
   const fieldId = params.fieldId;
 
-  const [field, setField] = useState();
+  const [field, setField] = useState<FieldSchema>();
 
   const { loading, getFieldDetail } = useGetFieldDetail();
 
   useEffect(() => {
     const fetchField = async () => {
       const fetchedField = await getFieldDetail(fieldId || "");
+      if (!fetchedField.imageUrl) {
+        fetchedField.imageUrl = "";
+      }
       setField(fetchedField);
     };
 
@@ -40,7 +44,7 @@ export default function UpdateFieldPage() {
           {loading ? (
             <Spinner />
           ) : (
-            <div className="bg-white rounded-lg shadow-lg border-2 p-6">
+            <div className="bg-white rounded-lg shadow-lg border-2 p-6 mb-16">
               <FieldForm field={field} fieldId={fieldId} />
             </div>
           )}
