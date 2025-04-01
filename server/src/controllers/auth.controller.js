@@ -197,9 +197,11 @@ export const login = async (req, res) => {
     const payload = {
       id: user.id,
       phone: user.phone,
+      email: user.email,
       name: user.name,
       role: user.role,
-      shopId: user.shopId,
+      gender: user.gender,
+      avatarUrl: user.avatarUrl,
       verified: user.verified,
     };
 

@@ -9,16 +9,19 @@ import {
 } from "react";
 import { getToken } from "@/services/token";
 
-type TAuthUser = {
+export type IAuthUser = {
   id: string;
   name: string;
   phone: string;
   role: string;
+  email: string;
+  gender: string;
+  avatarUrl?: string;
 };
 
 const AuthContext = createContext<{
-  authUser: TAuthUser | string;
-  setAuthUser: Dispatch<SetStateAction<TAuthUser | string>>;
+  authUser: IAuthUser | string;
+  setAuthUser: Dispatch<SetStateAction<IAuthUser | string>>;
   isLoading: boolean;
 }>({
   authUser: "",
@@ -27,7 +30,7 @@ const AuthContext = createContext<{
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
-  const [authUser, setAuthUser] = useState<TAuthUser | string>("");
+  const [authUser, setAuthUser] = useState<IAuthUser | string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

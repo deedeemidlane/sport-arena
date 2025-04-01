@@ -190,7 +190,7 @@ export const getOrders = async (req, res) => {
         bookings: true,
       },
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
     });
 
@@ -217,12 +217,31 @@ export const updateOrderStatus = async (req, res) => {
     const updatedOrder = await prisma.order.update({
       where: { id: parseInt(req.params.orderId) },
       data: { status: req.body.status },
+      include: { sportField: true },
     });
 
     if (updatedOrder) {
       if (updatedOrder.status === "CONFIRMED") {
+        await prisma.notification.create({
+          data: {
+            userId: updatedOrder.userId,
+            title: "Đơn đã xác nhận!",
+            message: `Đơn đặt sân tại <b>${updatedOrder.sportField.name}</b> đã được xác nhận!`,
+            isRead: false,
+            orderId: updatedOrder.id,
+          },
+        });
         res.status(200).json({ message: "Đã xác nhận đơn đặt!" });
       } else {
+        await prisma.notification.create({
+          data: {
+            userId: updatedOrder.userId,
+            title: "Đơn đã huỷ!",
+            message: `Đơn đặt sân tại <b>${updatedOrder.sportField.name}</b> đã bị huỷ!`,
+            isRead: false,
+            orderId: updatedOrder.id,
+          },
+        });
         res.status(200).json({ message: "Đã huỷ đơn đặt!" });
       }
     } else {

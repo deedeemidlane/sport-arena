@@ -4,7 +4,11 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { IBookingSlot, ICustomerInfo } from "../BookingPage";
 import { IField } from "@/types/Field";
-import { formatDate, formatPriceInVND } from "@/utils/helperFunctions";
+import {
+  formatDate,
+  formatHour,
+  formatPriceInVND,
+} from "@/utils/helperFunctions";
 import { Dispatch, SetStateAction } from "react";
 
 interface CustomerInfoProps {
@@ -62,7 +66,9 @@ export const CustomerInfo = ({
                   <td className="border p-2 text-center">
                     {formatDate(slot.date)}
                   </td>
-                  <td className="border p-2 text-center">{slot.time}</td>
+                  <td className="border p-2 text-center">
+                    {formatHour(slot.time)} - {formatHour(slot.time + 1)}
+                  </td>
                   <td className="border p-2 text-center">
                     Sân {slot.fieldIndex}
                   </td>

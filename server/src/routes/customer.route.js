@@ -1,5 +1,11 @@
 import express from "express";
-import { getOrders, placeOrder } from "../controllers/customer.controller.js";
+import {
+  getNotifications,
+  getOrderDetail,
+  getOrders,
+  placeOrder,
+  readNotification,
+} from "../controllers/customer.controller.js";
 import protectRoute from "../middleware/protectRoute.js";
 
 import multer from "multer";
@@ -19,6 +25,9 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 
 router.get("/orders", protectRoute, getOrders);
+router.get("/orders/:orderId", protectRoute, getOrderDetail);
 router.post("/orders", protectRoute, upload.single("image"), placeOrder);
+router.get("/notifications", protectRoute, getNotifications);
+router.patch("/notifications/:notificationId", protectRoute, readNotification);
 
 export default router;

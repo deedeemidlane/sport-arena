@@ -1,3 +1,4 @@
+import { Spinner } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { getFullImageUrl } from "@/utils/helperFunctions";
 import { useRef, useEffect } from "react";
@@ -5,7 +6,7 @@ import { useRef, useEffect } from "react";
 interface ImageModalProps {
   isOpen: boolean;
   closeModal: () => void;
-  imageUrl: string;
+  imageUrl: string | undefined;
 }
 
 export const ImageModal = ({
@@ -41,7 +42,15 @@ export const ImageModal = ({
       onKeyDown={preventClose}
     >
       <div className="border-2 rounded-lg p-2 flex justify-center">
-        <img src={getFullImageUrl(imageUrl)} alt="proof image" />
+        {imageUrl ? (
+          <img
+            className="max-h-[70vh] w-auto"
+            src={getFullImageUrl(imageUrl)}
+            alt="proof image"
+          />
+        ) : (
+          <Spinner />
+        )}
       </div>
       <Button className="w-full mt-5" onClick={closeModal}>
         Đóng

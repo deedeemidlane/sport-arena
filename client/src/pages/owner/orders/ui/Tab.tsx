@@ -1,4 +1,4 @@
-import { AlarmClock, Check, Eye, X } from "lucide-react";
+import { AlarmClock, Check, Eye, Inbox, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,13 +53,21 @@ export const Tab = ({
   currentOrderId,
 }: TabProps) => {
   const [openImageModal, setOpenImageModal] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState<string>();
 
   return (
     <Card x-chunk="dashboard-06-chunk-0" className="overflow-y-auto h-[80vh]">
-      <CardHeader>
+      {/* <CardHeader>
         <CardTitle>{tabContent[tabValue].title}</CardTitle>
-      </CardHeader>
+      </CardHeader> */}
+      {orders?.length === 0 && (
+        <div className="flex items-center justify-center w-full h-full text-gray-500 font-semibold text-lg">
+          <div className="flex flex-col items-center gap-2">
+            <Inbox className="w-20 h-20" />
+            Chưa có đơn đặt sân nào.
+          </div>
+        </div>
+      )}
       <CardContent>
         <div className="grid md:grid-cols-2 gap-4 xl:gap-8">
           {orders?.map((order) => (
@@ -163,9 +171,9 @@ export const Tab = ({
                     <Eye />
                     Minh chứng chuyển khoản
                   </Button>
-                  <Separator className="my-4" />
                   {tabValue === "pending" && (
                     <>
+                      <Separator className="my-4" />
                       {updateOrderLoading && currentOrderId === order.id ? (
                         <Button variant="outline" disabled className="w-full">
                           <Spinner />

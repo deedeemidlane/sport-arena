@@ -92,7 +92,10 @@ export default function BookingPage() {
       formData.append("image", proofImage);
     }
     formData.append("fieldId", JSON.stringify(fieldId));
-    formData.append("bookingSlots", JSON.stringify(bookingSlots));
+    formData.append(
+      "bookingSlots",
+      JSON.stringify(bookingSlots.filter((slot) => slot.selected))
+    );
     formData.append("customerInfo", JSON.stringify(customerInfo));
 
     const res = await placeOrder(formData);
