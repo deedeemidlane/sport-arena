@@ -34,7 +34,7 @@ export default function OrdersPage() {
   return (
     <div className="items-start gap-4 md:gap-8">
       {getOrdersLoading ? (
-        <div className="w-full text-center mt-10">
+        <div className="w-full flex justify-center mt-20">
           <Spinner />
         </div>
       ) : (

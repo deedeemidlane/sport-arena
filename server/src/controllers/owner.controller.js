@@ -37,16 +37,19 @@ export const getFieldDetail = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized - Not owner token" });
     }
 
-    console.log("req params: ", req.params);
-
     const fieldId = req.params.fieldId;
 
     const field = await prisma.sportField.findUnique({
       where: { id: parseInt(fieldId) },
+      include: {
+        owner: true,
+        orders: {
+          include: {
+            bookings: true,
+          },
+        },
+      },
     });
-
-    // console.log(field);
-    // return;
 
     if (field) {
       res.status(200).json(field);
@@ -184,6 +187,7 @@ export const getOrders = async (req, res) => {
         sportField: {
           ownerId: req.payload.id,
         },
+        orderType: "NORMAL_BOOKING",
       },
       include: {
         sportField: true,
@@ -244,6 +248,58 @@ export const updateOrderStatus = async (req, res) => {
         });
         res.status(200).json({ message: "Đã huỷ đơn đặt!" });
       }
+    } else {
+      res.status(400).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in updateOrderStatus controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const preBook = async (req, res) => {
+  try {
+    if (req.payload.role !== "OWNER") {
+      return res.status(401).json({ error: "Unauthorized - Not owner token" });
+    }
+
+    console.log("req body: ", req.body);
+
+    const fieldId = JSON.parse(req.body.fieldId);
+    const bookingSlots = JSON.parse(req.body.bookingSlots);
+
+    // console.log("fieldId: ", fieldId);
+    // console.log("bookingSlots: ", bookingSlots);
+
+    const newOrder = await prisma.order.create({
+      data: {
+        userId: req.payload.id,
+        sportFieldId: parseInt(fieldId),
+        customerName: "",
+        customerPhone: "",
+        proofImageUrl: "",
+        status: "CONFIRMED",
+        orderType: "OWNER_PREBOOKING",
+      },
+    });
+
+    if (newOrder) {
+      // Create bookings for each slot
+      await Promise.all(
+        bookingSlots.map((slot) =>
+          prisma.booking.create({
+            data: {
+              orderId: newOrder.id,
+              fieldNo: slot.fieldIndex,
+              bookingDate: slot.date,
+              price: slot.price,
+              startTime: parseInt(slot.time),
+            },
+          }),
+        ),
+      );
+
+      res.status(201).json({ message: "Giữ chỗ thành công!" });
     } else {
       res.status(400).json({ error: "Dữ liệu không hợp lệ" });
     }

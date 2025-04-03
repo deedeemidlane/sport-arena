@@ -24,6 +24,8 @@ import BookingPage from "./pages/home/fields/[fieldId]/booking";
 import OrdersPage from "./pages/owner/orders";
 import ProfilePage from "./pages/home/profile";
 import OrderDetailPage from "./pages/home/profile/order-detail";
+import PreBookingsPage from "./pages/owner/pre-bookings";
+import FieldPreBookingsPage from "./pages/owner/pre-bookings/[fieldId]";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -55,6 +57,10 @@ export default function App() {
         </Route>
         <Route path="orders">
           <Route index element={<OrdersPage />} />
+        </Route>
+        <Route path="pre-bookings">
+          <Route index element={<PreBookingsPage />} />
+          <Route path=":fieldId" element={<FieldPreBookingsPage />} />
         </Route>
       </Route>
       <Route path="term-of-service" element={<TermOfServicePage />} />

@@ -17,7 +17,7 @@ export default function CreateFieldPage() {
             Thêm Sân Thể Thao Mới
           </h1>
 
-          <div className="bg-white rounded-lg shadow-lg border-2 p-6">
+          <div className="bg-white rounded-lg shadow-lg border-2 p-6 mb-10">
             <FieldForm />
           </div>
         </div>

@@ -140,6 +140,15 @@ export default function FieldDetailPage() {
                   ))}
                 </div>
               </div> */}
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.9213204948787!2d105.77145436129972!3d21.017462112252012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x313454a9a88bbdfd%3A0x26566ebdcbc82c86!2zVGhlIEVtZXJhbGQsIE5nb8yDIDE4MCDEkMawxqHMgG5nIMSQacyAbmggVGjDtG4sIE3hu7kgxJDDrG5oLCBOYW0gVOG7qyBMacOqbSwgSMOgIE7hu5lpIDEyMDE1LCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1743610188855!5m2!1svi!2s"
+                width="600"
+                height="450"
+                style={{ border: 0 }}
+                // allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
 
             {/* Booking information */}

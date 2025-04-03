@@ -25,6 +25,11 @@ enum OrderStatus {
   CANCELED
 }
 
+enum OrderType {
+  NORMAL_BOOKING
+  OWNER_PREBOOKING
+}
+
 enum PaymentMethod {
   MOMO
   VNPAY
@@ -124,6 +129,7 @@ model Order {
   customerPhone String
   proofImageUrl String
   status        OrderStatus
+  orderType     OrderType   @default(NORMAL_BOOKING)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 

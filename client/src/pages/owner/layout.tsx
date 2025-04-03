@@ -4,6 +4,7 @@ import { ScrollText } from "lucide-react";
 import { useEffect } from "react";
 import { PiCourtBasketball } from "react-icons/pi";
 import { Outlet, useNavigate } from "react-router";
+import { LuNotebookPen } from "react-icons/lu";
 
 const sidebarOptions = [
   {
@@ -15,6 +16,11 @@ const sidebarOptions = [
     url: "/owner/orders",
     name: "Quản lý đơn đặt",
     icon: <ScrollText className="h-5 w-5" />,
+  },
+  {
+    url: "/owner/pre-bookings",
+    name: "Quản lý sân đặt trước",
+    icon: <LuNotebookPen className="h-5 w-5" />,
   },
 ];
 

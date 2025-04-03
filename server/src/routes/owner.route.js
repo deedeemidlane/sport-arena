@@ -4,6 +4,7 @@ import {
   getFieldDetail,
   getFields,
   getOrders,
+  preBook,
   updateField,
   updateOrderStatus,
 } from "../controllers/owner.controller.js";
@@ -37,5 +38,6 @@ router.patch(
 
 router.get("/orders", protectRoute, getOrders);
 router.patch("/orders/:orderId", protectRoute, updateOrderStatus);
+router.post("/pre-bookings", protectRoute, preBook);
 
 export default router;

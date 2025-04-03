@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -15,23 +14,15 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import {
-  formatDate,
-  formatPriceInVND,
-  getFullImageUrl,
-} from "@/utils/helperFunctions";
+import { getFullImageUrl } from "@/utils/helperFunctions";
 import useGetFields from "@/hooks/owner/useGetFields";
 import { IField } from "@/types/Field";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Spinner } from "@/components/common";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router";
 
-export default function OwnerFieldsPage() {
+export default function PreBookingsPage() {
+  const navigate = useNavigate();
   const { loading, getFields } = useGetFields();
 
   const [fields, setFields] = useState<IField[]>([]);
@@ -66,15 +57,12 @@ export default function OwnerFieldsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Danh sách sân tập</CardTitle>
-        <CardDescription>Quản lý các sân tập của bạn tại đây.</CardDescription>
-        <a href="/owner/fields/create">
-          <Button>
-            <Plus />
-            Thêm sân tập mới
-          </Button>
-        </a>
+        <CardTitle className="text-2xl font-bold">Chọn sân tập</CardTitle>
+        <CardDescription className="text-base">
+          Nhấn vào sân tập để đặt lịch
+        </CardDescription>
       </CardHeader>
+
       <CardContent>
         {loading ? (
           <div className="w-full flex justify-center">
@@ -91,8 +79,6 @@ export default function OwnerFieldsPage() {
                   <TableHead>Tên</TableHead>
                   <TableHead>Loại sân</TableHead>
                   <TableHead>Địa chỉ</TableHead>
-                  <TableHead>Giá thuê (1 giờ)</TableHead>
-                  <TableHead>Ngày tạo</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -102,7 +88,13 @@ export default function OwnerFieldsPage() {
                 {fields &&
                   fields.length > 0 &&
                   fields.map((field, index) => (
-                    <TableRow key={index} className="py-4">
+                    <TableRow
+                      key={index}
+                      className="py-2 cursor-pointer"
+                      onClick={() => {
+                        navigate(`/owner/pre-bookings/${field.id}`);
+                      }}
+                    >
                       <TableCell className="hidden sm:table-cell pl-4">
                         {field.imageUrl ? (
                           <img
@@ -126,33 +118,7 @@ export default function OwnerFieldsPage() {
                       <TableCell>{renderSportType(field.sportType)}</TableCell>
                       <TableCell>{field.address}</TableCell>
                       <TableCell>
-                        {formatPriceInVND(field.pricePerHour)}
-                      </TableCell>
-                      <TableCell>{formatDate(field.createdAt)}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              aria-haspopup="true"
-                              size="icon"
-                              variant="ghost"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Toggle menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <a
-                                href={`/owner/fields/${field.id}`}
-                                className="w-full"
-                              >
-                                Chỉnh sửa
-                              </a>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>Xóa</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <ExternalLink />
                       </TableCell>
                     </TableRow>
                   ))}

@@ -132,8 +132,6 @@ export const getNotifications = async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
 
-    console.log("notifications: ", notifications);
-
     if (notifications) {
       res.status(200).json({ notifications });
     } else {
