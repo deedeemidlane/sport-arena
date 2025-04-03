@@ -49,7 +49,9 @@ export const Header = ({
           <SheetHeader>
             <div className="flex items-center gap-2 text-lg font-semibold">
               <img src="/logo.png" className="h-6 w-6" />
-              <span className="">Trang quản lý</span>
+              <span className="text-lg font-heading font-bold text-primary">
+                SportArena
+              </span>
             </div>
           </SheetHeader>
           <nav className="grid gap-2 px-2 text-sm font-medium lg:px-4">

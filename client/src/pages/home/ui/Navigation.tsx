@@ -41,17 +41,17 @@ import useReadNotification from "@/hooks/customer/useReadNotification";
 const sports = [
   {
     name: "Bóng đá",
-    url: "/football",
+    url: "/fields?sportType=FOOTBALL",
     imageUrl: "/football.png",
   },
   {
     name: "Cầu lông",
-    url: "/badminton",
+    url: "/fields?sportType=BADMINTON",
     imageUrl: "/badminton.png",
   },
   {
     name: "Pickle Ball",
-    url: "/pickleball",
+    url: "/fields?sportType=PICKLEBALL",
     imageUrl: "/pickleball.png",
   },
 ];

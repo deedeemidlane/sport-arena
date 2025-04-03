@@ -4,11 +4,13 @@ import toast from "react-hot-toast";
 const useGetFields = () => {
   const [loading, setLoading] = useState(false);
 
-  const getFields = async () => {
+  const getFields = async (urlSearchParams: string) => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/guest/fields`,
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/api/guest/fields?${urlSearchParams}`,
         { method: "GET" }
       );
 

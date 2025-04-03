@@ -2,13 +2,23 @@ import prisma from "../db/prisma.js";
 
 export const getFields = async (req, res) => {
   try {
+    console.log("query: ", req.query);
+
+    const { fieldName, sportType, province, district } = req.query;
+
     const sportFields = await prisma.sportField.findMany({
+      where: {
+        ...(fieldName && {
+          name: { contains: fieldName, mode: "insensitive" },
+        }),
+        ...(sportType && { sportType: sportType }),
+        ...(province && { province: province }),
+        ...(district && { district: district }),
+      },
       include: {
         owner: true,
       },
     });
-
-    // console.log(user);
 
     if (sportFields) {
       res.status(200).json(sportFields);
@@ -23,8 +33,6 @@ export const getFields = async (req, res) => {
 
 export const getFieldDetail = async (req, res) => {
   try {
-    console.log("req params: ", req.params);
-
     const fieldId = req.params.fieldId;
 
     const field = await prisma.sportField.findUnique({
