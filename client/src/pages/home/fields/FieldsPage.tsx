@@ -35,6 +35,12 @@ export default function FieldsPage() {
     if (searchParams.get("district")) {
       params += `district=${searchParams.get("district")}&`;
     }
+    if (searchParams.get("minPrice")) {
+      params += `minPrice=${searchParams.get("minPrice")}&`;
+    }
+    if (searchParams.get("maxPrice")) {
+      params += `maxPrice=${searchParams.get("maxPrice")}&`;
+    }
 
     return params;
   }, [searchParams]);
@@ -64,6 +70,9 @@ export default function FieldsPage() {
         sportType={searchParams.get("sportType") || undefined}
         province={searchParams.get("province") || undefined}
         district={searchParams.get("district") || undefined}
+        minPrice={searchParams.get("minPrice") || undefined}
+        maxPrice={searchParams.get("maxPrice") || undefined}
+        showFilter={true}
       />
       <CourtList urlSearchParams={urlSearchParams} />
       <Footer />

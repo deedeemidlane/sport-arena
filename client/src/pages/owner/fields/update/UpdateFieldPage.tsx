@@ -6,12 +6,14 @@ import useGetFieldDetail from "@/hooks/owner/useGetFieldDetail";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/common";
 import { FieldSchema } from "../schema";
+import { IService } from "@/types/Field";
 
 export default function UpdateFieldPage() {
   const params = useParams();
   const fieldId = params.fieldId;
 
   const [field, setField] = useState<FieldSchema>();
+  const [services, setServices] = useState<IService[]>([]);
 
   const { loading, getFieldDetail } = useGetFieldDetail();
 
@@ -22,6 +24,7 @@ export default function UpdateFieldPage() {
         fetchedField.imageUrl = "";
       }
       setField(fetchedField);
+      setServices(fetchedField.services);
     };
 
     fetchField();
@@ -45,7 +48,12 @@ export default function UpdateFieldPage() {
             <Spinner />
           ) : (
             <div className="bg-white rounded-lg shadow-lg border-2 p-6 mb-16">
-              <FieldForm field={field} fieldId={fieldId} />
+              <FieldForm
+                field={field}
+                fieldId={fieldId}
+                services={services}
+                setServices={setServices}
+              />
             </div>
           )}
         </div>

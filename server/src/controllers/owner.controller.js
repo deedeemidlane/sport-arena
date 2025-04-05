@@ -42,6 +42,7 @@ export const getFieldDetail = async (req, res) => {
     const field = await prisma.sportField.findUnique({
       where: { id: parseInt(fieldId) },
       include: {
+        services: true,
         owner: true,
         orders: {
           include: {
@@ -101,6 +102,19 @@ export const createField = async (req, res) => {
     }
 
     if (newField) {
+      const services = JSON.parse(req.body.services);
+      await Promise.all(
+        services.map((service) =>
+          prisma.extraService.create({
+            data: {
+              sportFieldId: newField.id,
+              name: service.name,
+              price: parseInt(service.price),
+            },
+          }),
+        ),
+      );
+
       res.status(201).json({ message: "Thêm sân thành công!" });
     } else {
       res.status(400).json({ error: "Dữ liệu không hợp lệ" });
@@ -155,7 +169,23 @@ export const updateField = async (req, res) => {
     }
 
     if (updatedField) {
-      console.log("updatedField: ", updatedField);
+      const services = JSON.parse(req.body.services);
+
+      await prisma.extraService.deleteMany({
+        where: { sportFieldId: updatedField.id },
+      });
+
+      await Promise.all(
+        services.map((service) =>
+          prisma.extraService.create({
+            data: {
+              sportFieldId: updatedField.id,
+              name: service.name,
+              price: parseInt(service.price),
+            },
+          }),
+        ),
+      );
 
       if (updatedField.imageUrl === "") {
         const imagePublicId = currentImageUrl.substring(

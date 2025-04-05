@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   Building2,
   Dribbble,
+  HandCoins,
   MapPin,
   Search as SearchIcon,
 } from "lucide-react";
@@ -36,6 +37,8 @@ interface SearchParams {
   sportType?: string;
   province: string;
   district: string;
+  minPrice: number;
+  maxPrice: number;
 }
 
 interface SearchProps {
@@ -43,6 +46,9 @@ interface SearchProps {
   sportType?: string;
   province?: string;
   district?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  showFilter: boolean;
 }
 
 export const Search = ({
@@ -50,6 +56,9 @@ export const Search = ({
   sportType,
   province,
   district,
+  minPrice,
+  maxPrice,
+  showFilter,
 }: SearchProps) => {
   const navigate = useNavigate();
   const [selectedProvince, setSelectedProvince] = useState<string>();
@@ -93,6 +102,8 @@ export const Search = ({
       sportType: sportType,
       province: province,
       district: district,
+      minPrice: minPrice ? parseInt(minPrice) : 0,
+      maxPrice: maxPrice ? parseInt(maxPrice) : 0,
     },
   });
 
@@ -110,7 +121,9 @@ export const Search = ({
     if (data.sportType && data.sportType !== "all")
       params += `sportType=${data.sportType}&`;
     if (data.province) params += `province=${data.province}&`;
-    if (data.district) params += `district=${data.district}`;
+    if (data.district) params += `district=${data.district}&`;
+    if (data.minPrice) params += `minPrice=${data.minPrice}&`;
+    if (data.maxPrice) params += `maxPrice=${data.maxPrice}&`;
 
     navigate(`/fields?${params}`);
   };
@@ -119,135 +132,180 @@ export const Search = ({
     <div className="container mx-auto pt-4 px-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="rounded-xl p-6 md:flex flex-wrap gap-4 items-end border border-gray-200">
-            <div className="flex-1 max-md:mb-2">
-              <Label className="mb-2">Tên sân tập</Label>
-              <div className="relative">
-                <SearchIcon
-                  color="#71717b"
-                  className="h-4 w-4 absolute left-2.5 top-2.5"
-                />
-                <Input
-                  id=""
-                  type="text"
-                  placeholder="Nhập tên sân"
-                  className="pl-8"
-                  {...form.register("fieldName")}
-                />
+          <div className="rounded-xl p-6 border border-gray-200 space-y-6">
+            <div className="md:flex flex-wrap gap-4 items-end">
+              <div className="flex-1 max-md:mb-2">
+                <Label className="mb-2">Tên sân tập</Label>
+                <div className="relative">
+                  <SearchIcon
+                    color="#71717b"
+                    className="h-4 w-4 absolute left-2.5 top-2.5"
+                  />
+                  <Input
+                    id=""
+                    type="text"
+                    placeholder="Nhập tên sân"
+                    className="pl-8"
+                    {...form.register("fieldName")}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex-1 max-md:mb-2">
-              <FormField
-                control={form.control}
-                name="sportType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Môn thể thao</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <div className="flex items-center gap-2">
-                            <Dribbble className="h-4 w-4" />
-                            <div className="h-4 border-r border-gray-300"></div>
-                            <SelectValue placeholder="Chọn môn thể thao" />
-                          </div>
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="all">Tất cả</SelectItem>
-                        {SPORT_OPTIONS.map((sport) => (
-                          <SelectItem key={sport.value} value={sport.value}>
-                            {sport.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex-1 max-md:mb-2">
-              <FormField
-                control={form.control}
-                name="province"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Tỉnh/Thành phố</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                        handleProvinceChange(value);
-                      }}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4" />
-                            <div className="h-4 border-r border-gray-300"></div>
-                            <SelectValue placeholder="Chọn tỉnh/thành phố" />
-                          </div>
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {provinces.map((province) => (
-                          <SelectItem key={province.name} value={province.name}>
-                            {province.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex-1 max-md:mb-2">
-              {/* District */}
-              <FormField
-                control={form.control}
-                name="district"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Quận/Huyện</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(value);
-                      }}
-                      defaultValue={field.value}
-                      disabled={!selectedProvince}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
-                            <div className="h-4 border-r border-gray-300"></div>
-                            <SelectValue placeholder="Chọn quận/huyện" />
-                          </div>
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {selectedProvince &&
-                          districts?.map((district) => (
-                            <SelectItem
-                              key={district.name}
-                              value={district.name}
-                            >
-                              {district.name}
+              <div className="flex-1 max-md:mb-2">
+                <FormField
+                  control={form.control}
+                  name="sportType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Môn thể thao</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <div className="flex items-center gap-2">
+                              <Dribbble className="h-4 w-4" />
+                              <div className="h-4 border-r border-gray-300"></div>
+                              <SelectValue placeholder="Chọn môn thể thao" />
+                            </div>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="all">Tất cả</SelectItem>
+                          {SPORT_OPTIONS.map((sport) => (
+                            <SelectItem key={sport.value} value={sport.value}>
+                              {sport.label}
                             </SelectItem>
                           ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex-1 max-md:mb-2">
+                <FormField
+                  control={form.control}
+                  name="province"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Tỉnh/Thành phố</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          handleProvinceChange(value);
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <div className="flex items-center gap-2">
+                              <Building2 className="h-4 w-4" />
+                              <div className="h-4 border-r border-gray-300"></div>
+                              <SelectValue placeholder="Chọn tỉnh/thành phố" />
+                            </div>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {provinces.map((province) => (
+                            <SelectItem
+                              key={province.name}
+                              value={province.name}
+                            >
+                              {province.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex-1 max-md:mb-2">
+                {/* District */}
+                <FormField
+                  control={form.control}
+                  name="district"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Quận/Huyện</FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                        }}
+                        defaultValue={field.value}
+                        disabled={!selectedProvince}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4" />
+                              <div className="h-4 border-r border-gray-300"></div>
+                              <SelectValue placeholder="Chọn quận/huyện" />
+                            </div>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {selectedProvince &&
+                            districts?.map((district) => (
+                              <SelectItem
+                                key={district.name}
+                                value={district.name}
+                              >
+                                {district.name}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button className="bg-primary hover:bg-primary/90 max-md:w-full">
+                <SearchIcon className="h-4 w-4" />
+                Tìm kiếm
+              </Button>
             </div>
-            <Button className="bg-primary hover:bg-primary/90 max-md:w-full">
-              <SearchIcon className="h-4 w-4" />
-              Tìm kiếm
-            </Button>
+            {showFilter && (
+              <div>
+                <h2 className="font-bold text-lg flex items-center gap-2 mb-2">
+                  <HandCoins />
+                  Lọc theo giá
+                </h2>
+                <div className="md:flex flex-wrap gap-4 items-end">
+                  <div className="flex-1 max-md:mb-2">
+                    <Label className="mb-2">Từ</Label>
+                    <div className="relative">
+                      <Input
+                        id="minPrice"
+                        type="number"
+                        {...form.register("minPrice")}
+                      />
+                      <span className="absolute right-7 top-1.5 text-gray-500">
+                        &#x2768;VND&#x2769;
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-1 max-md:mb-2">
+                    <Label className="mb-2">Đến</Label>
+                    <div className="relative">
+                      <Input
+                        id="maxPrice"
+                        type="number"
+                        {...form.register("maxPrice")}
+                      />
+                      <span className="absolute right-7 top-1.5 text-gray-500">
+                        &#x2768;VND&#x2769;
+                      </span>
+                    </div>
+                  </div>
+                  <Button className="bg-primary hover:bg-primary/90 max-md:hidden invisible">
+                    <SearchIcon className="h-4 w-4" />
+                    Tìm kiếm
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </form>
       </Form>

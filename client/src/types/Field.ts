@@ -11,6 +11,7 @@ export interface IField {
   ward: string;
   district: string;
   province: string;
+  googleMapLink: string;
   pricePerHour: number;
   imageUrl?: string;
   description: string;
@@ -20,6 +21,10 @@ export interface IField {
   accountName: string;
   acqId: string;
   orders: IOrder[];
+  services: {
+    name: string,
+    price: number
+  }[]
 }
 
 export const defaultFieldValue: IField = {
@@ -32,6 +37,7 @@ export const defaultFieldValue: IField = {
   ward: "",
   district: "",
   province: "",
+  googleMapLink: "",
   pricePerHour: 0,
   imageUrl: "",
   description: "",
@@ -41,4 +47,10 @@ export const defaultFieldValue: IField = {
   accountName: "",
   acqId: "",
   orders: [],
+  services: []
 };
+
+export interface IService {
+  name?: string;
+  price?: string;
+}

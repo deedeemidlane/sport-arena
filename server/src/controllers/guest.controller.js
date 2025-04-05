@@ -4,7 +4,8 @@ export const getFields = async (req, res) => {
   try {
     console.log("query: ", req.query);
 
-    const { fieldName, sportType, province, district } = req.query;
+    const { fieldName, sportType, province, district, minPrice, maxPrice } =
+      req.query;
 
     const sportFields = await prisma.sportField.findMany({
       where: {
@@ -14,6 +15,25 @@ export const getFields = async (req, res) => {
         ...(sportType && { sportType: sportType }),
         ...(province && { province: province }),
         ...(district && { district: district }),
+        ...(minPrice &&
+          maxPrice && {
+            pricePerHour: {
+              gte: parseInt(minPrice),
+              lte: parseInt(maxPrice),
+            },
+          }),
+        ...(minPrice &&
+          !maxPrice && {
+            pricePerHour: {
+              gte: parseInt(minPrice),
+            },
+          }),
+        ...(maxPrice &&
+          !minPrice && {
+            pricePerHour: {
+              lte: parseInt(maxPrice),
+            },
+          }),
       },
       include: {
         owner: true,

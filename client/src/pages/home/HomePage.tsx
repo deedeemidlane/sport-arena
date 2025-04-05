@@ -5,12 +5,12 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Navigation />
       <Carousel />
-      <Search />
+      <Search showFilter={false} />
       <div>
         <div className="container mx-auto px-4 pt-12">
           <h2 className="text-3xl font-heading font-bold">Danh sách sân tập</h2>
         </div>
-        <CourtList />
+        <CourtList urlSearchParams="" />
       </div>
       <Footer />
     </div>

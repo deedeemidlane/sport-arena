@@ -83,29 +83,30 @@ model User {
 }
 
 model SportField {
-  id           Int       @id @default(autoincrement())
-  ownerId      Int
-  sportType    SportType
-  name         String
-  numOfFields  Int
-  address      String
-  ward         String
-  district     String
-  province     String
-  pricePerHour Int
-  imageUrl     String?
-  description  String?
-  accountNo    String
-  accountName  String
-  acqId        String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id            Int       @id @default(autoincrement())
+  ownerId       Int
+  sportType     SportType
+  name          String
+  numOfFields   Int
+  address       String
+  ward          String
+  district      String
+  province      String
+  googleMapLink String    @default("")
+  pricePerHour  Int
+  imageUrl      String?
+  description   String?
+  accountNo     String
+  accountName   String
+  acqId         String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  owner         User             @relation(fields: [ownerId], references: [id])
-  orders        Order[]
-  reviews       Review[]
-  promotions    Promotion[]
-  fieldServices FieldsServices[]
+  owner      User           @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  orders     Order[]
+  reviews    Review[]
+  promotions Promotion[]
+  services   ExtraService[]
 }
 
 model Booking {
@@ -118,7 +119,7 @@ model Booking {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  Order Order @relation(fields: [orderId], references: [id])
+  Order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model Order {
@@ -133,8 +134,8 @@ model Order {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
-  user       User       @relation(fields: [userId], references: [id])
-  sportField SportField @relation(fields: [sportFieldId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  sportField SportField @relation(fields: [sportFieldId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   bookings   Booking[]
   payments   Payment[]
 }
@@ -148,7 +149,7 @@ model Payment {
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
-  order Order @relation(fields: [orderId], references: [id])
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model Review {
@@ -160,8 +161,8 @@ model Review {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user       User       @relation(fields: [userId], references: [id])
-  sportField SportField @relation(fields: [sportFieldId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  sportField SportField @relation(fields: [sportFieldId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model Promotion {
@@ -174,29 +175,18 @@ model Promotion {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  sportField SportField @relation(fields: [sportFieldId], references: [id])
+  sportField SportField @relation(fields: [sportFieldId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model ExtraService {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  sportFieldId Int
+  name         String
+  price        Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  fieldServices FieldsServices[]
-}
-
-model FieldsServices {
-  sportFieldId   Int
-  extraServiceId Int
-  pricePerHour   Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  sportField   SportField   @relation(fields: [sportFieldId], references: [id])
-  extraService ExtraService @relation(fields: [extraServiceId], references: [id])
-
-  @@id([sportFieldId, extraServiceId])
+  sportField SportField @relation(fields: [sportFieldId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model MatchRequest {
@@ -215,7 +205,7 @@ model MatchRequest {
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model Notification {
@@ -228,5 +218,5 @@ model Notification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }

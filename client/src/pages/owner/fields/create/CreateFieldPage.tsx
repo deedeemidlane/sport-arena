@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { FieldForm } from "../ui";
+import { useState } from "react";
+import { IService } from "@/types/Field";
 
 export default function CreateFieldPage() {
+  const [services, setServices] = useState<IService[]>([]);
+
   return (
     <div className="flex flex-col">
       <div className="flex-1 container mx-auto px-4">
@@ -18,7 +22,7 @@ export default function CreateFieldPage() {
           </h1>
 
           <div className="bg-white rounded-lg shadow-lg border-2 p-6 mb-10">
-            <FieldForm />
+            <FieldForm services={services} setServices={setServices} />
           </div>
         </div>
       </div>
