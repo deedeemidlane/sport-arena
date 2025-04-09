@@ -37,7 +37,7 @@ const OrderDetailPage = () => {
     };
 
     fetchOrderDetail();
-  }, []);
+  }, [orderId]);
   console.log("order", order);
 
   const [rating, setRating] = useState<number>(0);
@@ -83,7 +83,9 @@ const OrderDetailPage = () => {
                       {order.sportField.name}
                     </CardTitle>
                     <CardDescription className="flex items-center gap-1 mt-1">
-                      <MapPin className="h-3 w-3" />
+                      <div>
+                        <MapPin className="h-5 w-5" />
+                      </div>
                       {order.sportField.ward}, {order.sportField.district},{" "}
                       {order.sportField.province}
                     </CardDescription>
@@ -139,7 +141,7 @@ const OrderDetailPage = () => {
                     </div>
                     <div className="mt-3">
                       <h3 className="text-lg font-semibold">Người đặt</h3>
-                      <div className="flex gap-10">
+                      <div className="sm:flex gap-10">
                         <div className="flex items-center gap-2 mt-2">
                           <User className="h-4 w-4" />
                           <span>{order.customerName}</span>

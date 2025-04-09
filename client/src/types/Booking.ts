@@ -1,3 +1,5 @@
+import { IOrder } from "./Order";
+
 export interface IBooking {
   id: number;
   orderId: number;
@@ -6,4 +8,5 @@ export interface IBooking {
   startTime: number;
   price: number;
   createdAt: string;
+  order: IOrder;
 }

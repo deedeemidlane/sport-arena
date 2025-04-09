@@ -59,6 +59,7 @@ export const getFieldDetail = async (req, res) => {
       where: { id: parseInt(fieldId) },
       include: {
         owner: true,
+        services: true,
         orders: {
           include: {
             bookings: true,
@@ -66,9 +67,6 @@ export const getFieldDetail = async (req, res) => {
         },
       },
     });
-
-    // console.log(field);
-    // return;
 
     if (field) {
       res.status(200).json(field);

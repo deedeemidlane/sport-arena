@@ -24,18 +24,19 @@ export const Footer = () => {
             <h4 className="font-heading font-semibold mb-4">Liên kết</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
-                  Về chúng tôi
+                <a
+                  href="/term-of-service"
+                  className="text-gray-600 hover:text-primary"
+                >
+                  Điều khoản
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
+                <a
+                  href="/privacy-policy"
+                  className="text-gray-600 hover:text-primary"
+                >
                   Chính sách
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
-                  Hỗ trợ
                 </a>
               </li>
             </ul>
@@ -44,18 +45,27 @@ export const Footer = () => {
             <h4 className="font-heading font-semibold mb-4">Môn thể thao</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
+                <a
+                  href="/fields?sportType=FOOTBALL"
+                  className="text-gray-600 hover:text-primary"
+                >
                   Bóng đá
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
+                <a
+                  href="/fields?sportType=BADMINTON"
+                  className="text-gray-600 hover:text-primary"
+                >
                   Cầu lông
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-600 hover:text-primary">
-                  Pickle Ball
+                <a
+                  href="/fields?sportType=PICKLEBALL"
+                  className="text-gray-600 hover:text-primary"
+                >
+                  Pickleball
                 </a>
               </li>
             </ul>

@@ -12,6 +12,7 @@ import {
   HandCoins,
   MapPin,
   Search as SearchIcon,
+  Swords,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
@@ -98,7 +99,7 @@ export const Search = ({
 
   const form = useForm<SearchParams>({
     defaultValues: {
-      fieldName: fieldName,
+      fieldName: fieldName || "",
       sportType: sportType,
       province: province,
       district: district,
@@ -106,6 +107,8 @@ export const Search = ({
       maxPrice: maxPrice ? parseInt(maxPrice) : 0,
     },
   });
+
+  let isDirty = Object.keys(form.formState.dirtyFields).length > 0;
 
   // Handle province change to update district & ward options
   const handleProvinceChange = (provinceName: string) => {
@@ -135,15 +138,15 @@ export const Search = ({
           <div className="rounded-xl p-6 border border-gray-200 space-y-6">
             <div className="md:flex flex-wrap gap-4 items-end">
               <div className="flex-1 max-md:mb-2">
-                <Label className="mb-2">Tên sân tập</Label>
+                <Label className="mb-2">Tên sân</Label>
                 <div className="relative">
                   <SearchIcon
                     color="#71717b"
                     className="h-4 w-4 absolute left-2.5 top-2.5"
                   />
                   <Input
-                    id=""
-                    type="text"
+                    id="fieldName"
+                    type="search"
                     placeholder="Nhập tên sân"
                     className="pl-8"
                     {...form.register("fieldName")}
@@ -261,10 +264,22 @@ export const Search = ({
                   )}
                 />
               </div>
-              <Button className="bg-primary hover:bg-primary/90 max-md:w-full">
+              <Button
+                className="bg-primary hover:bg-primary/90 max-md:w-full max-md:mb-2"
+                disabled={!isDirty}
+              >
                 <SearchIcon className="h-4 w-4" />
                 Tìm kiếm
               </Button>
+              <a href="/match-requests" className="block max-md:w-full">
+                <Button
+                  type="button"
+                  className="bg-blue-500 hover:bg-blue-500/90 w-full"
+                >
+                  <Swords className="h-4 w-4" />
+                  Ghép cặp đấu
+                </Button>
+              </a>
             </div>
             {showFilter && (
               <div>
@@ -302,6 +317,13 @@ export const Search = ({
                   <Button className="bg-primary hover:bg-primary/90 max-md:hidden invisible">
                     <SearchIcon className="h-4 w-4" />
                     Tìm kiếm
+                  </Button>
+                  <Button
+                    type="button"
+                    className="bg-blue-500 hover:bg-blue-500/90 max-md:hidden invisible"
+                  >
+                    <Swords className="h-4 w-4" />
+                    Ghép cặp đấu
                   </Button>
                 </div>
               </div>

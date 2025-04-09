@@ -56,14 +56,12 @@ export default function FieldsPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Danh sách sân tập</BreadcrumbPage>
+              <BreadcrumbPage>Danh sách sân</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
-        <h2 className="text-3xl font-heading font-bold mt-8">
-          Danh sách sân tập
-        </h2>
+        <h2 className="text-3xl font-heading font-bold mt-8">Danh sách sân</h2>
       </div>
       <Search
         fieldName={searchParams.get("fieldName") || undefined}

@@ -1,8 +1,11 @@
 import express from "express";
 import {
+  createMatchRequest,
+  getMyMatchRequests,
   getNotifications,
   getOrderDetail,
   getOrders,
+  getOtherMatchRequests,
   placeOrder,
   readNotification,
 } from "../controllers/customer.controller.js";
@@ -29,5 +32,8 @@ router.get("/orders/:orderId", protectRoute, getOrderDetail);
 router.post("/orders", protectRoute, upload.single("image"), placeOrder);
 router.get("/notifications", protectRoute, getNotifications);
 router.patch("/notifications/:notificationId", protectRoute, readNotification);
+router.post("/match-requests", protectRoute, createMatchRequest);
+router.get("/my-match-requests", protectRoute, getMyMatchRequests);
+router.get("/other-match-requests", protectRoute, getOtherMatchRequests);
 
 export default router;

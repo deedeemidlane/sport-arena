@@ -119,7 +119,8 @@ model Booking {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  Order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  order        Order         @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  matchRequest MatchRequest?
 }
 
 model Order {
@@ -190,22 +191,16 @@ model ExtraService {
 }
 
 model MatchRequest {
-  id                 Int           @id @default(autoincrement())
-  userId             Int
-  sportType          SportType
-  desiredLevel       PlayerLevel
-  preferredDate      DateTime
-  preferredStartTime DateTime
-  preferredEndTime   DateTime
-  address            String?
-  ward               String
-  district           String
-  province           String
-  status             RequestStatus
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  id           Int           @id @default(autoincrement())
+  userId       Int
+  bookingId    Int           @unique
+  desiredLevel PlayerLevel
+  status       RequestStatus
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model Notification {

@@ -26,6 +26,8 @@ import ProfilePage from "./pages/home/profile";
 import OrderDetailPage from "./pages/home/profile/order-detail";
 import PreBookingsPage from "./pages/owner/pre-bookings";
 import FieldPreBookingsPage from "./pages/owner/pre-bookings/[fieldId]";
+import MatchRequestsPage from "./pages/home/match-requests";
+import CreateMatchRequestPage from "./pages/home/match-requests/create";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -44,6 +46,10 @@ export default function App() {
       </Route>
       <Route path="profile" element={<ProfilePage />} />
       <Route path="orders/:orderId" element={<OrderDetailPage />} />
+      <Route path="match-requests">
+        <Route index element={<MatchRequestsPage />} />
+        <Route path="create" element={<CreateMatchRequestPage />} />
+      </Route>
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
       <Route path="verification" element={<VerificationPage />} />

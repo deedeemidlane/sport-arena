@@ -168,3 +168,94 @@ export const readNotification = async (req, res) => {
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };
+
+export const createMatchRequest = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const { bookingId, desiredLevel } = JSON.parse(req.body.data);
+    console.log("bookingId: ", bookingId);
+    console.log("desiredLevel: ", desiredLevel);
+    // return;
+
+    const newMatchRequest = await prisma.matchRequest.create({
+      data: {
+        userId: req.payload.id,
+        bookingId: parseInt(bookingId),
+        desiredLevel: desiredLevel,
+        status: "OPEN",
+      },
+    });
+
+    if (newMatchRequest) {
+      res.status(201).json({ message: "Tạo yêu cầu đặt sân thành công!" });
+    } else {
+      res.status(400).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in createMatchRequest controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const getMyMatchRequests = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const matchRequests = await prisma.matchRequest.findMany({
+      where: { userId: req.payload.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (matchRequests) {
+      res.status(200).json(matchRequests);
+    } else {
+      res.status(404).json({ error: "Không tìm thấy tài nguyên" });
+    }
+  } catch (error) {
+    console.log("Error in getMatchRequests controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const getOtherMatchRequests = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const matchRequests = await prisma.matchRequest.findMany({
+      where: { userId: { not: req.payload.id } },
+      include: {
+        user: true,
+        booking: {
+          include: {
+            order: {
+              include: { sportField: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (matchRequests) {
+      res.status(200).json(matchRequests);
+    } else {
+      res.status(404).json({ error: "Không tìm thấy tài nguyên" });
+    }
+  } catch (error) {
+    console.log("Error in getMatchRequests controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};

@@ -104,21 +104,35 @@ export default function FieldDetailPage() {
               </div>
 
               {/* Amenities */}
-              {/* <div className="mb-8">
-                <h2 className="text-xl font-heading font-semibold mb-3">
+              <div className="mb-8 border-2 rounded-sm">
+                <h2 className="text-xl font-heading font-semibold mb-3 bg-gray-200 p-4">
                   Tiện ích
                 </h2>
-                <div className="flex flex-wrap gap-2">
-                  {field.amenities.map((amenity, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-100 text-gray-800 py-1 px-3 rounded-full text-sm"
-                    >
-                      {amenity}
-                    </span>
-                  ))}
+                <div className="text-gray-700 p-4 pt-0">
+                  {field.services.length > 0 && (
+                    <table className="w-full border-collapse border">
+                      <thead>
+                        <tr>
+                          <th className="border p-2">Tên</th>
+                          <th className="border p-2">Giá thuê</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {field.services.map((service, index) => (
+                          <tr key={`service-${index}`}>
+                            <td className="border p-2 text-center">
+                              {service.name}
+                            </td>
+                            <td className="border p-2 text-center">
+                              {formatPriceInVND(service.price)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
-              </div> */}
+              </div>
 
               {/* Additional images */}
               {/* <div className="mb-8">

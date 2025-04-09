@@ -37,6 +37,7 @@ import useGetNotifications from "@/hooks/customer/useGetNotifications";
 import { Spinner } from "@/components/common";
 import { useNavigate } from "react-router";
 import useReadNotification from "@/hooks/customer/useReadNotification";
+import { format } from "date-fns";
 
 const sports = [
   {
@@ -50,7 +51,7 @@ const sports = [
     imageUrl: "/badminton.png",
   },
   {
-    name: "Pickle Ball",
+    name: "Pickleball",
     url: "/fields?sportType=PICKLEBALL",
     imageUrl: "/pickleball.png",
   },
@@ -118,7 +119,7 @@ export const Navigation = () => {
                   ></p>
                   <div>
                     <span className="text-xs text-muted-foreground">
-                      {notification.createdAt}
+                      {format(notification.createdAt, "hh:mm dd/MM/yyyy")}
                     </span>
                   </div>
                 </div>
