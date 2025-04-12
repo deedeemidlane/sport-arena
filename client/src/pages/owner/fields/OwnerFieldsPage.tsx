@@ -91,7 +91,7 @@ export default function OwnerFieldsPage() {
                   <TableHead>Tên</TableHead>
                   <TableHead>Loại sân</TableHead>
                   <TableHead>Địa chỉ</TableHead>
-                  <TableHead>Giá thuê (1 giờ)</TableHead>
+                  <TableHead>Giá thuê</TableHead>
                   <TableHead>Ngày tạo</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -106,7 +106,7 @@ export default function OwnerFieldsPage() {
                       <TableCell className="hidden sm:table-cell pl-4">
                         {field.imageUrl ? (
                           <img
-                            alt="Ảnh minh họa món"
+                            alt="Sport field image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
                             src={getFullImageUrl(field.imageUrl)}
@@ -114,7 +114,7 @@ export default function OwnerFieldsPage() {
                           />
                         ) : (
                           <img
-                            alt="Ảnh đại diện User"
+                            alt="Placeholder image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
                             src="/placeholder.svg"
@@ -124,7 +124,10 @@ export default function OwnerFieldsPage() {
                       </TableCell>
                       <TableCell>{field.name}</TableCell>
                       <TableCell>{renderSportType(field.sportType)}</TableCell>
-                      <TableCell>{field.address}</TableCell>
+                      <TableCell>
+                        {field.address && `${field.address}, `}
+                        {field.ward}, {field.district}, {field.province}
+                      </TableCell>
                       <TableCell>
                         {formatPriceInVND(field.pricePerHour)}
                       </TableCell>

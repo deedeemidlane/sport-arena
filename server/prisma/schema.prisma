@@ -51,6 +51,8 @@ enum PlayerLevel {
 
 enum RequestStatus {
   OPEN
+  PROCESSING_REQUEST
+  PROCESSING_PAYMENT
   MATCHED
   CLOSED
 }
@@ -62,24 +64,30 @@ enum SportType {
 }
 
 model User {
-  id               Int      @id @default(autoincrement())
-  phone            String   @unique
-  email            String   @unique
-  password         String
-  role             Role
-  name             String
-  gender           Gender
-  avatarUrl        String?
-  verified         Boolean  @default(false)
-  verificationCode String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                  Int      @id @default(autoincrement())
+  phone               String   @unique
+  email               String   @unique
+  password            String
+  role                Role
+  name                String
+  gender              Gender
+  avatarUrl           String?
+  frontIdCardImageUrl String?
+  backIdCardImageUrl  String?
+  accountNo           String?
+  accountName         String?
+  acqId               String?
+  verified            Boolean  @default(false)
+  verificationCode    String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   sportFields   SportField[]
   orders        Order[]
   reviews       Review[]
   matchRequests MatchRequest[]
   notifications Notification[]
+  matches       Match[]
 }
 
 model SportField {
@@ -201,15 +209,29 @@ model MatchRequest {
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  match   Match?
+}
+
+model Match {
+  id             Int      @id @default(autoincrement())
+  matchRequestId Int      @unique
+  opponentId     Int
+  proofImageUrl  String?
+  isRejected     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  matchRequest MatchRequest @relation(fields: [matchRequestId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  opponent     User         @relation(fields: [opponentId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model Notification {
   id        Int      @id @default(autoincrement())
   userId    Int
-  orderId   Int?
   title     String
   message   String
   isRead    Boolean  @default(false)
+  link      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

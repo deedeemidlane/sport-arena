@@ -16,10 +16,7 @@ import cloudinary from "../configs/cloudinaryConfig.js";
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: "sport-arena",
-    // allowed_formats: ["jpeg", "png", "jpg"],
-  },
+  params: { folder: "sport-arena" },
 });
 
 const upload = multer({ storage: storage });

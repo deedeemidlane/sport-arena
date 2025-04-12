@@ -17,9 +17,7 @@ const protectRoute = async (req, res, next) => {
 
       next();
     } else {
-      return res
-        .status(401)
-        .json({ error: "Unauthorized - No token provided" });
+      return res.status(401).json({ error: "Vui lòng đăng nhập" });
     }
   } catch (error) {
     console.log("Error in protectRoute controller: ", error.message);

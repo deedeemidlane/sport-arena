@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -21,15 +21,33 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Upload, Check, Eye, EyeOff } from "lucide-react";
 import useUpdateProfile from "@/hooks/customer/useUpdateProfile";
-import { IAuthUser } from "@/context/AuthContext";
 import { ProfileFormValues, profileSchema } from "../schema";
 import { Separator } from "@/components/ui/separator";
+import { getFullImageUrl } from "@/utils/helperFunctions";
+import { IUser } from "@/types/User";
+import { IBank } from "@/types/OtherTypes";
 
-export const ProfileForm = ({ authUser }: { authUser: IAuthUser }) => {
+export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
   const [avatar, setAvatar] = useState<string | undefined>(authUser.avatarUrl);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [banks, setBanks] = useState<IBank[]>([]);
+  // Fetch banks
+  useEffect(() => {
+    const fetchBank = async () => {
+      try {
+        const res = await fetch("https://api.vietqr.io/v2/banks");
+        const fetchedBanks = await res.json();
+        setBanks(fetchedBanks.data);
+      } catch (error) {
+        console.log("Error in fetchBank: ", error);
+      }
+    };
+
+    fetchBank();
+  }, []);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -172,6 +190,97 @@ export const ProfileForm = ({ authUser }: { authUser: IAuthUser }) => {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2">
+                {/* Banks */}
+                <FormField
+                  control={form.control}
+                  name="acqId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ngân hàng</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            className={
+                              form.formState.errors.acqId &&
+                              "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
+                            }
+                          >
+                            <SelectValue placeholder="Chọn ngân hàng" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {banks.map((bank) => (
+                            <SelectItem key={bank.id} value={bank.bin}>
+                              <img
+                                src={bank.logo}
+                                alt="bank image"
+                                className="h-5"
+                              />
+                              {bank.shortName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="accountNo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Số tài khoản</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nhập số tài khoản" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="accountName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tên chủ tài khoản</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Nhập tên chủ tài khoản"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <FormLabel>CCCD mặt trước</FormLabel>
+                  <div className="border rounded-md p-1">
+                    <img
+                      src={getFullImageUrl(authUser.frontIdCardImageUrl)}
+                      alt="frontIdCardImage"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <FormLabel>CCCD mặt sau</FormLabel>
+                  <div className="border rounded-md p-1">
+                    <img
+                      src={getFullImageUrl(authUser.backIdCardImageUrl)}
+                      alt="backIdCardImage"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 border-t">

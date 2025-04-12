@@ -1,6 +1,6 @@
+import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { UserSchema } from "@/pages/register/schema";
 import { useNavigate } from "react-router";
 
 const useCreateCustomerAccount = () => {
@@ -8,24 +8,20 @@ const useCreateCustomerAccount = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const createCustomerAccount = async (customerData: UserSchema) => {
+  const createCustomerAccount = async (formData: FormData) => {
     try {
       setLoading(true);
-      const res = await fetch(
+      const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/create-customer-account`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(customerData),
-        }
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      const data = await res.json();
-      console.log(data);
+      console.log(res);
 
-      if (!res.ok) throw new Error(data.error);
+      if (res.status >= 400) throw new Error(res.data.error);
 
-      toast.success(data.message);
+      toast.success(res.data.message);
       navigate("/verification");
     } catch (error: any) {
       toast.error(error.message);

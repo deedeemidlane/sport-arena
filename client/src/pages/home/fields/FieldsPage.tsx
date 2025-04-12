@@ -72,7 +72,7 @@ export default function FieldsPage() {
         maxPrice={searchParams.get("maxPrice") || undefined}
         showFilter={true}
       />
-      <CourtList urlSearchParams={urlSearchParams} />
+      <CourtList urlSearchParams={urlSearchParams} isHomePage={false} />
       <Footer />
     </div>
   );

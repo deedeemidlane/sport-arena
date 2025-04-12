@@ -8,6 +8,8 @@ import {
   Bell,
   X,
   History,
+  SquarePen,
+  Send,
 } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -57,6 +59,45 @@ const sports = [
   },
 ];
 
+const profileOptions = [
+  {
+    link: "/my",
+    content: (
+      <>
+        <User className="h-4 w-4" />
+        Thông tin cá nhân
+      </>
+    ),
+  },
+  {
+    link: "/my?tab=orders",
+    content: (
+      <>
+        <History className="h-4 w-4" />
+        Lịch sử đặt sân
+      </>
+    ),
+  },
+  {
+    link: "/my/created-match-requests",
+    content: (
+      <>
+        <SquarePen className="h-4 w-4" />
+        Yêu cầu ghép cặp đã tạo
+      </>
+    ),
+  },
+  {
+    link: "/my/sended-match-requests",
+    content: (
+      <>
+        <Send className="h-4 w-4" />
+        Yêu cầu ghép cặp đã gửi
+      </>
+    ),
+  },
+];
+
 export const Navigation = () => {
   const navigate = useNavigate();
   const { authUser } = useAuthContext();
@@ -84,7 +125,8 @@ export const Navigation = () => {
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
-  const { readNotification } = useReadNotification();
+  const { loading: readNotificationLoading, readNotification } =
+    useReadNotification();
 
   const NotificationsList = () => (
     <>
@@ -97,9 +139,12 @@ export const Navigation = () => {
                 notification.isRead ? "hover:bg-accent" : "bg-accent"
               } rounded-lg mb-1`}
               onClick={async () => {
-                await readNotification(notification.id);
-                navigate(`/orders/${notification.orderId}`);
+                if (!notification.isRead) {
+                  await readNotification(notification.id);
+                }
+                navigate(`/my${notification.link}`);
               }}
+              disabled={readNotificationLoading}
             >
               <div className="flex items-start gap-3">
                 <div className="flex-1">
@@ -119,7 +164,7 @@ export const Navigation = () => {
                   ></p>
                   <div>
                     <span className="text-xs text-muted-foreground">
-                      {format(notification.createdAt, "hh:mm dd/MM/yyyy")}
+                      {format(notification.createdAt, "HH:mm dd/MM/yyyy")}
                     </span>
                   </div>
                 </div>
@@ -237,27 +282,22 @@ export const Navigation = () => {
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="p-0">
-                        <a
-                          href={"/profile"}
-                          className="flex items-center gap-2 p-2 rounded-lg"
+                      {profileOptions.map((option) => (
+                        <DropdownMenuItem
+                          key={`desktop-${option.link}`}
+                          className="p-0"
                         >
-                          <User className="h-4 w-4" />
-                          Thông tin cá nhân
-                        </a>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="p-0">
-                        <a
-                          href={"/profile?tab=orders"}
-                          className="flex items-center gap-2 p-2 rounded-lg"
-                        >
-                          <History className="h-4 w-4" />
-                          Lịch sử đặt sân
-                        </a>
-                      </DropdownMenuItem>
+                          <a
+                            href={option.link}
+                            className="flex items-center gap-2 p-2 rounded-lg w-full"
+                          >
+                            {option.content}
+                          </a>
+                        </DropdownMenuItem>
+                      ))}
                       <DropdownMenuItem className="p-0">
                         <button
-                          className="flex items-center cursor-pointer gap-2 p-2 text-red-600 hover:text-red-700 hover:bg-transparent"
+                          className="flex items-center cursor-pointer gap-2 p-2 text-red-600 hover:bg-transparent w-full"
                           onClick={logout}
                         >
                           <LogOut className="h-4 w-4" color="#e7000b" />
@@ -320,13 +360,15 @@ export const Navigation = () => {
                 <div className="mt-4 pt-4 border-t">
                   {typeof authUser !== "string" ? (
                     <>
-                      <a
-                        href={"/profile"}
-                        className="flex items-center gap-2 text-base ml-4 mb-4"
-                      >
-                        <User className="h-4 w-4" />
-                        Thông tin cá nhân
-                      </a>
+                      {profileOptions.map((option) => (
+                        <a
+                          key={`mobile-${option.link}`}
+                          href={option.link}
+                          className="flex items-center gap-2 text-base ml-4 mb-4"
+                        >
+                          {option.content}
+                        </a>
+                      ))}
                       <button
                         className="flex items-center gap-2 text-base ml-4 text-red-600 hover:text-red-700 hover:bg-transparent"
                         onClick={logout}

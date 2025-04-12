@@ -17,8 +17,10 @@ export const fieldSchema = z.object({
   ward: z
     .string({ required_error: "Vui lòng chọn xã/phường" })
     .min(1, { message: "Vui lòng chọn xã/phường" }),
-  address: z.string().min(1, { message: "Vui lòng nhập địa chỉ" }),
-  googleMapLink: z.string().min(1, { message: "Vui lòng nhập iframe google map" }),
+  address: z.string().optional(),
+  googleMapLink: z
+    .string()
+    .min(1, { message: "Vui lòng nhập iframe google map" }),
   pricePerHour: z.coerce
     .number()
     .min(1, { message: "Giá thuê phải lớn hơn 0" }),

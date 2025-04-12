@@ -124,7 +124,7 @@ export default function AdminPage() {
                         <TableRow key={index} className="py-4">
                           <TableCell className="hidden sm:table-cell pl-4">
                             <img
-                              alt="Ảnh đại diện User"
+                              alt="Placeholder image"
                               className="aspect-square rounded-md object-cover"
                               height="64"
                               src="/placeholder.svg"

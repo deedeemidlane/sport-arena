@@ -16,7 +16,7 @@ import { IField } from "@/types/Field";
 import { formatPriceInVND, getFullImageUrl } from "@/utils/helperFunctions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SPORT_DISPLAYED_VALUES } from "@/constants/sports";
+import { DISPLAYED_SPORTS } from "@/constants/sports";
 
 export default function FieldDetailPage() {
   const params = useParams();
@@ -77,12 +77,12 @@ export default function FieldDetailPage() {
               </h1>
 
               <div className="flex flex-wrap gap-8 mb-6">
-                <div className="flex items-start text-gray-600">
+                <div className="flex items-center text-gray-600">
                   <div>
-                    <MapPin className="h-5 w-5 mr-1 mt-1" />
+                    <MapPin className="h-5 w-5 mr-1" />
                   </div>
-                  {field.address}, {field.ward}, {field.district},{" "}
-                  {field.province}
+                  {field.address && `${field.address}, `}
+                  {field.ward}, {field.district}, {field.province}
                 </div>
                 {/* <div className="flex items-center text-gray-600">
                   <Clock className="h-5 w-5 mr-1" />
@@ -188,7 +188,7 @@ export default function FieldDetailPage() {
                       <span className="text-gray-600">Loại sân</span>
                     </div>
                     <span className="font-medium">
-                      {SPORT_DISPLAYED_VALUES[field.sportType]}
+                      {DISPLAYED_SPORTS[field.sportType]}
                     </span>
                   </div>
 

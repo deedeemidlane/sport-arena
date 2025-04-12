@@ -179,10 +179,10 @@ export const OwnerForm = () => {
                 </p>
               )}
             </div>
-            <div className="flex items-start space-x-2">
+            <div className="flex items-center space-x-2">
               <Checkbox
                 id="termAgreement"
-                className="mt-1"
+                className=""
                 checked={termAgreement}
                 onCheckedChange={() => {
                   setTermAgreement(!termAgreement);

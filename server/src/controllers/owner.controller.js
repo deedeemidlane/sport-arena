@@ -262,7 +262,7 @@ export const updateOrderStatus = async (req, res) => {
             title: "Đơn đã xác nhận!",
             message: `Đơn đặt sân tại <b>${updatedOrder.sportField.name}</b> đã được xác nhận!`,
             isRead: false,
-            orderId: updatedOrder.id,
+            link: `/orders/${updatedOrder.id}`,
           },
         });
         res.status(200).json({ message: "Đã xác nhận đơn đặt!" });
@@ -273,7 +273,7 @@ export const updateOrderStatus = async (req, res) => {
             title: "Đơn đã huỷ!",
             message: `Đơn đặt sân tại <b>${updatedOrder.sportField.name}</b> đã bị huỷ!`,
             isRead: false,
-            orderId: updatedOrder.id,
+            link: `/orders/${updatedOrder.id}`,
           },
         });
         res.status(200).json({ message: "Đã huỷ đơn đặt!" });

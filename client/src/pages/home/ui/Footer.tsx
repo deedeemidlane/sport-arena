@@ -2,7 +2,7 @@ import { Facebook, Instagram, Mail, Phone, Twitter } from "lucide-react";
 
 export const Footer = () => {
   return (
-    <footer className="bg-gray-50 py-12 mt-12 px-4">
+    <footer className="bg-gray-50 pt-12 pb-8 mt-12 px-4">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
           <div>
@@ -26,6 +26,7 @@ export const Footer = () => {
               <li>
                 <a
                   href="/term-of-service"
+                  target="_blank"
                   className="text-gray-600 hover:text-primary"
                 >
                   Điều khoản
@@ -34,6 +35,7 @@ export const Footer = () => {
               <li>
                 <a
                   href="/privacy-policy"
+                  target="_blank"
                   className="text-gray-600 hover:text-primary"
                 >
                   Chính sách

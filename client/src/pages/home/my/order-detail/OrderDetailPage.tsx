@@ -14,7 +14,7 @@ import { ArrowLeft, MapPin, Phone, Star, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import useGetOrderDetail from "@/hooks/customer/useGetOrderDetail";
 import { IOrder } from "@/types/Order";
-import { STATUS_COLORS, STATUS_TEXT } from "@/constants/statuses";
+import { ORDER_STATUS_COLORS, ORDER_STATUS_TEXTS } from "@/constants/statuses";
 import { Spinner } from "@/components/common";
 import {
   formatDate,
@@ -61,7 +61,7 @@ const OrderDetailPage = () => {
                 <Button
                   variant="ghost"
                   className="flex items-center gap-2 mb-4"
-                  onClick={() => navigate("/profile")}
+                  onClick={() => navigate("/my?tab=orders")}
                 >
                   <ArrowLeft className="h-4 w-4" />
                   Quay lại
@@ -71,9 +71,9 @@ const OrderDetailPage = () => {
                   <h2 className="text-2xl font-bold">Chi tiết đơn đặt sân</h2>
                   <Badge
                     variant="outline"
-                    className={STATUS_COLORS[order.status]}
+                    className={ORDER_STATUS_COLORS[order.status]}
                   >
-                    {STATUS_TEXT[order.status]}
+                    {ORDER_STATUS_TEXTS[order.status]}
                   </Badge>
                 </div>
 

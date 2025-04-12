@@ -8,20 +8,11 @@ import {
   useState,
 } from "react";
 import { getToken } from "@/services/token";
-
-export type IAuthUser = {
-  id: string;
-  name: string;
-  phone: string;
-  role: string;
-  email: string;
-  gender: string;
-  avatarUrl?: string;
-};
+import { IUser } from "@/types/User";
 
 const AuthContext = createContext<{
-  authUser: IAuthUser | string;
-  setAuthUser: Dispatch<SetStateAction<IAuthUser | string>>;
+  authUser: IUser | string;
+  setAuthUser: Dispatch<SetStateAction<IUser | string>>;
   isLoading: boolean;
 }>({
   authUser: "",
@@ -30,7 +21,7 @@ const AuthContext = createContext<{
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
-  const [authUser, setAuthUser] = useState<IAuthUser | string>("");
+  const [authUser, setAuthUser] = useState<IUser | string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

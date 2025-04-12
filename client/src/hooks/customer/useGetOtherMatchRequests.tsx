@@ -5,13 +5,13 @@ import toast from "react-hot-toast";
 const useGetOtherMatchRequests = () => {
   const [loading, setLoading] = useState(false);
 
-  const getOtherMatchRequests = async () => {
+  const getOtherMatchRequests = async (urlSearchParams: string) => {
     try {
       setLoading(true);
       const res = await fetch(
         `${
           import.meta.env.VITE_API_BASE_URL
-        }/api/customer/other-match-requests`,
+        }/api/customer/other-match-requests${urlSearchParams}`,
         {
           method: "GET",
           headers: {

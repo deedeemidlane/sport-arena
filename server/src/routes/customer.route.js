@@ -1,13 +1,18 @@
 import express from "express";
 import {
+  acceptMatchRequest,
+  confirmDeposit,
   createMatchRequest,
+  deposit,
   getMyMatchRequests,
   getNotifications,
   getOrderDetail,
   getOrders,
   getOtherMatchRequests,
+  getSendedMatchRequests,
   placeOrder,
   readNotification,
+  requestMatch,
 } from "../controllers/customer.controller.js";
 import protectRoute from "../middleware/protectRoute.js";
 
@@ -35,5 +40,10 @@ router.patch("/notifications/:notificationId", protectRoute, readNotification);
 router.post("/match-requests", protectRoute, createMatchRequest);
 router.get("/my-match-requests", protectRoute, getMyMatchRequests);
 router.get("/other-match-requests", protectRoute, getOtherMatchRequests);
+router.get("/sended-match-requests", protectRoute, getSendedMatchRequests);
+router.post("/request-match", protectRoute, requestMatch);
+router.post("/accept-match-request", protectRoute, acceptMatchRequest);
+router.post("/deposit", protectRoute, upload.single("image"), deposit);
+router.post("/confirm-deposit", protectRoute, confirmDeposit);
 
 export default router;

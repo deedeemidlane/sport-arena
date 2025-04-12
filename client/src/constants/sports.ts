@@ -4,7 +4,7 @@ export const SPORT_OPTIONS = [
   { value: "PICKLEBALL", label: "Pickleball" },
 ];
 
-export const SPORT_DISPLAYED_VALUES = {
+export const DISPLAYED_SPORTS = {
   FOOTBALL: "Bóng đá",
   BADMINTON: "Cầu lông",
   PICKLEBALL: "Pickleball",

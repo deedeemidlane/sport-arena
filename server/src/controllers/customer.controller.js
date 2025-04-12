@@ -213,6 +213,19 @@ export const getMyMatchRequests = async (req, res) => {
     const matchRequests = await prisma.matchRequest.findMany({
       where: { userId: req.payload.id },
       orderBy: { createdAt: "desc" },
+      include: {
+        user: true,
+        booking: {
+          include: {
+            order: {
+              include: { sportField: true },
+            },
+          },
+        },
+        match: {
+          include: { opponent: true },
+        },
+      },
     });
 
     if (matchRequests) {
@@ -221,7 +234,7 @@ export const getMyMatchRequests = async (req, res) => {
       res.status(404).json({ error: "Không tìm thấy tài nguyên" });
     }
   } catch (error) {
-    console.log("Error in getMatchRequests controller: ", error.message);
+    console.log("Error in getMyMatchRequests controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };
@@ -234,8 +247,26 @@ export const getOtherMatchRequests = async (req, res) => {
         .json({ error: "Unauthorized - Not customer token" });
     }
 
+    const { sportType, province, district, level, gender } = req.query;
+
     const matchRequests = await prisma.matchRequest.findMany({
-      where: { userId: { not: req.payload.id } },
+      where: {
+        userId: { not: req.payload.id },
+        status: "OPEN",
+        booking: {
+          order: {
+            sportField: {
+              ...(sportType && { sportType: sportType }),
+              ...(province && { province: province }),
+              ...(district && { district: district }),
+            },
+          },
+        },
+        ...(level && { desiredLevel: level }),
+        user: {
+          ...(gender && { gender }),
+        },
+      },
       include: {
         user: true,
         booking: {
@@ -250,12 +281,252 @@ export const getOtherMatchRequests = async (req, res) => {
     });
 
     if (matchRequests) {
+      const now = new Date();
+      now.setHours(now.getHours());
+      const validMatchRequests = [];
+
+      matchRequests.forEach(async (request) => {
+        const bookingDate = new Date(request.booking.bookingDate);
+        const bookingStartTime = new Date(
+          bookingDate.getTime() + request.booking.startTime * 60 * 60 * 1000,
+        );
+
+        if (bookingStartTime > now) {
+          validMatchRequests.push(request);
+        } else {
+          await prisma.matchRequest.update({
+            where: { id: request.id },
+            data: { status: "CLOSED" },
+          });
+        }
+      });
+
+      // res.status(200).json(matchRequests);
+      res.status(200).json(validMatchRequests);
+    } else {
+      res.status(404).json({ error: "Không tìm thấy tài nguyên" });
+    }
+  } catch (error) {
+    console.log("Error in getOtherMatchRequests controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const getSendedMatchRequests = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const matchRequests = await prisma.matchRequest.findMany({
+      where: {
+        match: {
+          opponentId: req.payload.id,
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: true,
+        booking: {
+          include: {
+            order: {
+              include: { sportField: true },
+            },
+          },
+        },
+        match: {
+          include: { opponent: true },
+        },
+      },
+    });
+
+    if (matchRequests) {
       res.status(200).json(matchRequests);
     } else {
       res.status(404).json({ error: "Không tìm thấy tài nguyên" });
     }
   } catch (error) {
-    console.log("Error in getMatchRequests controller: ", error.message);
+    console.log("Error in getSendedMatchRequests controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const requestMatch = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const matchRequestId = JSON.parse(req.body.matchRequestId);
+
+    const newMatch = await prisma.match.create({
+      data: {
+        matchRequestId: parseInt(matchRequestId),
+        opponentId: req.payload.id,
+      },
+    });
+
+    if (newMatch) {
+      const updatedMatchRequest = await prisma.matchRequest.update({
+        where: { id: parseInt(matchRequestId) },
+        data: { status: "PROCESSING_REQUEST" },
+      });
+
+      await prisma.notification.create({
+        data: {
+          userId: updatedMatchRequest.userId,
+          title: "Bạn có yêu cầu ghép cặp đấu",
+          message: `<b>${req.payload.name}</b> vừa yêu cầu ghép cặp đấu với bạn.`,
+          isRead: false,
+          link: `/created-match-requests?status=PROCESSING_REQUEST`,
+        },
+      });
+
+      res.status(200).json({
+        message:
+          "Gửi yêu cầu bắt cặp thành công! Vui lòng chờ đối thủ xác nhận.",
+      });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in requestMatch controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const acceptMatchRequest = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const matchRequestId = JSON.parse(req.body.matchRequestId);
+    const opponentId = JSON.parse(req.body.opponentId);
+
+    const updatedMatchRequest = await prisma.matchRequest.update({
+      where: { id: parseInt(matchRequestId) },
+      data: { status: "PROCESSING_PAYMENT" },
+    });
+
+    if (updatedMatchRequest) {
+      const creator = await prisma.user.findUnique({
+        where: { id: updatedMatchRequest.userId },
+      });
+      await prisma.notification.create({
+        data: {
+          userId: parseInt(opponentId),
+          title: "Yêu cầu ghép cặp đã được xác nhận.",
+          message: `<b>${creator.name}</b> đã đồng ý ghép cặp. Vui lòng thanh toán tiền cọc để hoàn tất thủ tục ghép cặp.`,
+          isRead: false,
+          link: `/sended-match-requests?status=PROCESSING_PAYMENT`,
+        },
+      });
+
+      res.status(200).json({
+        message: "Xác nhận ghép cặp! Vui lòng chờ đối thủ đặt cọc.",
+      });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in requestMatch controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const deposit = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const imagePath = req.file.path;
+
+    const imageUrl = imagePath.slice(
+      imagePath.lastIndexOf(
+        "/",
+        imagePath.indexOf("/" + req.file.filename) - 1,
+      ) + 1,
+    );
+
+    const matchId = JSON.parse(req.body.matchId);
+
+    const updatedMatch = await prisma.match.update({
+      where: { id: matchId },
+      data: { proofImageUrl: imageUrl },
+    });
+
+    if (updatedMatch) {
+      const matchRequest = await prisma.matchRequest.findUnique({
+        where: { id: updatedMatch.matchRequestId },
+      });
+      await prisma.notification.create({
+        data: {
+          userId: matchRequest.userId,
+          title: "Kiểm tra tiền cọc",
+          message: `<b>${req.payload.name}</b> đã thanh toán tiền cọc. Vui lòng kiểm tra và xác nhận.`,
+          isRead: false,
+          link: `/created-match-requests?status=PROCESSING_PAYMENT`,
+        },
+      });
+
+      res.status(200).json({ message: "Đặt cọc thành công!" });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in deposit controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const confirmDeposit = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const matchRequestId = JSON.parse(req.body.matchRequestId);
+    const opponentId = JSON.parse(req.body.opponentId);
+
+    const updatedMatchRequest = await prisma.matchRequest.update({
+      where: { id: parseInt(matchRequestId) },
+      data: { status: "MATCHED" },
+    });
+
+    if (updatedMatchRequest) {
+      const creator = await prisma.user.findUnique({
+        where: { id: updatedMatchRequest.userId },
+      });
+      await prisma.notification.create({
+        data: {
+          userId: parseInt(opponentId),
+          title: "Ghép cặp thành công",
+          message: `<b>${creator.name}</b> đã xác nhận thanh toán. Ghép cặp hoàn tất!`,
+          isRead: false,
+          link: `/sended-match-requests?status=MATCHED`,
+        },
+      });
+
+      res.status(200).json({
+        message: "Ghép cặp thành công!",
+      });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in confirmDeposit controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };

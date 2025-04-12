@@ -5,4 +5,5 @@ export interface INotification {
   createdAt: string;
   isRead: boolean;
   orderId: number;
+  link: string;
 }

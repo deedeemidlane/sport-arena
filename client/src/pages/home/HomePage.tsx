@@ -10,7 +10,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 pt-12">
           <h2 className="text-3xl font-heading font-bold">Danh sách sân</h2>
         </div>
-        <CourtList urlSearchParams="" />
+        <CourtList urlSearchParams="" isHomePage={true} />
       </div>
       <Footer />
     </div>

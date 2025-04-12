@@ -30,18 +30,11 @@ import { Landmark, Plus, Trash2, X } from "lucide-react";
 import { PiCourtBasketball } from "react-icons/pi";
 import { MdMiscellaneousServices } from "react-icons/md";
 import { IService } from "@/types/Field";
+import { IBank } from "@/types/OtherTypes";
 
 interface IAddressData {
   code: string;
   name: string;
-}
-
-interface IBank {
-  id: number;
-  name: string;
-  bin: string;
-  shortName: string;
-  logo: string;
 }
 
 export const FieldForm = ({
@@ -104,7 +97,14 @@ export const FieldForm = ({
       fetch(`https://provinces.open-api.vn/api/d/${selectedDistrict}?depth=2`)
         .then((res) => res.json())
         .then((data) => {
-          setWards(data.wards);
+          const fetchedWards: IAddressData[] = data.wards;
+          // Filter out duplicate ward names
+          const uniqueWards = fetchedWards.filter(
+            (ward, index, self) =>
+              index === self.findIndex((w) => w.name === ward.name)
+          );
+
+          setWards(uniqueWards);
         })
         .catch((error) => console.error("Error when fetching wards:", error));
     }
@@ -186,12 +186,6 @@ export const FieldForm = ({
     );
 
     data.googleMapLink = link;
-
-    console.log(
-      "services: ",
-      services.filter((service) => service.name !== "" && service.price !== "")
-    );
-    // return;
 
     const formData = new FormData();
 
@@ -387,7 +381,10 @@ export const FieldForm = ({
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Địa chỉ *</FormLabel>
+                <FormLabel>
+                  Địa chỉ chi tiết (số nhà, tên đường... KHÔNG NHẬP LẠI XÃ HUYỆN
+                  TỈNH)
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="Nhập địa chỉ chi tiết..." {...field} />
                 </FormControl>

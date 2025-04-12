@@ -71,17 +71,44 @@ export const createOwnerAccount = async (req, res) => {
 
 export const createCustomerAccount = async (req, res) => {
   try {
-    const { phone, email, password, name, gender } = req.body;
+    console.log("req.body: ", req.body);
+    console.log("req.files: ", req.files);
 
-    console.log(req.body);
+    const data = JSON.parse(req.body.data);
+    delete data.confirmPassword;
+    const frontIdCardImageFile = req.files["frontIdCardImage"][0];
+    const backIdCardImageFile = req.files["backIdCardImage"][0];
+
+    console.log("data: ", data);
+    console.log("frontIdCardImage: ", frontIdCardImageFile);
+    console.log("backIdCardImage: ", backIdCardImageFile);
+
+    const frontIdCardImageUrl = frontIdCardImageFile.path.slice(
+      frontIdCardImageFile.path.lastIndexOf(
+        "/",
+        frontIdCardImageFile.path.indexOf("/" + frontIdCardImageFile.filename) -
+          1,
+      ) + 1,
+    );
+    const backIdCardImageUrl = backIdCardImageFile.path.slice(
+      backIdCardImageFile.path.lastIndexOf(
+        "/",
+        backIdCardImageFile.path.indexOf("/" + backIdCardImageFile.filename) -
+          1,
+      ) + 1,
+    );
+
     // return;
 
     const userWithDuplicatePhone = await prisma.user.findUnique({
-      where: { phone },
+      where: { phone: data.phone },
     });
     const userWithDuplicateEmail = await prisma.user.findUnique({
-      where: { email },
+      where: { email: data.email },
     });
+
+    if (userWithDuplicatePhone || userWithDuplicateEmail) {
+    }
 
     if (userWithDuplicatePhone) {
       return res
@@ -96,7 +123,7 @@ export const createCustomerAccount = async (req, res) => {
     }
 
     const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
+    const hashedPassword = await bcryptjs.hash(data.password, salt);
 
     let randomVerificationCode = Math.random().toString().slice(2, 8);
 
@@ -110,18 +137,17 @@ export const createCustomerAccount = async (req, res) => {
 
     const newUser = await prisma.user.create({
       data: {
-        phone,
-        email,
+        ...data,
+        frontIdCardImageUrl,
+        backIdCardImageUrl,
         password: hashedPassword,
-        name,
         role: "CUSTOMER",
-        gender,
         verificationCode: randomVerificationCode,
       },
     });
 
     if (newUser) {
-      sendVerificationEamil(email, name, newUser.verificationCode);
+      sendVerificationEamil(data.email, data.name, newUser.verificationCode);
       res.status(201).json({
         message:
           "Đăng ký tài khoản người chơi thành công! Vui lòng xác thực email của bạn.",
@@ -195,14 +221,7 @@ export const login = async (req, res) => {
     }
 
     const payload = {
-      id: user.id,
-      phone: user.phone,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      gender: user.gender,
-      avatarUrl: user.avatarUrl,
-      verified: user.verified,
+      ...user,
     };
 
     const token = generateToken(payload, res);

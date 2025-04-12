@@ -5,9 +5,22 @@ export interface IMatchRequest {
   id: number;
   userId: number;
   bookingId: number;
-  desiredLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-  status: "OPEN" | "MATCHED" | "CLOSED";
+  desiredLevel: DesireLevel;
+  status: RequestStatus;
   createdAt: string;
   booking: IBooking;
   user: IUser;
+  match: {
+    id: number;
+    proofImageUrl?: string;
+    opponent: IUser;
+  };
 }
+
+export type DesireLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+export type RequestStatus =
+  | "OPEN"
+  | "PROCESSING_REQUEST"
+  | "PROCESSING_PAYMENT"
+  | "MATCHED"
+  | "CLOSED";

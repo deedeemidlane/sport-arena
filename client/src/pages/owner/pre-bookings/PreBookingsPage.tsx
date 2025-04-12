@@ -98,7 +98,7 @@ export default function PreBookingsPage() {
                       <TableCell className="hidden sm:table-cell pl-4">
                         {field.imageUrl ? (
                           <img
-                            alt="Ảnh minh họa món"
+                            alt="Sport field image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
                             src={getFullImageUrl(field.imageUrl)}
@@ -106,7 +106,7 @@ export default function PreBookingsPage() {
                           />
                         ) : (
                           <img
-                            alt="Ảnh đại diện User"
+                            alt="Placeholder image"
                             className="aspect-square rounded-md object-cover"
                             height="64"
                             src="/placeholder.svg"
@@ -116,7 +116,10 @@ export default function PreBookingsPage() {
                       </TableCell>
                       <TableCell>{field.name}</TableCell>
                       <TableCell>{renderSportType(field.sportType)}</TableCell>
-                      <TableCell>{field.address}</TableCell>
+                      <TableCell>
+                        {field.address && `${field.address}, `}
+                        {field.ward}, {field.district}, {field.province}
+                      </TableCell>
                       <TableCell>
                         <ExternalLink />
                       </TableCell>

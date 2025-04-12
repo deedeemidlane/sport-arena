@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { IOrder } from "@/types/Order";
 import { Spinner } from "@/components/common";
 import { useNavigate } from "react-router";
-import { STATUS_COLORS, STATUS_TEXT } from "@/constants/statuses";
+import { ORDER_STATUS_COLORS, ORDER_STATUS_TEXTS } from "@/constants/statuses";
 
 export const OrderHistory = () => {
   const navigate = useNavigate();
@@ -72,9 +72,9 @@ export const OrderHistory = () => {
                   </div>
                   <Badge
                     variant="outline"
-                    className={STATUS_COLORS[order.status]}
+                    className={ORDER_STATUS_COLORS[order.status]}
                   >
-                    {STATUS_TEXT[order.status]}
+                    {ORDER_STATUS_TEXTS[order.status]}
                   </Badge>
                 </div>
               </CardHeader>
@@ -100,7 +100,7 @@ export const OrderHistory = () => {
                     Đặt lại
                   </Button>
                 )}
-                <a href={`/orders/${order.id}`}>
+                <a href={`/my/orders/${order.id}`}>
                   <Button variant="ghost">
                     Chi tiết <ChevronRight />
                   </Button>

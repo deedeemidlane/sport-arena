@@ -3,11 +3,7 @@ import { Link, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/common/DatePicker";
 import { ArrowLeft, Calendar } from "lucide-react";
-import {
-  formatDate,
-  formatHour,
-  formatPriceInVND,
-} from "@/utils/helperFunctions";
+import { formatHour, formatPriceInVND } from "@/utils/helperFunctions";
 import { defaultFieldValue, IField } from "@/types/Field";
 import useGetFieldDetail from "@/hooks/owner/useGetFieldDetail";
 import { Spinner } from "@/components/common";
@@ -165,73 +161,66 @@ export default function FieldPreBookingsPage() {
           </div>
 
           {/* Booking table */}
-          <div className="h-[65vh] overflow-auto border mb-4">
-            <table className="w-full border-collapse">
+          <div className="max-h-[60vh] overflow-auto border mb-4">
+            <table className="w-full border-collapse border-2">
               <thead>
-                <tr className="">
-                  <th className="border p-3 text-left w-20"></th>
-                  <th className="border border-r-2 p-3 text-center w-30">
-                    Sân
-                  </th>
-                  <th className="border p-3 text-center">
-                    {formatDate(selectedDate.toString())}
-                  </th>
+                <tr>
+                  <th className="p-3 text-left w-20 outline-2 -outline-offset-1 outline-gray-400 sticky top-0 left-0 bg-gray-300 z-10"></th>
+                  {Array.from(
+                    { length: field.numOfFields },
+                    (_, i) => i + 1
+                  ).map((fieldIndex) => (
+                    <th
+                      key={`fieldNo-${fieldIndex}`}
+                      className=" outline-2 -outline-offset-1 outline-gray-400 p-3.5 text-center sticky top-0 bg-white"
+                    >
+                      Sân {fieldIndex}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {timeSlots.map((time) => (
                   <tr key={time}>
-                    <td className="border p-3 text-center font-semibold text-gray-600">
+                    <td className="outline-2 -outline-offset-1 bg-white p-3 border-none text-center font-bold sticky left-0">
                       {formatHour(time)}
                     </td>
-                    <td className="p-0" colSpan={8}>
-                      <table className="w-full border-collapse">
-                        <tbody>
-                          {Array.from(
-                            { length: field.numOfFields },
-                            (_, i) => i + 1
-                          ).map((fieldIndex) => {
-                            const slot = bookingSlots.find(
-                              (s) =>
-                                s.date === selectedDate.toLocaleDateString() &&
-                                s.fieldIndex === fieldIndex &&
-                                s.time === time
-                            );
-                            const isBooked = slot?.booked || false;
-                            const isSelected = slot?.selected || false;
+                    {Array.from(
+                      { length: field.numOfFields },
+                      (_, i) => i + 1
+                    ).map((fieldIndex) => {
+                      const slot = bookingSlots.find(
+                        (s) =>
+                          s.date === selectedDate.toLocaleDateString() &&
+                          s.fieldIndex === fieldIndex &&
+                          s.time === time
+                      );
+                      const isBooked = slot?.booked || false;
+                      const isSelected = slot?.selected || false;
 
-                            return (
-                              <tr key={`${fieldIndex}-${time}`}>
-                                <td className="border border-l-0 w-30 p-3 text-center">
-                                  Sân {fieldIndex}
-                                </td>
-                                <td className="border text-center">
-                                  <button
-                                    className={`w-full p-3 hover:bg-gray-100 ${
-                                      isBooked
-                                        ? "bg-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-500 cursor-not-allowed"
-                                        : isSelected
-                                        ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800 cursor-pointer"
-                                        : "cursor-pointer"
-                                    }`}
-                                    disabled={isBooked}
-                                    onClick={() =>
-                                      handleSlotToggle(
-                                        fieldIndex,
-                                        time,
-                                        isSelected
-                                      )
-                                    }
-                                  >
-                                    {formatPriceInVND(field.pricePerHour)}
-                                  </button>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </td>
+                      return (
+                        <td
+                          key={`${fieldIndex}-${time}`}
+                          className="text-center border-2"
+                        >
+                          <button
+                            className={`w-full p-3.5 hover:bg-gray-100 text-sm ${
+                              isBooked
+                                ? "bg-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-500 cursor-not-allowed"
+                                : isSelected
+                                ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800 cursor-pointer"
+                                : "cursor-pointer"
+                            }`}
+                            disabled={isBooked}
+                            onClick={() =>
+                              handleSlotToggle(fieldIndex, time, isSelected)
+                            }
+                          >
+                            {formatPriceInVND(field.pricePerHour)}
+                          </button>
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
               </tbody>

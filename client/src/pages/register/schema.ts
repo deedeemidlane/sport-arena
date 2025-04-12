@@ -22,6 +22,13 @@ export const userSchema = z
       .string()
       .min(8, { message: "Mật khẩu phải có ít nhất 8 kí tự" }),
     confirmPassword: z.string(),
+    accountNo: z.string().min(1, { message: "Vui lòng nhập số tài khoản" }),
+    accountName: z
+      .string()
+      .min(1, { message: "Vui lòng nhập tên chủ tài khoản" }),
+    acqId: z
+      .string({ required_error: "Vui lòng chọn ngân hàng" })
+      .min(1, { message: "Vui lòng chọn ngân hàng" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Mật khẩu không khớp",
