@@ -2,14 +2,16 @@ import { getToken } from "@/services/token";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const useGetMyMatchRequests = () => {
+const useGetCreatedMatchRequests = () => {
   const [loading, setLoading] = useState(false);
 
-  const getMyMatchRequests = async () => {
+  const getCreatedMatchRequests = async () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/customer/my-match-requests`,
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/api/customer/created-match-requests`,
         {
           method: "GET",
           headers: {
@@ -31,6 +33,6 @@ const useGetMyMatchRequests = () => {
     }
   };
 
-  return { loading, getMyMatchRequests };
+  return { loading, getCreatedMatchRequests };
 };
-export default useGetMyMatchRequests;
+export default useGetCreatedMatchRequests;

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { Plus, Inbox, BadgePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -10,35 +9,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Footer, Navigation } from "../../ui";
 import { CreatedRequestCard } from "./ui";
 import { IMatchRequest } from "@/types/MatchRequest";
 import { Spinner } from "@/components/common";
-import { DISPLAYED_SPORTS } from "@/constants/sports";
-import { DISPLAYED_LEVELS } from "@/constants/levels";
-import { formatDate, formatHour } from "@/utils/helperFunctions";
-import useGetMyMatchRequests from "@/hooks/customer/useGetMyMatchRequests";
 import useAcceptMatchRequest from "@/hooks/customer/useAcceptMatchRequest";
-import { ImageModal } from "./ui/modals";
+import {
+  ConfirmAcceptRequestModal,
+  ConfirmRejectRequestModal,
+  ImageModal,
+} from "./ui/modals";
 import useConfirmDeposit from "@/hooks/customer/useConfirmDeposit";
+import useGetCreatedMatchRequests from "@/hooks/customer/useGetCreatedMatchRequests";
+import useRejectMatchRequest from "@/hooks/customer/useRejectMatchRequest";
+import { REQUEST_STATUS_OPTIONS } from "@/constants/statuses";
 
 export default function CreatedMatchRequestsPage() {
   const [matchRequests, setMatchRequests] = useState<IMatchRequest[]>([]);
-  const { loading, getMyMatchRequests } = useGetMyMatchRequests();
+  const { loading, getCreatedMatchRequests } = useGetCreatedMatchRequests();
 
   const [toggleReRender, setToggleReRender] = useState(false);
 
   useEffect(() => {
     const fetchMatchRequests = async () => {
-      const fetchedMatchRequests: IMatchRequest[] = await getMyMatchRequests();
+      const fetchedMatchRequests: IMatchRequest[] =
+        await getCreatedMatchRequests();
       if (fetchedMatchRequests) {
         setMatchRequests(fetchedMatchRequests);
       }
@@ -78,7 +73,7 @@ export default function CreatedMatchRequestsPage() {
       formData.append("matchRequestId", JSON.stringify(selectedRequest.id));
       formData.append(
         "opponentId",
-        JSON.stringify(selectedRequest.match.opponent.id)
+        JSON.stringify(selectedRequest.match[0]?.opponent.id)
       );
     }
     await acceptMatchRequest(formData);
@@ -86,8 +81,21 @@ export default function CreatedMatchRequestsPage() {
     setToggleReRender(!toggleReRender);
   };
 
-  const rejectRequest = () => {
+  const { loading: rejectRequestLoading, rejectMatchRequest } =
+    useRejectMatchRequest();
+
+  const rejectRequest = async () => {
+    const formData = new FormData();
+    if (selectedRequest) {
+      formData.append("matchRequestId", JSON.stringify(selectedRequest.id));
+      formData.append(
+        "opponentId",
+        JSON.stringify(selectedRequest.match[0]?.opponent.id)
+      );
+    }
+    await rejectMatchRequest(formData);
     setOpenRejectModal(false);
+    setToggleReRender(!toggleReRender);
   };
 
   const [openImageModal, setOpenImageModal] = useState(false);
@@ -100,7 +108,10 @@ export default function CreatedMatchRequestsPage() {
     const formData = new FormData();
     if (request) {
       formData.append("matchRequestId", JSON.stringify(request.id));
-      formData.append("opponentId", JSON.stringify(request.match.opponent.id));
+      formData.append(
+        "opponentId",
+        JSON.stringify(request.match[0]?.opponent.id)
+      );
     }
     await confirmDeposit(formData);
     setToggleReRender(!toggleReRender);
@@ -123,13 +134,11 @@ export default function CreatedMatchRequestsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Tất cả trạng thái</SelectItem>
-                <SelectItem value="OPEN">Đang mở</SelectItem>
-                <SelectItem value="PROCESSING_REQUEST">Chờ duyệt</SelectItem>
-                <SelectItem value="PROCESSING_PAYMENT">
-                  Chờ thanh toán
-                </SelectItem>
-                <SelectItem value="MATCHED">Đã ghép</SelectItem>
-                <SelectItem value="CLOSED">Đã đóng</SelectItem>
+                {Object.entries(REQUEST_STATUS_OPTIONS).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>
+                    {value}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Link to="/match-requests/create">
@@ -151,7 +160,7 @@ export default function CreatedMatchRequestsPage() {
               <div className="text-center py-12">
                 <Inbox className="w-20 h-20 mx-auto text-gray-500" />
                 <p className="text-xl text-gray-500">
-                  Không có yêu cầu ghép cặp nào.
+                  Không tìm thấy yêu cầu ghép cặp nào.
                 </p>
               </div>
             ) : (
@@ -174,131 +183,25 @@ export default function CreatedMatchRequestsPage() {
           </>
         )}
 
-        <Dialog open={openAcceptModal} onOpenChange={setOpenAcceptModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Xác nhận ghép cặp</DialogTitle>
-              <DialogDescription>
-                Bạn có chắc chắn muốn chấp nhận yêu cầu ghép cặp này không?
-              </DialogDescription>
-            </DialogHeader>
-            {selectedRequest && selectedRequest.match.opponent && (
-              <div className="my-4">
-                <p className="font-medium text-lg mb-2">Thông tin đối thủ</p>
-                <div className="flex items-center gap-3 mb-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={selectedRequest.match.opponent.avatarUrl}
-                    />
-                    <AvatarFallback>
-                      {selectedRequest.match.opponent.name
-                        .slice(0, 2)
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">
-                      {selectedRequest.match.opponent.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {selectedRequest.match.opponent.phone}
-                    </p>
-                  </div>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-md">
-                  <p>
-                    <strong>Môn thể thao:</strong>{" "}
-                    {
-                      DISPLAYED_SPORTS[
-                        selectedRequest.booking.order.sportField.sportType
-                      ]
-                    }
-                  </p>
-                  <p>
-                    <strong>Trình độ:</strong>{" "}
-                    {DISPLAYED_LEVELS[selectedRequest.desiredLevel]}
-                  </p>
-                  <p>
-                    <strong>Sân đấu:</strong>{" "}
-                    {selectedRequest.booking.order.sportField.name}
-                  </p>
-                  <p>
-                    <strong>Thời gian:</strong>{" "}
-                    {formatHour(selectedRequest.booking.startTime)}
-                    {" ngày "}
-                    {formatDate(selectedRequest.booking.bookingDate)}
-                  </p>
-                </div>
-              </div>
-            )}
-            <DialogFooter>
-              {acceptRequestLoading ? (
-                <Button variant="outline" className="w-full" disabled>
-                  <Spinner />
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    variant="outline"
-                    onClick={() => setOpenAcceptModal(false)}
-                  >
-                    Huỷ
-                  </Button>
-                  <Button onClick={acceptRequest}>Xác nhận</Button>
-                </>
-              )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        {selectedRequest && (
+          <>
+            <ConfirmAcceptRequestModal
+              selectedRequest={selectedRequest}
+              openAcceptModal={openAcceptModal}
+              setOpenAcceptModal={setOpenAcceptModal}
+              acceptRequestLoading={acceptRequestLoading}
+              acceptRequest={acceptRequest}
+            />
 
-        <Dialog open={openRejectModal} onOpenChange={setOpenRejectModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Xác nhận huỷ</DialogTitle>
-              <DialogDescription>
-                {/* Bạn có chắc chắn muốn huỷ yêu cầu ghép cặp từ đối thủ này không? */}
-              </DialogDescription>
-            </DialogHeader>
-            {selectedRequest && selectedRequest.match.opponent && (
-              <div className="mt-4">
-                <p className="mb-2 text-center">
-                  Bạn có chắc chắn muốn huỷ yêu cầu ghép cặp từ đối thủ này
-                  không?
-                </p>
-                <div className="flex items-center gap-3 mb-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={selectedRequest.match.opponent.avatarUrl}
-                    />
-                    <AvatarFallback>
-                      {selectedRequest.match.opponent.name
-                        .slice(0, 2)
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">
-                      {selectedRequest.match.opponent.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {selectedRequest.match.opponent.phone}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setOpenRejectModal(false)}
-              >
-                Huỷ
-              </Button>
-              <Button onClick={rejectRequest}>Xác nhận</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            <ConfirmRejectRequestModal
+              selectedRequest={selectedRequest}
+              openRejectModal={openRejectModal}
+              setOpenRejectModal={setOpenRejectModal}
+              rejectRequestLoading={rejectRequestLoading}
+              rejectRequest={rejectRequest}
+            />
+          </>
+        )}
 
         <ImageModal
           isOpen={openImageModal}

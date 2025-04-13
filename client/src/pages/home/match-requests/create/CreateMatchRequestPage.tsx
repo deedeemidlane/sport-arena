@@ -19,8 +19,8 @@ import { formatDate, formatHour } from "@/utils/helperFunctions";
 import { Label } from "@/components/ui/label";
 import { IBooking } from "@/types/Booking";
 import useCreateMatchRequest from "@/hooks/customer/useCreateMatchRequest";
-import useGetMatchRequests from "@/hooks/customer/useGetMyMatchRequests";
 import { IMatchRequest } from "@/types/MatchRequest";
+import useGetCreatedMatchRequests from "@/hooks/customer/useGetCreatedMatchRequests";
 
 export default function CreateMatchRequestPage() {
   const navigate = useNavigate();
@@ -37,12 +37,13 @@ export default function CreateMatchRequestPage() {
 
   const [orders, setOrders] = useState<IOrder[]>();
   const { getOrders } = useGetOrders();
-  const { getMyMatchRequests } = useGetMatchRequests();
+  const { getCreatedMatchRequests } = useGetCreatedMatchRequests();
 
   useEffect(() => {
     const fetchOrders = async () => {
       const fetchedOrders: IOrder[] = await getOrders();
-      const fetchedMatchRequests: IMatchRequest[] = await getMyMatchRequests();
+      const fetchedMatchRequests: IMatchRequest[] =
+        await getCreatedMatchRequests();
 
       if (fetchedOrders) {
         const firstFilteredOrders = fetchedOrders.filter(

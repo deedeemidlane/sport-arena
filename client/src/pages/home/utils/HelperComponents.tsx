@@ -5,6 +5,7 @@ import {
   Circle,
   CircleDollarSign,
   RotateCcwIcon,
+  X,
   XCircle,
 } from "lucide-react";
 
@@ -19,6 +20,16 @@ export const StatusBadge = ({ status }: { status: RequestStatus }) => {
         >
           <Circle className="w-3 h-3 mt-0.5 fill-blue-600 stroke-blue-600" />
           Đang mở
+        </Badge>
+      );
+    case "REJECTED":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-red-50 text-red-600 border-red-200"
+        >
+          <X className="w-3 h-3 mt-0.5 stroke-red-600" />
+          Đã bị huỷ
         </Badge>
       );
     case "PROCESSING_REQUEST":

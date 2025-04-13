@@ -202,7 +202,7 @@ export const createMatchRequest = async (req, res) => {
   }
 };
 
-export const getMyMatchRequests = async (req, res) => {
+export const getCreatedMatchRequests = async (req, res) => {
   try {
     if (req.payload.role !== "CUSTOMER") {
       return res
@@ -223,6 +223,7 @@ export const getMyMatchRequests = async (req, res) => {
           },
         },
         match: {
+          where: { isRejected: false },
           include: { opponent: true },
         },
       },
@@ -253,6 +254,11 @@ export const getOtherMatchRequests = async (req, res) => {
       where: {
         userId: { not: req.payload.id },
         status: "OPEN",
+        match: {
+          none: {
+            opponentId: parseInt(req.payload.id),
+          },
+        },
         booking: {
           order: {
             sportField: {
@@ -320,30 +326,34 @@ export const getSendedMatchRequests = async (req, res) => {
         .json({ error: "Unauthorized - Not customer token" });
     }
 
-    const matchRequests = await prisma.matchRequest.findMany({
+    const matchs = await prisma.match.findMany({
       where: {
-        match: {
-          opponentId: req.payload.id,
-        },
+        opponentId: parseInt(req.payload.id),
       },
       orderBy: { createdAt: "desc" },
       include: {
-        user: true,
-        booking: {
+        matchRequest: {
           include: {
-            order: {
-              include: { sportField: true },
+            user: true,
+            booking: {
+              include: {
+                order: {
+                  include: { sportField: true },
+                },
+              },
             },
           },
-        },
-        match: {
-          include: { opponent: true },
         },
       },
     });
 
-    if (matchRequests) {
-      res.status(200).json(matchRequests);
+    if (matchs) {
+      res.status(200).json(
+        matchs.map((match) => ({
+          ...match,
+          status: match.isRejected ? "REJECTED" : match.matchRequest.status,
+        })),
+      );
     } else {
       res.status(404).json({ error: "Không tìm thấy tài nguyên" });
     }
@@ -436,7 +446,56 @@ export const acceptMatchRequest = async (req, res) => {
       res.status(404).json({ error: "Dữ liệu không hợp lệ" });
     }
   } catch (error) {
-    console.log("Error in requestMatch controller: ", error.message);
+    console.log("Error in acceptMatchRequest controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const rejectMatchRequest = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const matchRequestId = JSON.parse(req.body.matchRequestId);
+    const opponentId = JSON.parse(req.body.opponentId);
+
+    const updatedMatchRequest = await prisma.matchRequest.update({
+      where: { id: parseInt(matchRequestId) },
+      data: { status: "OPEN" },
+    });
+
+    if (updatedMatchRequest) {
+      await prisma.match.update({
+        where: {
+          opponentId: parseInt(opponentId),
+          matchRequestId: parseInt(matchRequestId),
+        },
+        data: {
+          isRejected: true,
+        },
+      });
+      const creator = await prisma.user.findUnique({
+        where: { id: updatedMatchRequest.userId },
+      });
+      await prisma.notification.create({
+        data: {
+          userId: parseInt(opponentId),
+          title: "Yêu cầu ghép cặp đã bị huỷ",
+          message: `<b>${creator.name}</b> đã huỷ yêu cầu ghép cặp của bạn. Hãy tìm đối thủ phù hợp hơn.`,
+          isRead: false,
+          link: `/sended-match-requests?status=REJECTED`,
+        },
+      });
+
+      res.status(200).json({ message: "Đã huỷ yêu cầu!" });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in rejectMatchRequest controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };

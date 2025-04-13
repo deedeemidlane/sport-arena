@@ -11,3 +11,11 @@ export const ORDER_STATUS_TEXTS: Record<OrderStatus, string> = {
   PENDING: "Chờ xác nhận",
   CANCELED: "Đã hủy",
 };
+
+export const REQUEST_STATUS_OPTIONS = {
+  OPEN: "Đang mở",
+  PROCESSING_REQUEST: "Chờ duyệt",
+  PROCESSING_PAYMENT: "Chờ thanh toán",
+  MATCHED: "Đã ghép",
+  CLOSED: "Đã đóng",
+};

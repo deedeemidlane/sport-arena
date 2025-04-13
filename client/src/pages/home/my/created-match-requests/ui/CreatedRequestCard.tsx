@@ -8,12 +8,11 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IMatchRequest } from "@/types/MatchRequest";
-import { LevelBadge, StatusBadge } from "../../../utils/HelperComponents";
-import { Activity, Calendar, Check, Clock, Eye, MapPin, X } from "lucide-react";
-import { DISPLAYED_SPORTS } from "@/constants/sports";
-import { formatDate, formatHour } from "@/utils/helperFunctions";
+import { StatusBadge } from "../../../utils/HelperComponents";
+import { Check, Eye, Phone, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/common";
+import { MatchRequestCardContent, Spinner } from "@/components/common";
+import { DISPLAYED_GENDERS } from "@/constants/genders";
 
 export const CreatedRequestCard = ({
   request,
@@ -34,7 +33,7 @@ export const CreatedRequestCard = ({
   confirmDepositLoading: boolean;
   handleConfirmDeposit: (request: IMatchRequest) => void;
 }) => {
-  const sportField = request.booking.order.sportField;
+  const opponent = request.match[0]?.opponent;
   return (
     <Card key={request.id} className="overflow-hidden">
       <CardHeader className="relative">
@@ -45,58 +44,30 @@ export const CreatedRequestCard = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-gray-500" />
-            <div className="flex items-center gap-2">
-              <span>{DISPLAYED_SPORTS[sportField.sportType]}</span>
-              <LevelBadge level={request.desiredLevel} />
-            </div>
-          </div>
+          <MatchRequestCardContent request={request} showGender={false} />
 
-          <div className="flex items-center gap-2">
-            <div>
-              <MapPin className="h-4 w-4 text-gray-500" />
-            </div>
-            <div>
-              <a
-                href={`/fields/${sportField.id}`}
-                className="font-medium hover:text-blue-600"
-              >
-                {sportField.name}
-              </a>
-              <p className="text-sm text-gray-500">
-                {sportField.address && `${sportField.address}, `}
-                {sportField.ward}, {sportField.district}, {sportField.province}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 text-gray-500 mr-2" />
-              <span>{formatDate(request.booking.bookingDate)}</span>
-            </div>
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 text-gray-500 mr-2" />
-              <span>{formatHour(request.booking.startTime)}</span>
-            </div>
-          </div>
-
-          {request.match && (
+          {request.match.length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-500 mb-2">Đối thủ:</p>
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={request.match.opponent.avatarUrl} />
+                  <AvatarImage src={opponent.avatarUrl} />
                   <AvatarFallback>
-                    {request.match.opponent.name.slice(0, 2).toUpperCase()}
+                    {opponent.name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{request.match.opponent.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {request.match.opponent.phone}
-                  </p>
+                  <p className="font-medium">{opponent.name}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500 flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      {opponent.phone}
+                    </span>
+                    <span className="text-sm text-gray-500 flex items-center gap-1">
+                      <User className="w-3 h-3" />
+                      {DISPLAYED_GENDERS[opponent.gender]}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -128,7 +99,7 @@ export const CreatedRequestCard = ({
       )}
       {request.status === "PROCESSING_PAYMENT" && (
         <CardFooter className="pt-0">
-          {request.match.proofImageUrl && (
+          {request.match.length > 0 && (
             <>
               {confirmDepositLoading ? (
                 <Button className="w-full" disabled>
@@ -141,7 +112,7 @@ export const CreatedRequestCard = ({
                     size="sm"
                     className="rounded-xs mb-2"
                     onClick={() => {
-                      setImageUrl(request.match.proofImageUrl);
+                      setImageUrl(request.match[0].proofImageUrl);
                       setOpenImageModal(true);
                     }}
                   >

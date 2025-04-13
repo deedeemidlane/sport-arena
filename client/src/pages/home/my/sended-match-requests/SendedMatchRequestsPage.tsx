@@ -9,24 +9,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Footer, Navigation } from "../../ui";
-import { IMatchRequest } from "@/types/MatchRequest";
 import { Spinner } from "@/components/common";
 import useGetSendedMatchRequests from "@/hooks/customer/useGetSendedMatchRequests";
 import { QrPaymentModal } from "./ui/modals";
 import { SendedRequestCard } from "./ui";
 import useDeposit from "@/hooks/customer/useDeposit";
+import { REQUEST_STATUS_OPTIONS } from "@/constants/statuses";
+import { IMatch } from "@/types/Match";
 
 export default function SendedMatchRequestsPage() {
-  const [matchRequests, setMatchRequests] = useState<IMatchRequest[]>([]);
+  const [requestedMatches, setRequestedMatches] = useState<IMatch[]>([]);
   const { loading, getSendedMatchRequests } = useGetSendedMatchRequests();
 
   const [toggleReRender, setToggleReRender] = useState(false);
 
   useEffect(() => {
     const fetchMatchRequests = async () => {
-      const fetchedMatchRequests: IMatchRequest[] =
-        await getSendedMatchRequests();
-      setMatchRequests(fetchedMatchRequests);
+      const fetchedMatchRequests: IMatch[] = await getSendedMatchRequests();
+
+      if (fetchedMatchRequests) {
+        setRequestedMatches(fetchedMatchRequests);
+      }
     };
     fetchMatchRequests();
   }, [toggleReRender]);
@@ -42,15 +45,14 @@ export default function SendedMatchRequestsPage() {
   }, [statusFilter]);
 
   const [openQrPaymentModal, setOpenQrPaymentModal] = useState(false);
-  const [selectedMatchRequest, setSelectedMatchRequest] =
-    useState<IMatchRequest>();
+  const [selectedMatch, setSelectedMatch] = useState<IMatch>();
 
   const [proofImage, setProofImage] = useState<File>();
 
-  const filteredRequests =
+  const filteredMatchs =
     statusFilter === "ALL"
-      ? matchRequests
-      : matchRequests.filter((request) => request.status === statusFilter);
+      ? requestedMatches
+      : requestedMatches.filter((match) => match.status === statusFilter);
 
   const { loading: depositLoading, deposit } = useDeposit();
 
@@ -60,7 +62,9 @@ export default function SendedMatchRequestsPage() {
     if (proofImage) {
       formData.append("image", proofImage);
     }
-    formData.append("matchId", JSON.stringify(selectedMatchRequest?.match.id));
+    if (selectedMatch) {
+      formData.append("matchId", JSON.stringify(selectedMatch.opponentId));
+    }
 
     await deposit(formData);
     setOpenQrPaymentModal(false);
@@ -86,13 +90,12 @@ export default function SendedMatchRequestsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Tất cả trạng thái</SelectItem>
-                <SelectItem value="OPEN">Đang mở</SelectItem>
-                <SelectItem value="PROCESSING_REQUEST">Chờ duyệt</SelectItem>
-                <SelectItem value="PROCESSING_PAYMENT">
-                  Chờ thanh toán
-                </SelectItem>
-                <SelectItem value="MATCHED">Đã ghép</SelectItem>
-                <SelectItem value="CLOSED">Đã đóng</SelectItem>
+                {Object.entries(REQUEST_STATUS_OPTIONS).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>
+                    {value}
+                  </SelectItem>
+                ))}
+                <SelectItem value="REJECTED">Đã bị huỷ</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -104,20 +107,20 @@ export default function SendedMatchRequestsPage() {
           </div>
         ) : (
           <>
-            {filteredRequests.length === 0 ? (
+            {filteredMatchs.length === 0 ? (
               <div className="text-center py-12">
                 <Inbox className="w-20 h-20 mx-auto text-gray-500" />
                 <p className="text-xl text-gray-500">
-                  Không có yêu cầu ghép cặp nào.
+                  Không tìm thấy yêu cầu ghép cặp nào.
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredRequests.map((request) => (
+                {filteredMatchs.map((match) => (
                   <SendedRequestCard
-                    key={`request-${request.id}`}
-                    request={request}
-                    setSelectedRequest={setSelectedMatchRequest}
+                    key={`request-${match.id}`}
+                    requestedMatch={match}
+                    setSelectedMatch={setSelectedMatch}
                     setOpenQrPaymentModal={setOpenQrPaymentModal}
                   />
                 ))}
@@ -126,12 +129,12 @@ export default function SendedMatchRequestsPage() {
           </>
         )}
 
-        {selectedMatchRequest && (
+        {selectedMatch && (
           <QrPaymentModal
             open={openQrPaymentModal}
             setOpen={setOpenQrPaymentModal}
-            creator={selectedMatchRequest.user}
-            price={selectedMatchRequest?.booking.price}
+            creator={selectedMatch.matchRequest.user}
+            price={selectedMatch.matchRequest.booking.price}
             proofImage={proofImage}
             setProofImage={setProofImage}
             loading={depositLoading}

@@ -14,12 +14,13 @@ export interface IMatchRequest {
     id: number;
     proofImageUrl?: string;
     opponent: IUser;
-  };
+  }[];
 }
 
 export type DesireLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 export type RequestStatus =
   | "OPEN"
+  | "REJECTED"
   | "PROCESSING_REQUEST"
   | "PROCESSING_PAYMENT"
   | "MATCHED"
