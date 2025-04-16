@@ -1,23 +1,29 @@
+import { transporter } from "../configs/emailConfig.js";
 import { verificationEmailTemplate } from "../mails/verificationEmailTemplate.js";
-import sgMail from "@sendgrid/mail";
 
 export const sendVerificationEamil = async (email, name, verificationCode) => {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  const msg = {
-    to: email,
-    from: "sportarena12341234@gmail.com",
-    subject: "Xác thực email",
-    text: "Xác thực email",
-    html: verificationEmailTemplate
-      .replace("{verificationCode}", verificationCode)
-      .replace("{name}", name),
-  };
-  sgMail
-    .send(msg)
-    .then(() => {
-      console.log("Email sent");
-    })
-    .catch((error) => {
-      console.error(error);
+  try {
+    const mailData = {
+      from: '"SportArena" <no-reply@gmail.com>',
+      to: email,
+      subject: "Xác thực email",
+      text: "Xác thực email",
+      html: verificationEmailTemplate
+        .replace("{verificationCode}", verificationCode)
+        .replace("{name}", name),
+    };
+    await new Promise((resolve, reject) => {
+      transporter.sendMail(mailData, (err, info) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(info);
+        }
+      });
     });
+    console.log("Email send Successfully");
+  } catch (error) {
+    console.log("Email error", error);
+  }
 };
