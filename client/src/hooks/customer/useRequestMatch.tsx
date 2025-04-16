@@ -20,8 +20,6 @@ const useRequestMatch = () => {
         }
       );
 
-      console.log(res.data);
-
       toast.success(res.data.message);
     } catch (error: any) {
       if (error.response) {

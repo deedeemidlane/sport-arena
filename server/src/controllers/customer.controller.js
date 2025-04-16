@@ -18,8 +18,6 @@ export const getOrders = async (req, res) => {
       },
     });
 
-    // console.log(user);
-
     if (user && user.orders) {
       res.status(200).json({ orders: user.orders });
     } else {

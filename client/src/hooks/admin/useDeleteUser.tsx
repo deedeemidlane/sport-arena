@@ -9,9 +9,6 @@ const useDeleteUser = () => {
   const [loading, setLoading] = useState(false);
 
   const deleteUser = async (userId: number) => {
-    console.log(userId);
-    // return;
-
     try {
       setLoading(true);
       const res = await fetch(

@@ -18,8 +18,6 @@ export const getFields = async (req, res) => {
       },
     });
 
-    // console.log(user);
-
     if (user && user.sportFields) {
       res.status(200).json({ fields: user.sportFields });
     } else {
@@ -349,9 +347,6 @@ export const preBook = async (req, res) => {
 
     const fieldId = JSON.parse(req.body.fieldId);
     const bookingSlots = JSON.parse(req.body.bookingSlots);
-
-    // console.log("fieldId: ", fieldId);
-    // console.log("bookingSlots: ", bookingSlots);
 
     const newOrder = await prisma.order.create({
       data: {

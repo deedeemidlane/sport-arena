@@ -35,7 +35,7 @@ export const formatHour = (hour: number) => {
 };
 
 export function getFullImageUrl(imageUrl: string) {
-  return `http://res.cloudinary.com/${
+  return `https://res.cloudinary.com/${
     import.meta.env.VITE_CLOUD_NAME
   }/image/upload/${imageUrl}`;
 }

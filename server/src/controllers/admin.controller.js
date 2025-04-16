@@ -12,9 +12,6 @@ export const getUsers = async (req, res) => {
       },
     });
 
-    console.log(noneAdminUsers);
-    // return;
-
     if (noneAdminUsers) {
       res.status(200).json(noneAdminUsers);
     } else {

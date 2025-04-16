@@ -3,7 +3,7 @@ import { verificationEmailTemplate } from "../mails/verificationEmailTemplate.js
 
 export const sendVerificationEamil = async (email, name, verificationCode) => {
   try {
-    const response = await transporter.sendMail({
+    const mailData = {
       from: '"SportArena" <no-reply@gmail.com>',
       to: email, // list of receivers
       subject: "Xác thực email", // Subject line
@@ -11,6 +11,16 @@ export const sendVerificationEamil = async (email, name, verificationCode) => {
       html: verificationEmailTemplate
         .replace("{verificationCode}", verificationCode)
         .replace("{name}", name),
+    };
+    const response = await new Promise((resolve, reject) => {
+      transporter.sendMail(mailData, (err, info) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(info);
+        }
+      });
     });
     console.log("Email send Successfully", response);
   } catch (error) {
