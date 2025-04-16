@@ -108,7 +108,7 @@ export const Search = ({
     },
   });
 
-  let isDirty = Object.keys(form.formState.dirtyFields).length > 0;
+  const isDirty = Object.keys(form.formState.dirtyFields).length > 0;
 
   // Handle province change to update district & ward options
   const handleProvinceChange = (provinceName: string) => {

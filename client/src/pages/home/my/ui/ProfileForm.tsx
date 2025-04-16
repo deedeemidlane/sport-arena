@@ -59,7 +59,7 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
     },
   });
 
-  const { loading, updateProfile } = useUpdateProfile();
+  const { loading } = useUpdateProfile();
 
   const onSubmit = async (data: ProfileFormValues) => {
     console.log(data);
