@@ -20,6 +20,7 @@
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@prisma/client": "^5.18.0",
+    "@sendgrid/mail": "^8.1.5",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
