@@ -16,12 +16,9 @@ import useGetOrderDetail from "@/hooks/customer/useGetOrderDetail";
 import { IOrder } from "@/types/Order";
 import { ORDER_STATUS_COLORS, ORDER_STATUS_TEXTS } from "@/constants/statuses";
 import { Spinner } from "@/components/common";
-import {
-  formatDate,
-  formatHour,
-  formatPriceInVND,
-} from "@/utils/helperFunctions";
+import { formatDate, formatPriceInVND } from "@/utils/helperFunctions";
 import { Textarea } from "@/components/ui/textarea";
+import { getTimeIndex, TIME_SLOTS } from "@/constants/times";
 
 const OrderDetailPage = () => {
   const { orderId } = useParams();
@@ -79,9 +76,14 @@ const OrderDetailPage = () => {
 
                 <Card className="overflow-hidden">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">
-                      {order.sportField.name}
-                    </CardTitle>
+                    <a
+                      href={`/fields/${order.sportField.id}`}
+                      className="hover:text-blue-500"
+                    >
+                      <CardTitle className="text-lg">
+                        {order.sportField.name}
+                      </CardTitle>
+                    </a>
                     <CardDescription className="flex items-center gap-1 mt-1">
                       <div>
                         <MapPin className="h-5 w-5" />
@@ -109,8 +111,8 @@ const OrderDetailPage = () => {
                                 {formatDate(slot.bookingDate)}
                               </td>
                               <td className="border p-2 text-center">
-                                {formatHour(slot.startTime)} -{" "}
-                                {formatHour(slot.startTime + 1)}
+                                {slot.startTime} -{" "}
+                                {TIME_SLOTS[getTimeIndex(slot.startTime) + 1]}
                               </td>
                               <td className="border p-2 text-center">
                                 Sân {slot.fieldNo}

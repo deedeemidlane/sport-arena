@@ -21,9 +21,6 @@ export const fieldSchema = z.object({
   googleMapLink: z
     .string()
     .min(1, { message: "Vui lòng nhập iframe google map" }),
-  pricePerHour: z.coerce
-    .number()
-    .min(1, { message: "Giá thuê phải lớn hơn 0" }),
   imageUrl: z.string().optional(),
   description: z.string().optional(),
   accountNo: z.string().min(1, { message: "Vui lòng nhập số tài khoản" }),
@@ -44,7 +41,6 @@ export const defaultFormValue: FieldSchema = {
   ward: "",
   address: "",
   googleMapLink: "",
-  pricePerHour: 0,
   imageUrl: "",
   description: "",
   accountNo: "",

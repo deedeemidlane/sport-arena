@@ -97,42 +97,43 @@ export const CreatedRequestCard = ({
           </Button>
         </CardFooter>
       )}
-      {request.status === "PROCESSING_PAYMENT" && (
-        <CardFooter className="pt-0">
-          {request.match.length > 0 && (
-            <>
-              {confirmDepositLoading ? (
-                <Button className="w-full" disabled>
-                  <Spinner />
-                </Button>
-              ) : (
-                <div>
-                  <Button
-                    variant="blue"
-                    size="sm"
-                    className="rounded-xs mb-2"
-                    onClick={() => {
-                      setImageUrl(request.match[0].proofImageUrl);
-                      setOpenImageModal(true);
-                    }}
-                  >
-                    <Eye />
-                    Xem ảnh chuyển khoản tiền cọc
+      {request.status === "PROCESSING_PAYMENT" &&
+        request.match[0].proofImageUrl && (
+          <CardFooter className="pt-0">
+            {request.match.length > 0 && (
+              <>
+                {confirmDepositLoading ? (
+                  <Button className="w-full" disabled>
+                    <Spinner />
                   </Button>
-                  <Button
-                    className="w-full"
-                    onClick={() => {
-                      handleConfirmDeposit(request);
-                    }}
-                  >
-                    <Check className="h-4 w-4" /> Xác nhận thanh toán
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </CardFooter>
-      )}
+                ) : (
+                  <div>
+                    <Button
+                      variant="blue"
+                      size="sm"
+                      className="rounded-xs mb-2"
+                      onClick={() => {
+                        setImageUrl(request.match[0].proofImageUrl);
+                        setOpenImageModal(true);
+                      }}
+                    >
+                      <Eye />
+                      Xem ảnh chuyển khoản tiền cọc
+                    </Button>
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        handleConfirmDeposit(request);
+                      }}
+                    >
+                      <Check className="h-4 w-4" /> Xác nhận thanh toán
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </CardFooter>
+        )}
     </Card>
   );
 };

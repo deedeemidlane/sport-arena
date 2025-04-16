@@ -11,7 +11,7 @@ import {
 import { IMatchRequest } from "@/types/MatchRequest";
 import { DISPLAYED_SPORTS } from "@/constants/sports";
 import { DISPLAYED_LEVELS } from "@/constants/levels";
-import { formatDate, formatHour } from "@/utils/helperFunctions";
+import { formatDate } from "@/utils/helperFunctions";
 import { Spinner } from "@/components/common";
 
 export const RequestConfirmationModal = ({
@@ -65,8 +65,7 @@ export const RequestConfirmationModal = ({
                 {request.booking.order.sportField.name}
               </p>
               <p>
-                <strong>Thời gian:</strong>{" "}
-                {formatHour(request.booking.startTime)}
+                <strong>Thời gian:</strong> {request.booking.startTime}
                 {" ngày "}
                 {formatDate(request.booking.bookingDate)}
               </p>

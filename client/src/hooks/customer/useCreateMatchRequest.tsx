@@ -28,7 +28,7 @@ const useCreateMatchRequest = () => {
       if (res.status >= 400) throw new Error(res.data.error);
 
       toast.success(res.data.message);
-      navigate("/match-requests");
+      navigate("/my/created-match-requests");
     } catch (error: any) {
       toast.error(error.message);
     } finally {

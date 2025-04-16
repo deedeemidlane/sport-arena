@@ -4,12 +4,9 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { IBookingSlot, ICustomerInfo } from "../BookingPage";
 import { IField } from "@/types/Field";
-import {
-  formatDate,
-  formatHour,
-  formatPriceInVND,
-} from "@/utils/helperFunctions";
+import { formatDate, formatPriceInVND } from "@/utils/helperFunctions";
 import { Dispatch, SetStateAction } from "react";
+import { getTimeIndex, TIME_SLOTS } from "@/constants/times";
 
 interface CustomerInfoProps {
   field: IField;
@@ -27,7 +24,9 @@ export const CustomerInfo = ({
   setCustomerInfo,
 }: CustomerInfoProps) => {
   const selectedSlots = bookingSlots.filter((slot) => slot.selected);
-  const totalPrice = selectedSlots.length * field.pricePerHour;
+  const totalPrice = bookingSlots
+    .filter((slot) => slot.selected)
+    .reduce((acc, slot) => acc + slot.price, 0);
 
   const {
     register,
@@ -67,13 +66,13 @@ export const CustomerInfo = ({
                     {formatDate(slot.date)}
                   </td>
                   <td className="border p-2 text-center">
-                    {formatHour(slot.time)} - {formatHour(slot.time + 1)}
+                    {slot.time} - {TIME_SLOTS[getTimeIndex(slot.time) + 1]}
                   </td>
                   <td className="border p-2 text-center">
                     Sân {slot.fieldIndex}
                   </td>
                   <td className="border p-2 text-center">
-                    {formatPriceInVND(field.pricePerHour)}
+                    {formatPriceInVND(slot.price)}
                   </td>
                 </tr>
               ))}

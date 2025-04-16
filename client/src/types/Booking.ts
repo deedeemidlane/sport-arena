@@ -5,7 +5,7 @@ export interface IBooking {
   orderId: number;
   fieldNo: number;
   bookingDate: string;
-  startTime: number;
+  startTime: string;
   price: number;
   createdAt: string;
   order: IOrder;

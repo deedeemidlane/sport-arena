@@ -198,7 +198,8 @@ export default function FieldDetailPage() {
                       <span className="text-gray-600">Giá thuê</span>
                     </div>
                     <span className="font-medium">
-                      {formatPriceInVND(field.pricePerHour)} / giờ
+                      {formatPriceInVND(field.minPrice)} -{" "}
+                      {formatPriceInVND(field.maxPrice)}
                     </span>
                   </div>
 

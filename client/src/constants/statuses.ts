@@ -9,7 +9,7 @@ export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
 export const ORDER_STATUS_TEXTS: Record<OrderStatus, string> = {
   CONFIRMED: "Đã xác nhận",
   PENDING: "Chờ xác nhận",
-  CANCELED: "Đã hủy",
+  CANCELED: "Đã bị hủy",
 };
 
 export const REQUEST_STATUS_OPTIONS = {

@@ -14,7 +14,7 @@ import { AfterPayment } from "./ui/AfterPayment";
 export interface IBookingSlot {
   date: string;
   fieldIndex: number;
-  time: number;
+  time: string;
   price: number;
   selected: boolean;
   booked: boolean;

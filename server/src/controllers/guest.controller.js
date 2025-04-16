@@ -17,20 +17,20 @@ export const getFields = async (req, res) => {
         ...(district && { district: district }),
         ...(minPrice &&
           maxPrice && {
-            pricePerHour: {
+            minPrice: {
               gte: parseInt(minPrice),
               lte: parseInt(maxPrice),
             },
           }),
         ...(minPrice &&
           !maxPrice && {
-            pricePerHour: {
+            minPrice: {
               gte: parseInt(minPrice),
             },
           }),
         ...(maxPrice &&
           !minPrice && {
-            pricePerHour: {
+            minPrice: {
               lte: parseInt(maxPrice),
             },
           }),
@@ -60,6 +60,9 @@ export const getFieldDetail = async (req, res) => {
       include: {
         owner: true,
         services: true,
+        fieldTimes: {
+          orderBy: { startTime: "asc" },
+        },
         orders: {
           include: {
             bookings: true,

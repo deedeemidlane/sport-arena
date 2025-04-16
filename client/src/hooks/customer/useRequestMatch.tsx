@@ -20,13 +20,13 @@ const useRequestMatch = () => {
         }
       );
 
-      console.log(res);
-
-      if (res.status >= 400) throw new Error(res.data.error);
+      console.log(res.data);
 
       toast.success(res.data.message);
     } catch (error: any) {
-      toast.error(error.message);
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
       return false;
     } finally {
       setLoading(false);

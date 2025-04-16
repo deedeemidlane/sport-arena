@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/common/DatePicker";
@@ -8,20 +8,12 @@ import { defaultFieldValue, IField } from "@/types/Field";
 import useGetFieldDetail from "@/hooks/owner/useGetFieldDetail";
 import { Spinner } from "@/components/common";
 import usePreBook from "@/hooks/owner/usePreBook";
-
-// Generate time slots from 5:00 to 23:00
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 5; hour < 23; hour++) {
-    slots.push(hour);
-  }
-  return slots;
-};
+import { getTimeIndex, TIME_SLOTS } from "@/constants/times";
 
 export interface IBookingSlot {
   date: string;
   fieldIndex: number;
-  time: number;
+  time: string;
   price: number;
   selected: boolean;
   booked: boolean;
@@ -70,20 +62,18 @@ export default function FieldPreBookingsPage() {
 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
-  const timeSlots = useMemo(() => {
+  const currentHour = useMemo(() => {
     if (selectedDate.toLocaleDateString() === new Date().toLocaleDateString()) {
-      const currentHour = new Date().getHours();
-      if (currentHour >= 5) {
-        return generateTimeSlots().slice(currentHour - 5 + 1);
-      }
+      return new Date().getHours();
     }
-    return generateTimeSlots();
+    return 0;
   }, [selectedDate]);
 
   const handleSlotToggle = (
     fieldIndex: number,
-    time: number,
-    isSelected: boolean
+    time: string,
+    isSelected: boolean,
+    price: number
   ) => {
     const updatedBookingSlots = [...bookingSlots];
     if (isSelected) {
@@ -99,7 +89,7 @@ export default function FieldPreBookingsPage() {
         date: selectedDate.toLocaleDateString(),
         time,
         fieldIndex,
-        price: field.pricePerHour,
+        price: price,
         selected: true,
         booked: false,
       });
@@ -180,48 +170,62 @@ export default function FieldPreBookingsPage() {
                 </tr>
               </thead>
               <tbody>
-                {timeSlots.map((time) => (
-                  <tr key={time}>
-                    <td className="outline-2 -outline-offset-1 bg-white p-3 border-none text-center font-bold sticky left-0">
-                      {formatHour(time)}
-                    </td>
-                    {Array.from(
-                      { length: field.numOfFields },
-                      (_, i) => i + 1
-                    ).map((fieldIndex) => {
-                      const slot = bookingSlots.find(
-                        (s) =>
-                          s.date === selectedDate.toLocaleDateString() &&
-                          s.fieldIndex === fieldIndex &&
-                          s.time === time
-                      );
-                      const isBooked = slot?.booked || false;
-                      const isSelected = slot?.selected || false;
+                {field.fieldTimes.map((fieldTime) => (
+                  <Fragment key={`fieldTime-${fieldTime.id}`}>
+                    {TIME_SLOTS.slice(
+                      TIME_SLOTS.indexOf(fieldTime.startTime),
+                      TIME_SLOTS.indexOf(fieldTime.endTime)
+                    )
+                      .filter((time) => time > formatHour(currentHour))
+                      .map((time) => (
+                        <tr key={time}>
+                          <td className="outline-2 -outline-offset-1 bg-white p-3 border-none text-center font-bold sticky left-0 sm:whitespace-nowrap max-sm:w-16">
+                            {time} - {TIME_SLOTS[getTimeIndex(time) + 1]}
+                          </td>
+                          {Array.from(
+                            { length: field.numOfFields },
+                            (_, i) => i + 1
+                          ).map((fieldIndex) => {
+                            const slot = bookingSlots.find(
+                              (s) =>
+                                s.date === selectedDate.toLocaleDateString() &&
+                                s.fieldIndex === fieldIndex &&
+                                s.time === time
+                            );
+                            const isBooked = slot?.booked || false;
+                            const isSelected = slot?.selected || false;
 
-                      return (
-                        <td
-                          key={`${fieldIndex}-${time}`}
-                          className="text-center border-2"
-                        >
-                          <button
-                            className={`w-full p-3.5 hover:bg-gray-100 text-sm ${
-                              isBooked
-                                ? "bg-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-500 cursor-not-allowed"
-                                : isSelected
-                                ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800 cursor-pointer"
-                                : "cursor-pointer"
-                            }`}
-                            disabled={isBooked}
-                            onClick={() =>
-                              handleSlotToggle(fieldIndex, time, isSelected)
-                            }
-                          >
-                            {formatPriceInVND(field.pricePerHour)}
-                          </button>
-                        </td>
-                      );
-                    })}
-                  </tr>
+                            return (
+                              <td
+                                key={`${fieldIndex}-${time}`}
+                                className="text-center border-2"
+                              >
+                                <button
+                                  className={`w-full p-3.5 max-sm:py-9 hover:bg-gray-100 text-sm ${
+                                    isBooked
+                                      ? "bg-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-500 cursor-not-allowed"
+                                      : isSelected
+                                      ? "bg-green-100 text-green-800 hover:bg-green-100 hover:text-green-800 cursor-pointer"
+                                      : "cursor-pointer"
+                                  }`}
+                                  disabled={isBooked}
+                                  onClick={() =>
+                                    handleSlotToggle(
+                                      fieldIndex,
+                                      time,
+                                      isSelected,
+                                      fieldTime.pricePerSlot
+                                    )
+                                  }
+                                >
+                                  {formatPriceInVND(fieldTime.pricePerSlot)}
+                                </button>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                  </Fragment>
                 ))}
               </tbody>
             </table>
@@ -230,7 +234,7 @@ export default function FieldPreBookingsPage() {
           {/* Booking summary */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-              <p className="text-gray-600">Đã chọn {numOfSelectedSlots} lịch</p>
+              <p className="font-bold">Đã chọn {numOfSelectedSlots} lịch</p>
             </div>
 
             <Button

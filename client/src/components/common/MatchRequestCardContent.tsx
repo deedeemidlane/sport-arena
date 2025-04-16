@@ -1,7 +1,7 @@
 import { DesireLevel, IMatchRequest } from "@/types/MatchRequest";
 import { Calendar, Clock, Dribbble, MapPin, User } from "lucide-react";
 import { DISPLAYED_SPORTS } from "@/constants/sports";
-import { formatDate, formatHour } from "@/utils/helperFunctions";
+import { formatDate } from "@/utils/helperFunctions";
 import { Badge } from "../ui/badge";
 import { DISPLAYED_GENDERS } from "@/constants/genders";
 
@@ -54,7 +54,7 @@ export const MatchRequestCardContent = ({
         </div>
         <div className="flex items-center">
           <Clock className="h-4 w-4 text-gray-500 mr-2" />
-          <span>{formatHour(request.booking.startTime)}</span>
+          <span>{request.booking.startTime}</span>
         </div>
       </div>
     </>

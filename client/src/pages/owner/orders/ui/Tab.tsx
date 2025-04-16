@@ -11,7 +11,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import {
   formatDate,
-  formatHour,
   formatPriceInVND,
   formatTime,
 } from "@/utils/helperFunctions";
@@ -19,6 +18,7 @@ import { IOrder } from "@/types/Order";
 import { Spinner } from "@/components/common";
 import { useState } from "react";
 import { ImageModal } from "./ImageModal";
+import { getTimeIndex, TIME_SLOTS } from "@/constants/times";
 
 const tabContent: {
   [key: string]: { title: string; color: string };
@@ -116,10 +116,13 @@ export const Tab = ({
                           className="flex items-center justify-between"
                         >
                           <span className="text-muted-foreground">
-                            Sân {slot.fieldNo}{" "}
+                            Sân {slot.fieldNo}
                             <span>
-                              ({formatHour(slot.startTime)} -{" "}
-                              {formatHour(slot.startTime + 1)})
+                              (
+                              {`${slot.startTime} - ${
+                                TIME_SLOTS[getTimeIndex(slot.startTime) + 1]
+                              }`}
+                              )
                             </span>{" "}
                             {formatDate(slot.bookingDate)}
                           </span>

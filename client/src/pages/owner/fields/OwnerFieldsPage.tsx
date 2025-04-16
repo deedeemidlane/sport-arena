@@ -15,11 +15,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import {
-  formatDate,
-  formatPriceInVND,
-  getFullImageUrl,
-} from "@/utils/helperFunctions";
+import { formatDate, getFullImageUrl } from "@/utils/helperFunctions";
 import useGetFields from "@/hooks/owner/useGetFields";
 import { IField } from "@/types/Field";
 import { MoreHorizontal, Plus } from "lucide-react";
@@ -91,7 +87,6 @@ export default function OwnerFieldsPage() {
                   <TableHead>Tên</TableHead>
                   <TableHead>Loại sân</TableHead>
                   <TableHead>Địa chỉ</TableHead>
-                  <TableHead>Giá thuê</TableHead>
                   <TableHead>Ngày tạo</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -127,9 +122,6 @@ export default function OwnerFieldsPage() {
                       <TableCell>
                         {field.address && `${field.address}, `}
                         {field.ward}, {field.district}, {field.province}
-                      </TableCell>
-                      <TableCell>
-                        {formatPriceInVND(field.pricePerHour)}
                       </TableCell>
                       <TableCell>{formatDate(field.createdAt)}</TableCell>
                       <TableCell>

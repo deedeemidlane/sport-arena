@@ -103,11 +103,24 @@ export const placeOrder = async (req, res) => {
               fieldNo: slot.fieldIndex,
               bookingDate: slot.date,
               price: slot.price,
-              startTime: parseInt(slot.time),
+              startTime: slot.time,
             },
           }),
         ),
       );
+
+      const totalPrice = bookingSlots
+        .filter((slot) => slot.selected)
+        .reduce((acc, slot) => acc + slot.price, 0);
+
+      await prisma.payment.create({
+        data: {
+          orderId: newOrder.id,
+          amount: totalPrice,
+          method: "BANKTRANSFER",
+          status: "PENDING",
+        },
+      });
 
       res.status(201).json({ message: "Đặt sân thành công!" });
     } else {
@@ -293,8 +306,9 @@ export const getOtherMatchRequests = async (req, res) => {
 
       matchRequests.forEach(async (request) => {
         const bookingDate = new Date(request.booking.bookingDate);
+        const [hour] = request.booking.startTime.split(":").map(Number);
         const bookingStartTime = new Date(
-          bookingDate.getTime() + request.booking.startTime * 60 * 60 * 1000,
+          bookingDate.getTime() + hour * 60 * 60 * 1000,
         );
 
         if (bookingStartTime > now) {
@@ -372,6 +386,51 @@ export const requestMatch = async (req, res) => {
     }
 
     const matchRequestId = JSON.parse(req.body.matchRequestId);
+
+    // Fetch the current match request
+    const currentMatchRequest = await prisma.matchRequest.findUnique({
+      where: { id: parseInt(matchRequestId) },
+      include: {
+        booking: true,
+      },
+    });
+
+    if (!currentMatchRequest) {
+      return res.status(404).json({ error: "Không tìm thấy yêu cầu ghép cặp" });
+    }
+
+    // Fetch created and sent match requests of the current user
+    const createdMatchRequests = await prisma.matchRequest.findMany({
+      where: { userId: req.payload.id },
+      include: { booking: true },
+    });
+
+    const sendedMatchRequests = await prisma.match.findMany({
+      where: { opponentId: req.payload.id, isRejected: false },
+      include: {
+        matchRequest: {
+          include: { booking: true },
+        },
+      },
+    });
+
+    const hasOverlap = [...createdMatchRequests, ...sendedMatchRequests].some(
+      (request) => {
+        const booking = request.booking || request.matchRequest?.booking;
+        if (!booking) return false;
+
+        return (
+          booking.bookingDate === currentMatchRequest.booking.bookingDate &&
+          booking.startTime === currentMatchRequest.booking.startTime
+        );
+      },
+    );
+
+    if (hasOverlap) {
+      return res.status(400).json({
+        error: "Không thể bắt cặp do bạn đã có cặp đấu khác ở khung giờ này.",
+      });
+    }
 
     const newMatch = await prisma.match.create({
       data: {
@@ -520,7 +579,7 @@ export const deposit = async (req, res) => {
     const matchId = JSON.parse(req.body.matchId);
 
     const updatedMatch = await prisma.match.update({
-      where: { id: matchId },
+      where: { id: parseInt(matchId) },
       data: { proofImageUrl: imageUrl },
     });
 

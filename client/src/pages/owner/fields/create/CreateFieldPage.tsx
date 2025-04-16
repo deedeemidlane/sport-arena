@@ -2,10 +2,17 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { FieldForm } from "../ui";
 import { useState } from "react";
-import { IService } from "@/types/Field";
+import { IFieldTime, IService } from "@/types/Field";
 
 export default function CreateFieldPage() {
   const [services, setServices] = useState<IService[]>([]);
+  const [fieldTimes, setFieldTimes] = useState<IFieldTime[]>([
+    {
+      startTime: "",
+      endTime: "",
+      pricePerSlot: "",
+    },
+  ]);
 
   return (
     <div className="flex flex-col">
@@ -22,7 +29,12 @@ export default function CreateFieldPage() {
           </h1>
 
           <div className="bg-white rounded-lg shadow-lg border-2 p-6 mb-10">
-            <FieldForm services={services} setServices={setServices} />
+            <FieldForm
+              services={services}
+              setServices={setServices}
+              fieldTimes={fieldTimes}
+              setFieldTimes={setFieldTimes}
+            />
           </div>
         </div>
       </div>

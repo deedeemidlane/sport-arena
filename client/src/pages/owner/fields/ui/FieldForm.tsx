@@ -26,11 +26,12 @@ import useUpdateFields from "@/hooks/owner/useUpdateField";
 import { Label } from "@/components/ui/label";
 import { SPORT_OPTIONS } from "@/constants/sports";
 import { getFullImageUrl } from "@/utils/helperFunctions";
-import { Landmark, Plus, Trash2, X } from "lucide-react";
+import { Clock, Landmark, Plus, Trash2, X } from "lucide-react";
 import { PiCourtBasketball } from "react-icons/pi";
 import { MdMiscellaneousServices } from "react-icons/md";
-import { IService } from "@/types/Field";
+import { IFieldTime, IService } from "@/types/Field";
 import { IBank } from "@/types/OtherTypes";
+import { TIME_SLOTS } from "@/constants/times";
 
 interface IAddressData {
   code: string;
@@ -42,11 +43,15 @@ export const FieldForm = ({
   fieldId,
   services,
   setServices,
+  fieldTimes,
+  setFieldTimes,
 }: {
   field?: FieldSchema;
   fieldId?: string;
   services: IService[];
   setServices: Dispatch<SetStateAction<IService[]>>;
+  fieldTimes: IFieldTime[];
+  setFieldTimes: Dispatch<SetStateAction<IFieldTime[]>>;
 }) => {
   const [selectedProvince, setSelectedProvince] = useState<string>();
   const [selectedDistrict, setSelectedDistrict] = useState<string>();
@@ -177,6 +182,29 @@ export const FieldForm = ({
     setServices(newServices);
   };
 
+  const addFieldTime = () => {
+    const newFieldTimes = [...fieldTimes];
+    newFieldTimes.push({
+      startTime: "",
+      endTime: "",
+      pricePerSlot: "",
+    });
+    setFieldTimes(newFieldTimes);
+  };
+
+  const deleteFieldTime = (index: number) => {
+    const newFieldTimes = [...fieldTimes];
+    newFieldTimes.splice(index, 1);
+    setFieldTimes(newFieldTimes);
+  };
+
+  const areAllFieldTimesValid = fieldTimes.every(
+    (fieldTime) =>
+      fieldTime.startTime !== "" &&
+      fieldTime.endTime !== "" &&
+      fieldTime.pricePerSlot !== ""
+  );
+
   const onSubmit = async (data: FieldSchema) => {
     const iframe = data.googleMapLink;
 
@@ -187,12 +215,33 @@ export const FieldForm = ({
 
     data.googleMapLink = link;
 
+    const filteredFieldTimes = fieldTimes.filter(
+      (fieldTime) =>
+        fieldTime.startTime !== "" &&
+        fieldTime.endTime !== "" &&
+        fieldTime.pricePerSlot !== ""
+    );
+
+    const prices = filteredFieldTimes.map((fieldTime) =>
+      Number(fieldTime.pricePerSlot)
+    );
+
+    const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+    const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
+
     const formData = new FormData();
 
     if (image) {
       formData.append("image", image);
     }
-    formData.append("data", JSON.stringify(data));
+    formData.append(
+      "data",
+      JSON.stringify({
+        ...data,
+        minPrice,
+        maxPrice,
+      })
+    );
     formData.append(
       "services",
       JSON.stringify(
@@ -201,6 +250,7 @@ export const FieldForm = ({
         )
       )
     );
+    formData.append("fieldTimes", JSON.stringify(filteredFieldTimes));
 
     if (field && fieldId) {
       updateField(fieldId, formData);
@@ -275,6 +325,122 @@ export const FieldForm = ({
               </FormItem>
             )}
           />
+
+          {/* Hiring price */}
+          <div className="border rounded-lg p-4">
+            <h2 className="font-semibold">Giá thuê *</h2>
+
+            {fieldTimes.map((fieldTime, index) => (
+              <div
+                key={`fieldTime-${index}`}
+                className="my-4 flex items-end gap-4"
+              >
+                <div className="space-y-2">
+                  <Label
+                    className="font-normal"
+                    htmlFor={`fieldTimeName-${index}`}
+                  >
+                    Giờ bắt đầu
+                  </Label>
+                  <Select
+                    onValueChange={(value) => {
+                      const newFieldTimes = [...fieldTimes];
+                      newFieldTimes[index].startTime = value;
+                      setFieldTimes(newFieldTimes);
+                    }}
+                    value={fieldTime.startTime}
+                  >
+                    <SelectTrigger className="mb-0">
+                      <Clock />
+                      <SelectValue placeholder="Chọn giờ bắt đầu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_SLOTS.slice(
+                        index === 0
+                          ? 0
+                          : TIME_SLOTS.indexOf(fieldTimes[index - 1].endTime)
+                      ).map((slot) => (
+                        <SelectItem key={slot} value={slot}>
+                          {slot}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    className="font-normal"
+                    htmlFor={`fieldTimeName-${index}`}
+                  >
+                    Giờ kết thúc
+                  </Label>
+                  <Select
+                    onValueChange={(value) => {
+                      const newFieldTimes = [...fieldTimes];
+                      newFieldTimes[index].endTime = value;
+                      setFieldTimes(newFieldTimes);
+                    }}
+                    value={fieldTime.endTime}
+                    disabled={!fieldTime.startTime}
+                  >
+                    <SelectTrigger className="mb-0">
+                      <Clock />
+                      <SelectValue placeholder="Chọn giờ kết thúc" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_SLOTS.slice(
+                        TIME_SLOTS.indexOf(fieldTime.startTime) + 1
+                      ).map((slot) => (
+                        <SelectItem key={slot} value={slot}>
+                          {slot}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    className="font-normal"
+                    htmlFor={`fieldTimePrice-${index}`}
+                  >
+                    Giá thuê (₫)
+                  </Label>
+                  <Input
+                    id={`fieldTimePrice-${index}`}
+                    type="text" // Change to text to allow formatting
+                    placeholder="Nhập giá thuê"
+                    value={new Intl.NumberFormat("vi-VN", {
+                      maximumFractionDigits: 0,
+                    }).format(Number(fieldTime.pricePerSlot) || 0)} // Format the value as currency
+                    onChange={(e) => {
+                      const rawValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+                      const newFieldTimes = [...fieldTimes];
+                      newFieldTimes[index].pricePerSlot = rawValue; // Store the raw numeric value
+                      setFieldTimes(newFieldTimes);
+                    }}
+                  />
+                </div>
+                {index !== 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => deleteFieldTime(index)}
+                  >
+                    <Trash2 />
+                  </Button>
+                )}
+              </div>
+            ))}
+
+            <Button
+              type="button"
+              variant="blue"
+              disabled={!areAllFieldTimesValid}
+              onClick={addFieldTime}
+            >
+              <Plus /> Thêm khung giờ
+            </Button>
+          </div>
 
           {/* Location Selection - Province */}
           <div className="flex flex-col md:flex-row md:items-start gap-4">
@@ -407,21 +573,6 @@ export const FieldForm = ({
                     rows={4}
                     {...field}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Price Per Hour */}
-          <FormField
-            control={form.control}
-            name="pricePerHour"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Giá thuê mỗi giờ (VNĐ) *</FormLabel>
-                <FormControl>
-                  <Input type="number" min="0" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -575,12 +726,12 @@ export const FieldForm = ({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor={`servicePrice-${index}`}>Giá thuê (VND)</Label>
+              <Label htmlFor={`servicePrice-${index}`}>Giá thuê (₫)</Label>
               <Input
                 id={`servicePrice-${index}`}
                 type="number"
                 placeholder="Nhập giá thuê"
-                value={service.price?.toString() || ""}
+                value={service.price}
                 onChange={(e) => {
                   const newServices = [...services];
                   newServices[index].price = e.target.value;

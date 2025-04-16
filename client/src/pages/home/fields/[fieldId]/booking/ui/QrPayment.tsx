@@ -28,16 +28,16 @@ export const QrPayment = ({
 
   useEffect(() => {
     const generateQR = async () => {
-      const numOfSelectedSlots = bookingSlots.filter(
-        (slot) => slot.selected
-      ).length;
+      const totalPrice = bookingSlots
+        .filter((slot) => slot.selected)
+        .reduce((acc, slot) => acc + slot.price, 0);
 
       const values = {
         accountNo: field.accountNo,
         accountName: field.accountName,
         acqId: field.acqId,
         addInfo: `Thanh toán hóa đơn từ ${field.name}`,
-        amount: `${numOfSelectedSlots * field.pricePerHour}`,
+        amount: `${totalPrice}`,
         template: "print",
       };
 

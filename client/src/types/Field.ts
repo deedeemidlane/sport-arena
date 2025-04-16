@@ -12,7 +12,8 @@ export interface IField {
   district: string;
   province: string;
   googleMapLink: string;
-  pricePerHour: number;
+  minPrice: number;
+  maxPrice: number;
   imageUrl?: string;
   description: string;
   createdAt: string;
@@ -22,9 +23,26 @@ export interface IField {
   acqId: string;
   orders: IOrder[];
   services: {
-    name: string,
-    price: number
-  }[]
+    name: string;
+    price: number;
+  }[];
+  fieldTimes: {
+    id: number;
+    startTime: string;
+    endTime: string;
+    pricePerSlot: number;
+  }[];
+}
+
+export interface IService {
+  name?: string;
+  price?: string;
+}
+
+export interface IFieldTime {
+  startTime: string;
+  endTime: string;
+  pricePerSlot: string;
 }
 
 export const defaultFieldValue: IField = {
@@ -38,7 +56,8 @@ export const defaultFieldValue: IField = {
   district: "",
   province: "",
   googleMapLink: "",
-  pricePerHour: 0,
+  minPrice: 0,
+  maxPrice: 0,
   imageUrl: "",
   description: "",
   createdAt: "",
@@ -47,10 +66,6 @@ export const defaultFieldValue: IField = {
   accountName: "",
   acqId: "",
   orders: [],
-  services: []
+  services: [],
+  fieldTimes: [],
 };
-
-export interface IService {
-  name?: string;
-  price?: string;
-}

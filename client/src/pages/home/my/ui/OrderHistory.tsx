@@ -13,11 +13,9 @@ import useGetOrders from "@/hooks/customer/useGetOrders";
 import { useEffect, useState } from "react";
 import { IOrder } from "@/types/Order";
 import { Spinner } from "@/components/common";
-import { useNavigate } from "react-router";
 import { ORDER_STATUS_COLORS, ORDER_STATUS_TEXTS } from "@/constants/statuses";
 
 export const OrderHistory = () => {
-  const navigate = useNavigate();
   const [orders, setOrders] = useState<IOrder[]>();
   const { loading, getOrders } = useGetOrders();
 
@@ -57,9 +55,14 @@ export const OrderHistory = () => {
               <CardHeader className="pb-2">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                   <div>
-                    <CardTitle className="text-lg">
-                      {order.sportField.name}
-                    </CardTitle>
+                    <a
+                      href={`/fields/${order.sportField.id}`}
+                      className="hover:text-blue-500"
+                    >
+                      <CardTitle className="text-lg">
+                        {order.sportField.name}
+                      </CardTitle>
+                    </a>
                     <CardDescription className="flex items-start gap-1 mt-1">
                       <div>
                         <MapPin className="h-4 w-4 mt-0.5" />
@@ -80,27 +83,14 @@ export const OrderHistory = () => {
               </CardHeader>
 
               <CardFooter className="pt-2 flex justify-between items-center">
-                {order.status === "PENDING" && (
-                  <Button
-                    variant="outline"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    Hủy đặt sân
-                  </Button>
-                )}
-                {(order.status === "CONFIRMED" ||
-                  order.status === "CANCELED") && (
-                  <Button
-                    variant="outline"
-                    className="text-primary"
-                    onClick={() => {
-                      navigate(`/fields/${order.sportField.id}`);
-                    }}
-                  >
-                    Đặt lại
-                  </Button>
-                )}
-                <a href={`/my/orders/${order.id}`}>
+                <Button
+                  variant="outline"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  disabled
+                >
+                  Hủy đặt sân
+                </Button>
+                <a href={`/my/orders/${order.id}`} className="ml-auto">
                   <Button variant="ghost">
                     Chi tiết <ChevronRight />
                   </Button>

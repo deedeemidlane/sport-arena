@@ -15,12 +15,13 @@ import { FormEvent, useEffect, useState } from "react";
 import useGetOrders from "@/hooks/customer/useGetOrders";
 import { IOrder } from "@/types/Order";
 import { Spinner } from "@/components/common";
-import { formatDate, formatHour } from "@/utils/helperFunctions";
+import { formatDate } from "@/utils/helperFunctions";
 import { Label } from "@/components/ui/label";
 import { IBooking } from "@/types/Booking";
 import useCreateMatchRequest from "@/hooks/customer/useCreateMatchRequest";
 import { IMatchRequest } from "@/types/MatchRequest";
 import useGetCreatedMatchRequests from "@/hooks/customer/useGetCreatedMatchRequests";
+import { getTimeIndex, TIME_SLOTS } from "@/constants/times";
 
 export default function CreateMatchRequestPage() {
   const navigate = useNavigate();
@@ -63,12 +64,8 @@ export default function CreateMatchRequestPage() {
               const [month, day, year] = slot.bookingDate
                 .split("/")
                 .map(Number);
-              const bookingDateTime = new Date(
-                year,
-                month - 1,
-                day,
-                slot.startTime
-              );
+              const [hour] = slot.startTime.split(":").map(Number);
+              const bookingDateTime = new Date(year, month - 1, day, hour + 1);
               return bookingDateTime > now;
             });
 
@@ -76,7 +73,29 @@ export default function CreateMatchRequestPage() {
           })
           .filter((order) => order.bookings.length > 0);
 
-        setOrders(secondFilteredOrders);
+        console.log("secondFilteredOrders: ", secondFilteredOrders);
+
+        const combinedOrders = Array.from(
+          secondFilteredOrders.reduce((map, order) => {
+            if (!map.has(order.sportFieldId)) {
+              map.set(order.sportFieldId, {
+                ...order,
+                bookings: [...order.bookings],
+              });
+            } else {
+              const existingOrder = map.get(order.sportFieldId);
+              existingOrder.bookings = [
+                ...existingOrder.bookings,
+                ...order.bookings,
+              ];
+            }
+            return map;
+          }, new Map())
+        ).map(([_, order]) => order);
+
+        console.log("combinedOrders: ", combinedOrders);
+
+        setOrders(combinedOrders);
       }
     };
 
@@ -180,8 +199,12 @@ export default function CreateMatchRequestPage() {
                                     {formatDate(slot.bookingDate)}
                                   </td>
                                   <td className="border p-2 text-center">
-                                    {formatHour(slot.startTime)} -{" "}
-                                    {formatHour(slot.startTime + 1)}
+                                    {slot.startTime} -{" "}
+                                    {
+                                      TIME_SLOTS[
+                                        getTimeIndex(slot.startTime) + 1
+                                      ]
+                                    }
                                   </td>
                                   <td className="border p-2 text-center">
                                     Sân {slot.fieldNo}

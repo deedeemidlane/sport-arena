@@ -63,7 +63,7 @@ export default function SendedMatchRequestsPage() {
       formData.append("image", proofImage);
     }
     if (selectedMatch) {
-      formData.append("matchId", JSON.stringify(selectedMatch.opponentId));
+      formData.append("matchId", JSON.stringify(selectedMatch.id));
     }
 
     await deposit(formData);

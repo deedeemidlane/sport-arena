@@ -9,7 +9,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DISPLAYED_SPORTS } from "@/constants/sports";
 import { DISPLAYED_LEVELS } from "@/constants/levels";
-import { formatDate, formatHour } from "@/utils/helperFunctions";
+import { formatDate } from "@/utils/helperFunctions";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/common";
 import { IMatchRequest } from "@/types/MatchRequest";
@@ -71,8 +71,7 @@ export const ConfirmAcceptRequestModal = ({
                 {selectedRequest.booking.order.sportField.name}
               </p>
               <p>
-                <strong>Thời gian:</strong>{" "}
-                {formatHour(selectedRequest.booking.startTime)}
+                <strong>Thời gian:</strong> {selectedRequest.booking.startTime}
                 {" ngày "}
                 {formatDate(selectedRequest.booking.bookingDate)}
               </p>

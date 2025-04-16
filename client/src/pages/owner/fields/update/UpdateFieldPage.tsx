@@ -6,13 +6,20 @@ import useGetFieldDetail from "@/hooks/owner/useGetFieldDetail";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/common";
 import { FieldSchema } from "../schema";
-import { IService } from "@/types/Field";
+import { IFieldTime, IService } from "@/types/Field";
 
 export default function UpdateFieldPage() {
   const params = useParams();
   const fieldId = params.fieldId;
 
   const [field, setField] = useState<FieldSchema>();
+  const [fieldTimes, setFieldTimes] = useState<IFieldTime[]>([
+    {
+      startTime: "",
+      endTime: "",
+      pricePerSlot: "",
+    },
+  ]);
   const [services, setServices] = useState<IService[]>([]);
 
   const { loading, getFieldDetail } = useGetFieldDetail();
@@ -25,6 +32,7 @@ export default function UpdateFieldPage() {
       }
       setField(fetchedField);
       setServices(fetchedField.services);
+      setFieldTimes(fetchedField.fieldTimes);
     };
 
     fetchField();
@@ -53,6 +61,8 @@ export default function UpdateFieldPage() {
                 fieldId={fieldId}
                 services={services}
                 setServices={setServices}
+                fieldTimes={fieldTimes}
+                setFieldTimes={setFieldTimes}
               />
             </div>
           )}

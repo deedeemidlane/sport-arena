@@ -43,6 +43,11 @@ export const getFieldDetail = async (req, res) => {
       where: { id: parseInt(fieldId) },
       include: {
         services: true,
+        fieldTimes: {
+          orderBy: {
+            startTime: "asc",
+          },
+        },
         owner: true,
         orders: {
           include: {
@@ -102,6 +107,24 @@ export const createField = async (req, res) => {
     }
 
     if (newField) {
+      const fieldTimes = JSON.parse(req.body.fieldTimes);
+      await prisma.fieldTime.deleteMany({
+        where: { fieldId: newField.id },
+      });
+
+      await Promise.all(
+        fieldTimes.map((fieldTime) =>
+          prisma.fieldTime.create({
+            data: {
+              fieldId: newField.id,
+              startTime: fieldTime.startTime,
+              endTime: fieldTime.endTime,
+              pricePerSlot: parseInt(fieldTime.pricePerSlot),
+            },
+          }),
+        ),
+      );
+
       const services = JSON.parse(req.body.services);
       await Promise.all(
         services.map((service) =>
@@ -169,6 +192,25 @@ export const updateField = async (req, res) => {
     }
 
     if (updatedField) {
+      const fieldTimes = JSON.parse(req.body.fieldTimes);
+
+      await prisma.fieldTime.deleteMany({
+        where: { fieldId: updatedField.id },
+      });
+
+      await Promise.all(
+        fieldTimes.map((fieldTime) =>
+          prisma.fieldTime.create({
+            data: {
+              fieldId: updatedField.id,
+              startTime: fieldTime.startTime,
+              endTime: fieldTime.endTime,
+              pricePerSlot: parseInt(fieldTime.pricePerSlot),
+            },
+          }),
+        ),
+      );
+
       const services = JSON.parse(req.body.services);
 
       await prisma.extraService.deleteMany({
@@ -256,6 +298,11 @@ export const updateOrderStatus = async (req, res) => {
 
     if (updatedOrder) {
       if (updatedOrder.status === "CONFIRMED") {
+        await prisma.payment.update({
+          where: { orderId: updatedOrder.id },
+          data: { status: "PAID" },
+        });
+
         await prisma.notification.create({
           data: {
             userId: updatedOrder.userId,
@@ -267,6 +314,11 @@ export const updateOrderStatus = async (req, res) => {
         });
         res.status(200).json({ message: "Đã xác nhận đơn đặt!" });
       } else {
+        await prisma.payment.update({
+          where: { orderId: updatedOrder.id },
+          data: { status: "FAILED" },
+        });
+
         await prisma.notification.create({
           data: {
             userId: updatedOrder.userId,
@@ -323,7 +375,7 @@ export const preBook = async (req, res) => {
               fieldNo: slot.fieldIndex,
               bookingDate: slot.date,
               price: slot.price,
-              startTime: parseInt(slot.time),
+              startTime: slot.time,
             },
           }),
         ),

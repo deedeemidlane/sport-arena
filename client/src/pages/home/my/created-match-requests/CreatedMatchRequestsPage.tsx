@@ -142,7 +142,7 @@ export default function CreatedMatchRequestsPage() {
               </SelectContent>
             </Select>
             <Link to="/match-requests/create">
-              <Button>
+              <Button variant={"blue"}>
                 <Plus className="h-4 w-4" />
                 Tạo yêu cầu ghép cặp
               </Button>
