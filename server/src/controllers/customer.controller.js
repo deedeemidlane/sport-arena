@@ -722,7 +722,9 @@ export const createReview = async (req, res) => {
         .json({ error: "Unauthorized - Not customer token" });
     }
 
-    const { rating, comment, sportFieldId } = JSON.parse(req.body.data);
+    const { rating, comment, sportFieldId, orderId } = JSON.parse(
+      req.body.data,
+    );
 
     // Validate input
     if (!sportFieldId || !rating || rating < 1 || rating > 5) {
@@ -743,6 +745,7 @@ export const createReview = async (req, res) => {
       data: {
         userId: req.payload.id,
         sportFieldId: parseInt(sportFieldId),
+        orderId: parseInt(orderId),
         rating: parseInt(rating),
         comment,
       },
