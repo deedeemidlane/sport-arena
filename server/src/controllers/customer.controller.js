@@ -12,7 +12,12 @@ export const getOrders = async (req, res) => {
       where: { id: req.payload.id },
       include: {
         orders: {
-          include: { bookings: true, sportField: true },
+          include: {
+            bookings: {
+              orderBy: [{ bookingDate: "asc" }, { startTime: "asc" }],
+            },
+            sportField: true,
+          },
           orderBy: { createdAt: "desc" },
         },
       },
@@ -41,7 +46,12 @@ export const getOrderDetail = async (req, res) => {
 
     const order = await prisma.order.findUnique({
       where: { id: parseInt(orderId) },
-      include: { bookings: true, sportField: true },
+      include: {
+        bookings: {
+          orderBy: [{ bookingDate: "asc" }, { startTime: "asc" }],
+        },
+        sportField: true,
+      },
     });
 
     if (order) {
@@ -126,6 +136,62 @@ export const placeOrder = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in placeOrder controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const cancelOrder = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const orderId = JSON.parse(req.body.orderId);
+
+    const updatedOrder = await prisma.order.update({
+      where: { id: parseInt(orderId) },
+      data: { status: "SELF_CANCELED" },
+    });
+
+    if (updatedOrder) {
+      res.status(200).json({ message: "Huỷ đơn đặt sân thành công" });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in cancelOrder controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const confirmRefund = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const orderId = JSON.parse(req.body.orderId);
+
+    const updatedOrder = await prisma.order.update({
+      where: { id: parseInt(orderId) },
+      data: { status: "FINISHED" },
+    });
+
+    if (updatedOrder) {
+      await prisma.payment.delete({
+        where: { orderId: updatedOrder.id },
+      });
+
+      res.status(200).json({ message: "Xác nhận hoàn tiền thành công" });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in confirmRefund controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };

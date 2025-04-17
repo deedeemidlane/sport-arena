@@ -1,7 +1,9 @@
 import express from "express";
 import {
   acceptMatchRequest,
+  cancelOrder,
   confirmDeposit,
+  confirmRefund,
   createMatchRequest,
   deposit,
   getCreatedMatchRequests,
@@ -36,6 +38,8 @@ const router = express.Router();
 router.get("/orders", protectRoute, getOrders);
 router.get("/orders/:orderId", protectRoute, getOrderDetail);
 router.post("/orders", protectRoute, upload.single("image"), placeOrder);
+router.post("/cancel-order", protectRoute, cancelOrder);
+router.post("/confirm-refund", protectRoute, confirmRefund);
 
 router.get("/notifications", protectRoute, getNotifications);
 router.patch("/notifications/:notificationId", protectRoute, readNotification);

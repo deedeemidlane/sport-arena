@@ -30,6 +30,7 @@ import MatchRequestsPage from "./pages/home/match-requests";
 import CreateMatchRequestPage from "./pages/home/match-requests/create";
 import CreatedMatchRequestsPage from "./pages/home/my/created-match-requests";
 import SendedMatchRequestsPage from "./pages/home/my/sended-match-requests";
+import CancelingRequestsPage from "./pages/owner/canceling-requests";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -82,6 +83,7 @@ export default function App() {
         <Route path="orders">
           <Route index element={<OrdersPage />} />
         </Route>
+        <Route path="canceling-requests" element={<CancelingRequestsPage />} />
         <Route path="pre-bookings">
           <Route index element={<PreBookingsPage />} />
           <Route path=":fieldId" element={<FieldPreBookingsPage />} />

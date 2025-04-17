@@ -19,6 +19,7 @@ import { Spinner } from "@/components/common";
 import { formatDate, formatPriceInVND } from "@/utils/helperFunctions";
 import { Textarea } from "@/components/ui/textarea";
 import { getTimeIndex, TIME_SLOTS } from "@/constants/times";
+import useConfirmRefund from "@/hooks/customer/useConfirmRefund";
 
 const OrderDetailPage = () => {
   const { orderId } = useParams();
@@ -27,6 +28,8 @@ const OrderDetailPage = () => {
   const { getOrderDetail } = useGetOrderDetail();
   const [order, setOrder] = useState<IOrder>();
 
+  const [toggleReRender, setToggleReRender] = useState(false);
+
   useEffect(() => {
     const fetchOrderDetail = async () => {
       const orderDetail = await getOrderDetail(orderId || "");
@@ -34,8 +37,7 @@ const OrderDetailPage = () => {
     };
 
     fetchOrderDetail();
-  }, [orderId]);
-  console.log("order", order);
+  }, [orderId, toggleReRender]);
 
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
@@ -45,6 +47,17 @@ const OrderDetailPage = () => {
   };
 
   const handleSubmitReview = () => {};
+
+  const { loading: confirmRefundLoading, confirmRefund } = useConfirmRefund();
+  const handleConfirmRefund = async (orderId: number) => {
+    const formData = new FormData();
+
+    formData.append("orderId", JSON.stringify(orderId));
+
+    await confirmRefund(formData);
+    navigate("/my?tab=orders");
+    setToggleReRender(!toggleReRender);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -141,18 +154,48 @@ const OrderDetailPage = () => {
                         </tbody>
                       </table>
                     </div>
-                    <div className="mt-3">
-                      <h3 className="text-lg font-semibold">Người đặt</h3>
-                      <div className="sm:flex gap-10">
-                        <div className="flex items-center gap-2 mt-2">
-                          <User className="h-4 w-4" />
-                          <span>{order.customerName}</span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Phone className="h-4 w-4" />
-                          <span>{order.customerPhone}</span>
+                    <div className="md:flex justify-between items-end">
+                      <div className="mt-3">
+                        <h3 className="text-lg font-semibold">Người đặt</h3>
+                        <div className="sm:flex gap-10">
+                          <div className="flex items-center gap-2 mt-2">
+                            <User className="h-4 w-4" />
+                            <span>{order.customerName}</span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Phone className="h-4 w-4" />
+                            <span>{order.customerPhone}</span>
+                          </div>
                         </div>
                       </div>
+
+                      {order.status === "SELF_CANCELED" && (
+                        <p className="font-semibold text-sm italic text-yellow-500">
+                          Đã huỷ đơn đặt sân. Vui lòng chờ chủ sân xử lý hoàn
+                          tiền.
+                        </p>
+                      )}
+                      {order.status === "PROCESSING_REFUND" && (
+                        <Button
+                          variant="outline"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          onClick={() => {
+                            handleConfirmRefund(order.id);
+                          }}
+                          disabled={confirmRefundLoading}
+                        >
+                          {confirmRefundLoading ? (
+                            <Spinner />
+                          ) : (
+                            "Xác nhận đã hoàn tiền"
+                          )}
+                        </Button>
+                      )}
+                      {order.status === "FINISHED" && (
+                        <p className="font-semibold text-sm italic text-green-600">
+                          Huỷ sân hoàn tất.
+                        </p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

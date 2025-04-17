@@ -23,6 +23,9 @@ enum OrderStatus {
   PENDING
   CONFIRMED
   CANCELED
+  SELF_CANCELED
+  PROCESSING_REFUND
+  FINISHED
 }
 
 enum OrderType {

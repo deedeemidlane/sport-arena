@@ -1,6 +1,6 @@
 import { Header, Sidebar } from "@/components/common";
 import { useAuthContext } from "@/context/AuthContext";
-import { ScrollText } from "lucide-react";
+import { ScrollText, UserRoundX } from "lucide-react";
 import { useEffect } from "react";
 import { PiCourtBasketball } from "react-icons/pi";
 import { Outlet, useNavigate } from "react-router";
@@ -16,6 +16,11 @@ const sidebarOptions = [
     url: "/owner/orders",
     name: "Quản lý đơn đặt",
     icon: <ScrollText className="h-5 w-5" />,
+  },
+  {
+    url: "/owner/canceling-requests",
+    name: "Yêu cầu huỷ sân",
+    icon: <UserRoundX className="h-5 w-5" />,
   },
   {
     url: "/owner/pre-bookings",

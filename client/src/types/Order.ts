@@ -1,5 +1,6 @@
 import { IBooking } from "./Booking";
 import { IField } from "./Field";
+import { IUser } from "./User";
 
 export interface IOrder {
   id: number;
@@ -8,8 +9,17 @@ export interface IOrder {
   customerName: string;
   customerPhone: string;
   proofImageUrl: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELED";
+  status: OrderStatus;
   createdAt: string;
   sportField: IField;
   bookings: IBooking[];
+  user: IUser;
 }
+
+export type OrderStatus =
+  | "CONFIRMED"
+  | "PENDING"
+  | "CANCELED"
+  | "SELF_CANCELED"
+  | "PROCESSING_REFUND"
+  | "FINISHED";

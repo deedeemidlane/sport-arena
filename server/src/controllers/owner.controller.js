@@ -261,7 +261,10 @@ export const getOrders = async (req, res) => {
       },
       include: {
         sportField: true,
-        bookings: true,
+        bookings: {
+          orderBy: [{ bookingDate: "asc" }, { startTime: "asc" }],
+        },
+        user: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -284,9 +287,6 @@ export const updateOrderStatus = async (req, res) => {
     if (req.payload.role !== "OWNER") {
       return res.status(401).json({ error: "Unauthorized - Not owner token" });
     }
-
-    console.log("req params: ", req.params);
-    console.log("req body: ", req.body);
 
     const updatedOrder = await prisma.order.update({
       where: { id: parseInt(req.params.orderId) },
@@ -311,7 +311,7 @@ export const updateOrderStatus = async (req, res) => {
           },
         });
         res.status(200).json({ message: "Đã xác nhận đơn đặt!" });
-      } else {
+      } else if (updatedOrder.status === "CANCELED") {
         await prisma.payment.update({
           where: { orderId: updatedOrder.id },
           data: { status: "FAILED" },
@@ -327,6 +327,17 @@ export const updateOrderStatus = async (req, res) => {
           },
         });
         res.status(200).json({ message: "Đã huỷ đơn đặt!" });
+      } else if (updatedOrder.status === "PROCESSING_REFUND") {
+        await prisma.notification.create({
+          data: {
+            userId: updatedOrder.userId,
+            title: "Chủ sân đã hoàn tiền!",
+            message: `Chủ sân của <b>${updatedOrder.sportField.name}</b> đã hoàn tiền cho bạn. Vui lòng kiểm tra và xác nhận.`,
+            isRead: false,
+            link: `/orders/${updatedOrder.id}`,
+          },
+        });
+        res.status(200).json({ message: "Thành công!" });
       }
     } else {
       res.status(400).json({ error: "Dữ liệu không hợp lệ" });

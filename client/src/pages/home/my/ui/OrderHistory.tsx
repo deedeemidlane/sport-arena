@@ -14,10 +14,18 @@ import { useEffect, useState } from "react";
 import { IOrder } from "@/types/Order";
 import { Spinner } from "@/components/common";
 import { ORDER_STATUS_COLORS, ORDER_STATUS_TEXTS } from "@/constants/statuses";
+import useCancelOrder from "@/hooks/customer/useCancelOrder";
+import { CancelOrderModal } from "./modals/CancelOrderModal";
+import useConfirmRefund from "@/hooks/customer/useConfirmRefund";
+import { useNavigate } from "react-router";
 
 export const OrderHistory = () => {
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState<IOrder[]>();
   const { loading, getOrders } = useGetOrders();
+
+  const [toggleReRender, setToggleReRender] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -26,7 +34,61 @@ export const OrderHistory = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [toggleReRender]);
+
+  const canCanelOrder = (order: IOrder) => {
+    if (order.status === "CANCELED") {
+      return false;
+    }
+
+    const earliestBookingSlot = order.bookings[0];
+
+    // Parse bookingDate and startTime
+    const [month, day, year] = earliestBookingSlot.bookingDate
+      .split("/")
+      .map(Number);
+    const [hour, minute] = earliestBookingSlot.startTime.split(":").map(Number);
+
+    const bookingDateTime = new Date(year, month - 1, day, hour, minute); // Create Date object
+    const now = new Date();
+    const twentyFourHoursAfter = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Current time plus 24 hours
+
+    // Check if the booking is more than 24 hours after the current time
+    return bookingDateTime >= twentyFourHoursAfter;
+  };
+
+  const isSelfCanceled = (order: IOrder) => {
+    return (
+      order.status === "SELF_CANCELED" ||
+      order.status === "PROCESSING_REFUND" ||
+      order.status === "FINISHED"
+    );
+  };
+
+  const [openCancelOrderModal, setOpenCancelOrderModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<IOrder>();
+
+  const { loading: cancelOrderLoading, cancelOrder } = useCancelOrder();
+  const handleCancelOrder = async () => {
+    const formData = new FormData();
+
+    formData.append("orderId", JSON.stringify(selectedOrder?.id));
+
+    await cancelOrder(formData);
+    setToggleReRender(!toggleReRender);
+    setOpenCancelOrderModal(false);
+  };
+
+  const { loading: confirmRefundLoading, confirmRefund } = useConfirmRefund();
+  const handleConfirmRefund = async (orderId: number) => {
+    const formData = new FormData();
+
+    formData.append("orderId", JSON.stringify(orderId));
+
+    await confirmRefund(formData);
+    navigate("/my?tab=orders");
+    setToggleReRender(!toggleReRender);
+  };
 
   return (
     <div className="space-y-6">
@@ -83,13 +145,46 @@ export const OrderHistory = () => {
               </CardHeader>
 
               <CardFooter className="pt-2 flex justify-between items-center">
-                <Button
-                  variant="outline"
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  disabled
-                >
-                  Hủy đặt sân
-                </Button>
+                {order.status === "SELF_CANCELED" && (
+                  <p className="font-semibold text-sm italic text-yellow-500">
+                    Đã huỷ đơn đặt sân. Vui lòng chờ chủ sân xử lý hoàn tiền.
+                  </p>
+                )}
+                {order.status === "PROCESSING_REFUND" && (
+                  <Button
+                    variant="outline"
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    onClick={() => {
+                      handleConfirmRefund(order.id);
+                    }}
+                    disabled={confirmRefundLoading}
+                  >
+                    {confirmRefundLoading ? (
+                      <Spinner />
+                    ) : (
+                      "Xác nhận đã hoàn tiền"
+                    )}
+                  </Button>
+                )}
+                {order.status === "FINISHED" && (
+                  <p className="font-semibold text-sm italic text-green-600">
+                    Huỷ sân hoàn tất.
+                  </p>
+                )}
+                {!isSelfCanceled(order) && (
+                  <Button
+                    variant="outline"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    disabled={!canCanelOrder(order)}
+                    onClick={() => {
+                      setSelectedOrder(order);
+                      setOpenCancelOrderModal(true);
+                    }}
+                  >
+                    Hủy đặt sân
+                  </Button>
+                )}
+
                 <a href={`/my/orders/${order.id}`} className="ml-auto">
                   <Button variant="ghost">
                     Chi tiết <ChevronRight />
@@ -100,6 +195,13 @@ export const OrderHistory = () => {
           ))}
         </div>
       )}
+
+      <CancelOrderModal
+        open={openCancelOrderModal}
+        setOpen={setOpenCancelOrderModal}
+        cancelOrder={handleCancelOrder}
+        loading={cancelOrderLoading}
+      />
     </div>
   );
 };
