@@ -27,12 +27,14 @@ export default function UpdateFieldPage() {
   useEffect(() => {
     const fetchField = async () => {
       const fetchedField = await getFieldDetail(fieldId || "");
-      if (!fetchedField.imageUrl) {
-        fetchedField.imageUrl = "";
+      if (fetchedField) {
+        if (!fetchedField.imageUrl) {
+          fetchedField.imageUrl = "";
+        }
+        setField(fetchedField);
+        setServices(fetchedField.services);
+        setFieldTimes(fetchedField.fieldTimes);
       }
-      setField(fetchedField);
-      setServices(fetchedField.services);
-      setFieldTimes(fetchedField.fieldTimes);
     };
 
     fetchField();

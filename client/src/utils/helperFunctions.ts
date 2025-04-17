@@ -1,3 +1,5 @@
+import { IField } from "@/types/Field";
+
 export function formatPriceInVND(price: number) {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
@@ -30,12 +32,24 @@ export function formatTime(dateString: string) {
   return `${hours}:${minutes}`;
 }
 
-export const formatHour = (hour: number) => {
+export function formatHour(hour: number) {
   return `${hour.toString().padStart(2, "0")}:00`;
-};
+}
 
 export function getFullImageUrl(imageUrl: string) {
   return `https://res.cloudinary.com/${
     import.meta.env.VITE_CLOUD_NAME
   }/image/upload/${imageUrl}`;
+}
+
+export function getAverageRating(field: IField | undefined) {
+  if (!field || field.reviews.length === 0) {
+    return 0;
+  }
+
+  const averageRating =
+    field.reviews.reduce((acc, slot) => acc + slot.rating, 0) /
+    field.reviews.length;
+
+  return parseFloat(averageRating.toFixed(1)); // Round to one decimal place
 }

@@ -10,6 +10,7 @@ import {
   History,
   SquarePen,
   Send,
+  Swords,
 } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -112,7 +113,7 @@ export const Navigation = () => {
     const fetchNotifications = async () => {
       if (typeof authUser !== "string" && authUser.role === "CUSTOMER") {
         const fetchedNotifications = await getNotifications();
-        setNotifications(fetchedNotifications);
+        if (fetchedNotifications) setNotifications(fetchedNotifications);
       }
     };
 
@@ -135,7 +136,7 @@ export const Navigation = () => {
           {notifications.map((notification) => (
             <button
               key={notification.id}
-              className={`px-4 py-3 cursor-pointer text-left ${
+              className={`px-4 py-3 cursor-pointer text-left w-full ${
                 notification.isRead ? "hover:bg-accent" : "bg-accent"
               } rounded-lg mb-1`}
               onClick={async () => {
@@ -246,7 +247,7 @@ export const Navigation = () => {
         </a>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-10 items-center">
+        <div className="hidden lg:flex gap-10 items-center">
           {sports.map((sport) => (
             <a
               key={sport.name}
@@ -257,6 +258,13 @@ export const Navigation = () => {
               {sport.name}
             </a>
           ))}
+          <a
+            href={"/match-requests"}
+            className="flex items-center gap-1 font-semibold text-base hover:border-b-2 hover:border-primary"
+          >
+            <Swords className="w-4 h-4" />
+            Ghép cặp đấu
+          </a>
         </div>
 
         {/* Desktop Avatar Dropdown */}
@@ -328,6 +336,7 @@ export const Navigation = () => {
 
         {/* Mobile Navigation */}
         <div className="flex md:hidden items-center gap-2">
+          {/* Notification Bell */}
           <MobileNotifications />
 
           <Sheet>
@@ -355,6 +364,13 @@ export const Navigation = () => {
                     {sport.name}
                   </a>
                 ))}
+                <a
+                  href={"/match-requests"}
+                  className="flex items-center gap-2 font-semibold text-base ml-4"
+                >
+                  <Swords className="w-4 h-4" />
+                  Ghép cặp đấu
+                </a>
 
                 {/* Mobile Profile Options */}
                 <div className="mt-4 pt-4 border-t">

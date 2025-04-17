@@ -10,7 +10,7 @@ export default function OrdersPage() {
   const { loading: getOrdersLoading, getOrders } = useGetOrders();
   const fetchOrders = async () => {
     const fetchedOrders = await getOrders();
-    setOrders(fetchedOrders);
+    if (fetchedOrders) setOrders(fetchedOrders);
   };
 
   const [orders, setOrders] = useState<IOrder[]>();

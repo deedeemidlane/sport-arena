@@ -48,7 +48,9 @@ export default function BookingPage() {
   useEffect(() => {
     const fetchField = async () => {
       const fetchedField = await getFieldDetail(fieldId || "");
-      setField(fetchedField);
+      if (fetchedField) {
+        setField(fetchedField);
+      }
     };
 
     fetchField();
@@ -145,10 +147,10 @@ export default function BookingPage() {
           ) : (
             <div className="flex-1 container mx-auto py-24 px-4 flex flex-col items-center justify-center">
               <h1 className="text-3xl font-heading font-bold mb-4">
-                Không tìm thấy sân tập
+                Không tìm thấy sân đấu
               </h1>
               <p className="mb-6">
-                Sân tập bạn đang tìm kiếm không tồn tại hoặc đã bị xoá.
+                Sân đấu bạn đang tìm kiếm không tồn tại hoặc đã bị xoá.
               </p>
               <Link to="/">
                 <Button className="flex items-center gap-2">

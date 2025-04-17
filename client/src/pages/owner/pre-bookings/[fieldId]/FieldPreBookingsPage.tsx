@@ -29,7 +29,7 @@ export default function FieldPreBookingsPage() {
   useEffect(() => {
     const fetchField = async () => {
       const fetchedField = await getFieldDetail(fieldId || "");
-      setField(fetchedField);
+      if (fetchedField) setField(fetchedField);
     };
 
     fetchField();

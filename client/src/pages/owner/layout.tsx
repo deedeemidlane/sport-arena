@@ -9,7 +9,7 @@ import { LuNotebookPen } from "react-icons/lu";
 const sidebarOptions = [
   {
     url: "/owner/fields",
-    name: "Quản lý sân tập",
+    name: "Quản lý sân đấu",
     icon: <PiCourtBasketball className="h-5 w-5" />,
   },
   {

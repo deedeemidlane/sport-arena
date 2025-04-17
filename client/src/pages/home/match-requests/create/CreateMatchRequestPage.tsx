@@ -147,7 +147,7 @@ export default function CreateMatchRequestPage() {
               <>
                 {orders.length > 0 ? (
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <Label className="mb-2">Sân tập</Label>
+                    <Label className="mb-2">Sân đấu</Label>
                     <Select
                       onValueChange={(value) => {
                         setSelectedOrder(
@@ -159,7 +159,7 @@ export default function CreateMatchRequestPage() {
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Chọn sân tập" />
+                        <SelectValue placeholder="Chọn sân đấu" />
                       </SelectTrigger>
                       <SelectContent>
                         {orders.map((order) => (
@@ -242,7 +242,7 @@ export default function CreateMatchRequestPage() {
                 ) : (
                   <div className="w-full flex flex-col items-center text-gray-500 space-y-2 my-8">
                     <h3 className="text-xl font-bold">
-                      Bạn chưa có sân tập nào khả dụng.
+                      Bạn chưa có sân đấu nào khả dụng.
                     </h3>
                     <p>Vui lòng đặt sân trước khi tạo yêu cầu.</p>
                     <a href="/fields">

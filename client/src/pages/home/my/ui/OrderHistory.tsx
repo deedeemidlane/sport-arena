@@ -30,7 +30,7 @@ export const OrderHistory = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       const fetchedOrders = await getOrders();
-      setOrders(fetchedOrders);
+      if (fetchedOrders) setOrders(fetchedOrders);
     };
 
     fetchOrders();

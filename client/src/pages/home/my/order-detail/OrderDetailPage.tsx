@@ -20,6 +20,7 @@ import { formatDate, formatPriceInVND } from "@/utils/helperFunctions";
 import { Textarea } from "@/components/ui/textarea";
 import { getTimeIndex, TIME_SLOTS } from "@/constants/times";
 import useConfirmRefund from "@/hooks/customer/useConfirmRefund";
+import useCreateReview from "@/hooks/customer/useCreateReview";
 
 const OrderDetailPage = () => {
   const { orderId } = useParams();
@@ -33,7 +34,7 @@ const OrderDetailPage = () => {
   useEffect(() => {
     const fetchOrderDetail = async () => {
       const orderDetail = await getOrderDetail(orderId || "");
-      setOrder(orderDetail);
+      if (orderDetail) setOrder(orderDetail);
     };
 
     fetchOrderDetail();
@@ -46,7 +47,40 @@ const OrderDetailPage = () => {
     setRating(selectedRating);
   };
 
-  const handleSubmitReview = () => {};
+  const canReview = () => {
+    if (!order) return false;
+
+    const earliestBookingSlot = order.bookings[0];
+
+    // Parse bookingDate and startTime
+    const [month, day, year] = earliestBookingSlot.bookingDate
+      .split("/")
+      .map(Number);
+    const [hour, minute] = earliestBookingSlot.startTime.split(":").map(Number);
+
+    const bookingDateTime = new Date(year, month - 1, day, hour, minute);
+    const now = new Date();
+
+    return now > bookingDateTime;
+  };
+
+  const { loading, createReview } = useCreateReview();
+
+  const handleSubmitReview = () => {
+    const formData = new FormData();
+
+    formData.append(
+      "data",
+      JSON.stringify({
+        rating,
+        comment,
+        sportFieldId: order?.sportFieldId,
+        orderId: order?.id,
+      })
+    );
+
+    createReview(formData);
+  };
 
   const { loading: confirmRefundLoading, confirmRefund } = useConfirmRefund();
   const handleConfirmRefund = async (orderId: number) => {
@@ -200,65 +234,128 @@ const OrderDetailPage = () => {
                   </CardContent>
                 </Card>
 
-                {order.status === "CONFIRMED" && (
+                {order.status === "CONFIRMED" &&
+                  canReview() &&
+                  !order.review && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                          Đánh giá dịch vụ
+                        </CardTitle>
+                        <CardDescription>
+                          Hãy chia sẻ trải nghiệm của bạn tại sân đấu này
+                        </CardDescription>
+                      </CardHeader>
+
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Chất lượng sân</p>
+                          <div className="flex items-center gap-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Button
+                                key={star}
+                                variant="ghost"
+                                size="icon"
+                                className={`h-10 w-10 ${
+                                  rating >= star
+                                    ? "text-yellow-500"
+                                    : "text-muted-foreground"
+                                }`}
+                                onClick={() => handleRatingClick(star)}
+                              >
+                                <Star
+                                  className="h-6 w-6"
+                                  fill={
+                                    rating >= star ? "currentColor" : "none"
+                                  }
+                                />
+                              </Button>
+                            ))}
+                            <span className="text-sm text-muted-foreground ml-2">
+                              {rating > 0 ? `${rating}/5` : "Chưa đánh giá"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="comment"
+                            className="text-sm font-medium"
+                          >
+                            Nhận xét của bạn
+                          </label>
+                          <Textarea
+                            id="comment"
+                            placeholder="Chia sẻ trải nghiệm của bạn tại sân bóng này..."
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            className="min-h-[120px]"
+                          />
+                        </div>
+                      </CardContent>
+
+                      <CardFooter className="flex justify-end">
+                        <Button
+                          disabled={!rating || loading}
+                          onClick={handleSubmitReview}
+                        >
+                          {loading ? <Spinner /> : "Gửi đánh giá"}
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  )}
+
+                {order.review && (
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg">
-                        Đánh giá dịch vụ
+                        Đánh giá của bạn
                       </CardTitle>
-                      <CardDescription>
-                        Hãy chia sẻ trải nghiệm của bạn tại sân tập này
-                      </CardDescription>
+                      <CardDescription></CardDescription>
                     </CardHeader>
 
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <p className="text-sm font-medium">Chất lượng sân</p>
                         <div className="flex items-center gap-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Button
-                              key={star}
-                              variant="ghost"
-                              size="icon"
-                              className={`h-10 w-10 ${
-                                rating >= star
-                                  ? "text-yellow-500"
-                                  : "text-muted-foreground"
-                              }`}
-                              onClick={() => handleRatingClick(star)}
-                            >
-                              <Star
-                                className="h-6 w-6"
-                                fill={rating >= star ? "currentColor" : "none"}
-                              />
-                            </Button>
+                          {[...Array(5)].map((_, i) => (
+                            <>
+                              {order.review && (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${
+                                    i < order.review.rating
+                                      ? "text-yellow-400"
+                                      : "text-gray-300"
+                                  }`}
+                                  fill={
+                                    i < order.review.rating
+                                      ? "currentColor"
+                                      : "none"
+                                  }
+                                />
+                              )}
+                            </>
                           ))}
                           <span className="text-sm text-muted-foreground ml-2">
-                            {rating > 0 ? `${rating}/5` : "Chưa đánh giá"}
+                            {order.review.rating > 0
+                              ? `${order.review.rating}/5`
+                              : "Chưa đánh giá"}
                           </span>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <label
-                          htmlFor="comment"
-                          className="text-sm font-medium"
-                        >
+                        <label className="text-sm font-medium">
                           Nhận xét của bạn
                         </label>
                         <Textarea
-                          id="comment"
-                          placeholder="Chia sẻ trải nghiệm của bạn tại sân bóng này..."
-                          value={comment}
-                          onChange={(e) => setComment(e.target.value)}
-                          className="min-h-[120px]"
-                        />
+                          defaultValue={order.review.comment}
+                          disabled
+                          className="disabled:opacity-100"
+                        ></Textarea>
                       </div>
                     </CardContent>
-
-                    <CardFooter className="flex justify-end">
-                      <Button onClick={handleSubmitReview}>Gửi đánh giá</Button>
-                    </CardFooter>
                   </Card>
                 )}
               </div>

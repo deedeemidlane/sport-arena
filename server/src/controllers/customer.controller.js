@@ -51,6 +51,7 @@ export const getOrderDetail = async (req, res) => {
           orderBy: [{ bookingDate: "asc" }, { startTime: "asc" }],
         },
         sportField: true,
+        review: true,
       },
     });
 
@@ -709,6 +710,51 @@ export const confirmDeposit = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in confirmDeposit controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
+export const createReview = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const { rating, comment, sportFieldId } = JSON.parse(req.body.data);
+
+    // Validate input
+    if (!sportFieldId || !rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Dữ liệu không hợp lệ" });
+    }
+
+    // Check if the sport field exists
+    const sportField = await prisma.sportField.findUnique({
+      where: { id: parseInt(sportFieldId) },
+    });
+
+    if (!sportField) {
+      return res.status(404).json({ error: "Sân đấu không tồn tại" });
+    }
+
+    // Create the review
+    const newReview = await prisma.review.create({
+      data: {
+        userId: req.payload.id,
+        sportFieldId: parseInt(sportFieldId),
+        rating: parseInt(rating),
+        comment,
+      },
+    });
+
+    if (newReview) {
+      res.status(201).json({ message: "Cảm ơn bạn đã gửi đánh giá!" });
+    } else {
+      res.status(400).json({ error: "Gửi đánh giá thất bại" });
+    }
+  } catch (error) {
+    console.log("Error in createReview controller: ", error.message);
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };

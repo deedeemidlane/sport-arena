@@ -9,13 +9,13 @@ import {
 const images = [
   {
     url: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1600&h=600&q=80",
-    title: "Hệ thống đặt sân tập hàng đầu Việt Nam",
+    title: "Hệ thống đặt sân đấu hàng đầu Việt Nam",
     subtitle: "Được ưa chuộng bởi hàng triệu người chơi",
   },
   {
     url: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1600&h=600&q=80",
-    title: "Quy trình đặt sân tập đơn giản và nhanh chóng",
-    subtitle: "Đặt sân tập mong muốn chỉ trong vài bước",
+    title: "Quy trình đặt sân đấu đơn giản và nhanh chóng",
+    subtitle: "Đặt sân đấu mong muốn chỉ trong vài bước",
   },
 ];
 

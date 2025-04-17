@@ -35,7 +35,7 @@ export default function OwnerFieldsPage() {
   useEffect(() => {
     const fetchFields = async () => {
       const fetchedFields = await getFields();
-      setFields(fetchedFields);
+      if (fetchedFields) setFields(fetchedFields);
     };
 
     fetchFields();
@@ -62,12 +62,12 @@ export default function OwnerFieldsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Danh sách sân tập</CardTitle>
-        <CardDescription>Quản lý các sân tập của bạn tại đây.</CardDescription>
+        <CardTitle>Danh sách sân đấu</CardTitle>
+        <CardDescription>Quản lý các sân đấu của bạn tại đây.</CardDescription>
         <a href="/owner/fields/create">
           <Button>
             <Plus />
-            Thêm sân tập mới
+            Thêm sân đấu mới
           </Button>
         </a>
       </CardHeader>
@@ -156,7 +156,7 @@ export default function OwnerFieldsPage() {
                     <TableCell colSpan={8}>
                       <div className="py-20 flex flex-col w-full h-full items-center text-center">
                         <span className="text-gray-600 text-base font-semibold">
-                          Không tìm thấy sân tập 👀
+                          Không tìm thấy sân đấu 👀
                         </span>
                       </div>
                     </TableCell>

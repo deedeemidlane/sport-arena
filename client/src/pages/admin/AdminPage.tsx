@@ -65,7 +65,9 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       const fetchedUsers = await getUsers();
-      setUsers(fetchedUsers);
+      if (fetchedUsers) {
+        setUsers(fetchedUsers);
+      }
     };
 
     fetchUsers();

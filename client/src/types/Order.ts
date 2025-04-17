@@ -1,5 +1,5 @@
 import { IBooking } from "./Booking";
-import { IField } from "./Field";
+import { IField, IReview } from "./Field";
 import { IUser } from "./User";
 
 export interface IOrder {
@@ -14,6 +14,7 @@ export interface IOrder {
   sportField: IField;
   bookings: IBooking[];
   user: IUser;
+  review?: IReview;
 }
 
 export type OrderStatus =

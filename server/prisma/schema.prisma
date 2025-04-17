@@ -164,6 +164,7 @@ model Order {
   sportField SportField @relation(fields: [sportFieldId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   bookings   Booking[]
   payment    Payment?
+  review     Review?
 }
 
 model Payment {
@@ -182,6 +183,7 @@ model Review {
   id           Int      @id @default(autoincrement())
   userId       Int
   sportFieldId Int
+  orderId      Int      @unique
   rating       Int
   comment      String?
   createdAt    DateTime @default(now())
@@ -189,6 +191,7 @@ model Review {
 
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
   sportField SportField @relation(fields: [sportFieldId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  order      Order      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
 }
 
 model Promotion {

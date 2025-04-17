@@ -2,8 +2,8 @@ import { Spinner } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import useGetFields from "@/hooks/guest/useGetFields";
 import { IField } from "@/types/Field";
-import { getFullImageUrl } from "@/utils/helperFunctions";
-import { ChevronRight, Inbox, MapPin, Phone } from "lucide-react";
+import { getAverageRating, getFullImageUrl } from "@/utils/helperFunctions";
+import { ChevronRight, Inbox, MapPin, Phone, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function CourtList({
@@ -44,6 +44,15 @@ export function CourtList({
                     className="cursor-pointer rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] shadow"
                   >
                     <div className="relative h-48">
+                      {field && field.reviews.length > 0 && (
+                        <div className="absolute top-4 right-4 bg-yellow-50 text-yellow-500 border border-yellow-200 py-1 px-3 rounded-full text-sm font-semibold flex items-center">
+                          <Star
+                            className="h-4 w-4 mr-1 text-yellow-400"
+                            fill="currentColor"
+                          />
+                          {getAverageRating(field)}
+                        </div>
+                      )}
                       {field.imageUrl ? (
                         <img
                           alt="Sport field image"
@@ -74,10 +83,6 @@ export function CourtList({
                           {field.ward}, {field.district}, {field.province}
                         </span>
                       </div>
-                      {/* <div className="flex items-center text-sm">
-                      <Star className="h-4 w-4 mr-1 text-yellow-400" />
-                      {field.rating}
-                    </div> */}
                     </div>
                   </a>
                 ))}

@@ -37,6 +37,7 @@ export const getFields = async (req, res) => {
       },
       include: {
         owner: true,
+        reviews: true,
       },
     });
 
@@ -60,6 +61,7 @@ export const getFieldDetail = async (req, res) => {
       include: {
         owner: true,
         services: true,
+        reviews: { include: { user: true } },
         fieldTimes: {
           orderBy: { startTime: "asc" },
         },

@@ -1,19 +1,26 @@
 import useGetFieldDetail from "@/hooks/guest/useGetFieldDetail";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import {
   ArrowLeft,
   Calendar,
+  Clock,
   HandCoins,
   MapPin,
   Phone,
+  Star,
   Users,
   Volleyball,
 } from "lucide-react";
 import { Footer, Navigation } from "../../ui";
 import { Spinner } from "@/components/common";
-import { IField } from "@/types/Field";
-import { formatPriceInVND, getFullImageUrl } from "@/utils/helperFunctions";
+import { IField, IReview } from "@/types/Field";
+import {
+  formatDate,
+  formatPriceInVND,
+  getAverageRating,
+  getFullImageUrl,
+} from "@/utils/helperFunctions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DISPLAYED_SPORTS } from "@/constants/sports";
@@ -28,18 +35,22 @@ export default function FieldDetailPage() {
   useEffect(() => {
     const fetchField = async () => {
       const fetchedField = await getFieldDetail(params.fieldId || "");
-      setField(fetchedField);
+      if (fetchedField) setField(fetchedField);
     };
 
     fetchField();
   }, []);
+
+  const averageRating = useMemo(() => {
+    return getAverageRating(field);
+  }, [field]);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
 
       {field ? (
-        <div className="flex-1 container mx-auto pt-4 pb-24 px-4">
+        <div className="flex-1 container mx-auto pt-4 pb-10 px-4">
           {/* Back button */}
           <a href="/">
             <Button variant="ghost" className="mb-4">
@@ -59,13 +70,15 @@ export default function FieldDetailPage() {
               alt={field.name}
               className="w-full h-full object-contain"
             />
-            {/* <div className="absolute top-4 right-4 bg-primary text-white py-1 px-3 rounded-full text-sm flex items-center">
-              <Star
-                className="h-4 w-4 mr-1 text-yellow-300"
-                fill="currentColor"
-              />
-              {field.rating}
-            </div> */}
+            {averageRating && (
+              <div className="absolute top-4 right-4 bg-yellow-50 text-yellow-500 border border-yellow-200 py-1 px-3 rounded-full text-sm font-semibold flex items-center">
+                <Star
+                  className="h-4 w-4 mr-1 text-yellow-400"
+                  fill="currentColor"
+                />
+                {averageRating}
+              </div>
+            )}
           </div>
 
           {/* Court information */}
@@ -84,10 +97,10 @@ export default function FieldDetailPage() {
                   {field.address && `${field.address}, `}
                   {field.ward}, {field.district}, {field.province}
                 </div>
-                {/* <div className="flex items-center text-gray-600">
+                <div className="flex items-center text-gray-600">
                   <Clock className="h-5 w-5 mr-1" />
-                  {field.openTime}
-                </div> */}
+                  {field.fieldTimes[0]?.startTime}
+                </div>
                 <div className="flex items-center text-gray-600">
                   <Users className="h-5 w-5 mr-1" />
                   {field.numOfFields} sân
@@ -133,27 +146,6 @@ export default function FieldDetailPage() {
                   )}
                 </div>
               </div>
-
-              {/* Additional images */}
-              {/* <div className="mb-8">
-                <h2 className="text-xl font-heading font-semibold mb-3">
-                  Gallery
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {field.images.map((image, index) => (
-                    <div
-                      key={index}
-                      className="aspect-video rounded-lg overflow-hidden"
-                    >
-                      <img
-                        src={image}
-                        alt={`${field.name} view ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div> */}
               <div className="mb-8 border-2 rounded-sm">
                 <h2 className="text-xl font-heading font-semibold mb-3 bg-gray-200 p-4">
                   Vị trí sân
@@ -169,6 +161,43 @@ export default function FieldDetailPage() {
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
                     ></iframe>
+                  )}
+                </div>
+              </div>
+
+              {/* Reviews and Ratings Section */}
+              <div className="mb-8 border-2 rounded-sm">
+                <div className="flex items-center justify-between mb-3 bg-gray-200 p-4">
+                  <h2 className="text-xl font-heading font-semibold">
+                    Đánh giá
+                  </h2>
+                  {averageRating !== 0 && (
+                    <div className="flex items-center">
+                      <div className="bg-yellow-50 text-yellow-500 border border-yellow-200 px-3 py-1 rounded-md flex items-center mr-2">
+                        <Star
+                          className="h-4 w-4 mr-1 text-yellow-400"
+                          fill="currentColor"
+                        />
+                        <span className="font-semibold">{averageRating}</span>
+                        <span className="text-sm text-gray-500 ml-1">/ 5</span>
+                      </div>
+                      <span className="text-sm">
+                        ({field.reviews.length} đánh giá)
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="text-gray-700 p-4 pt-0">
+                  {field.reviews.length > 0 ? (
+                    <div className="bg-white rounded-lg shadow-sm border">
+                      <div className="p-4">
+                        {field.reviews.map((review) => (
+                          <ReviewItem key={review.id} review={review} />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    "Chưa có đánh giá"
                   )}
                 </div>
               </div>
@@ -232,3 +261,44 @@ export default function FieldDetailPage() {
     </div>
   );
 }
+
+// Review item component
+const ReviewItem = ({ review }: { review: IReview }) => {
+  return (
+    <div className="border-b border-gray-200 py-4 last:border-0">
+      <div className="flex items-start gap-3">
+        <div className="shrink-0">
+          <img
+            src={
+              review.user.avatarUrl
+                ? getFullImageUrl(review.user.avatarUrl)
+                : "/placeholder.svg"
+            }
+            alt={"avatar"}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        </div>
+        <div className="flex-grow">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="font-medium">{review.user.name}</h4>
+            <span className="text-sm text-gray-500">
+              {formatDate(review.createdAt)}
+            </span>
+          </div>
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`h-4 w-4 ${
+                  i < review.rating ? "text-yellow-400" : "text-gray-300"
+                }`}
+                fill={i < review.rating ? "currentColor" : "none"}
+              />
+            ))}
+          </div>
+          <p className="mt-2 text-gray-700">{review.comment}</p>
+        </div>
+      </div>
+    </div>
+  );
+};

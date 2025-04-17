@@ -32,6 +32,17 @@ export interface IField {
     endTime: string;
     pricePerSlot: number;
   }[];
+  reviews: IReview[];
+}
+
+export interface IReview {
+  id: number;
+  userId: number;
+  sportFieldId: number;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+  user: IUser;
 }
 
 export interface IService {
@@ -68,4 +79,5 @@ export const defaultFieldValue: IField = {
   orders: [],
   services: [],
   fieldTimes: [],
+  reviews: [],
 };

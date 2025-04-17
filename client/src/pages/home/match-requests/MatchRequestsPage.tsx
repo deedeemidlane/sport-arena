@@ -57,7 +57,9 @@ export default function MatchRequestsPage() {
   useEffect(() => {
     const fetchMatchRequests = async () => {
       const fetchedMatchRequests = await getOtherMatchRequests(pathname.search);
-      setMatchRequests(fetchedMatchRequests);
+      if (fetchedMatchRequests) {
+        setMatchRequests(fetchedMatchRequests);
+      }
     };
 
     fetchMatchRequests();

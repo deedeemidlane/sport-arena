@@ -30,7 +30,7 @@ export default function PreBookingsPage() {
   useEffect(() => {
     const fetchFields = async () => {
       const fetchedFields = await getFields();
-      setFields(fetchedFields);
+      if (fetchedFields) setFields(fetchedFields);
     };
 
     fetchFields();
@@ -57,9 +57,9 @@ export default function PreBookingsPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Chọn sân tập</CardTitle>
+        <CardTitle className="text-2xl font-bold">Chọn sân đấu</CardTitle>
         <CardDescription className="text-base">
-          Nhấn vào sân tập để đặt lịch
+          Nhấn vào sân đấu để đặt lịch
         </CardDescription>
       </CardHeader>
 
@@ -130,7 +130,7 @@ export default function PreBookingsPage() {
                     <TableCell colSpan={8}>
                       <div className="py-20 flex flex-col w-full h-full items-center text-center">
                         <span className="text-gray-600 text-base font-semibold">
-                          Không tìm thấy sân tập 👀
+                          Không tìm thấy sân đấu 👀
                         </span>
                       </div>
                     </TableCell>

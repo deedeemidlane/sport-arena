@@ -5,6 +5,7 @@ import {
   confirmDeposit,
   confirmRefund,
   createMatchRequest,
+  createReview,
   deposit,
   getCreatedMatchRequests,
   getNotifications,
@@ -53,5 +54,7 @@ router.post("/accept-match-request", protectRoute, acceptMatchRequest);
 router.post("/reject-match-request", protectRoute, rejectMatchRequest);
 router.post("/deposit", protectRoute, upload.single("image"), deposit);
 router.post("/confirm-deposit", protectRoute, confirmDeposit);
+
+router.post("/reviews", protectRoute, createReview);
 
 export default router;
