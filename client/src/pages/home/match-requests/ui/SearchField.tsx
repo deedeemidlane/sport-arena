@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowUpFromLine,
   Building2,
+  CalendarIcon,
   Dribbble,
   MapPin,
   Search,
@@ -26,6 +27,14 @@ import {
 import { useNavigate } from "react-router";
 import { SPORT_OPTIONS } from "@/constants/sports";
 import { LEVEL_OPTIONS } from "@/constants/levels";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 interface IAddressData {
   code: string;
@@ -38,6 +47,7 @@ interface SearchParams {
   district?: string;
   level?: string;
   gender?: string;
+  date?: Date;
 }
 
 interface SearchFieldProps {
@@ -46,6 +56,7 @@ interface SearchFieldProps {
   district?: string;
   level?: string;
   gender?: string;
+  date?: string;
 }
 
 export const SearchField = ({
@@ -54,6 +65,7 @@ export const SearchField = ({
   district,
   level,
   gender,
+  date,
 }: SearchFieldProps) => {
   const navigate = useNavigate();
   const [selectedProvince, setSelectedProvince] = useState<string>();
@@ -98,6 +110,7 @@ export const SearchField = ({
       district: district,
       level: level,
       gender: gender,
+      date: date ? new Date(date) : undefined,
     },
   });
 
@@ -111,6 +124,8 @@ export const SearchField = ({
   };
 
   const onSubmit = (data: SearchParams) => {
+    console.log(data);
+
     let params = "";
 
     if (data.sportType && data.sportType !== "all")
@@ -119,6 +134,7 @@ export const SearchField = ({
     if (data.district) params += `district=${data.district}&`;
     if (data.level && data.level !== "all") params += `level=${data.level}&`;
     if (data.gender) params += `gender=${data.gender}&`;
+    if (data.date) params += `date=${format(data.date, "M/d/y")}&`;
 
     navigate(`/match-requests?${params}`);
   };
@@ -231,6 +247,61 @@ export const SearchField = ({
                 />
               </div>
 
+              <Button
+                className="bg-primary hover:bg-primary/90 max-md:w-full max-md:mb-2 hidden md:flex md:invisible"
+                disabled={!isDirty}
+              >
+                <Search className="h-4 w-4" />
+                Tìm kiếm
+              </Button>
+            </div>
+            <div className="md:flex flex-wrap gap-4 items-end">
+              {/* Date */}
+              <div className="flex-1 max-md:mb-2">
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Chọn ngày</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full text-left font-normal justify-start",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="h-4 w-4 opacity-50" />
+                              {field.value ? (
+                                format(field.value, "dd/MM/yyyy")
+                              ) : (
+                                <span>Chọn ngày</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => {
+                              const currentDate = new Date();
+                              currentDate.setHours(0, 0, 0, 0);
+                              return date < currentDate;
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* Province */}
               <div className="flex-1 max-md:mb-2">
                 <FormField
@@ -315,6 +386,7 @@ export const SearchField = ({
               <Button
                 className="bg-primary hover:bg-primary/90 max-md:w-full max-md:mb-2"
                 disabled={!isDirty}
+                type="submit"
               >
                 <Search className="h-4 w-4" />
                 Tìm kiếm

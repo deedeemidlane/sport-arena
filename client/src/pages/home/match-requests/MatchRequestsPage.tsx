@@ -114,6 +114,7 @@ export default function MatchRequestsPage() {
           district={searchParams.get("district") || undefined}
           level={searchParams.get("level") || undefined}
           gender={searchParams.get("gender") || undefined}
+          date={searchParams.get("date") || undefined}
         />
 
         {!getMatchRequestsLoading ? (

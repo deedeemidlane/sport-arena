@@ -326,7 +326,7 @@ export const getOtherMatchRequests = async (req, res) => {
         .json({ error: "Unauthorized - Not customer token" });
     }
 
-    const { sportType, province, district, level, gender } = req.query;
+    const { sportType, province, district, level, gender, date } = req.query;
 
     const matchRequests = await prisma.matchRequest.findMany({
       where: {
@@ -338,6 +338,7 @@ export const getOtherMatchRequests = async (req, res) => {
           },
         },
         booking: {
+          ...(date && { bookingDate: date }),
           order: {
             sportField: {
               ...(sportType && { sportType: sportType }),

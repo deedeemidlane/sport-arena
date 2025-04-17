@@ -8,11 +8,11 @@ export const AfterPayment = () => {
         <div className="w-full flex justify-center">
           <CircleCheckBig color="#73bf40" className="w-20 h-20" />
         </div>
-        <h1 className="text-center text-3xl font-bold dark:text-white my-3 mb-6">
+        <h1 className="text-center text-xl dark:text-white my-3 mb-6">
           Đặt sân thành công
         </h1>
 
-        <p className="text-center">
+        <p className="text-center font-bold text-lg pb-4">
           Vui lòng chờ chủ sân xác nhận yêu cầu đặt sân của bạn.
         </p>
 
