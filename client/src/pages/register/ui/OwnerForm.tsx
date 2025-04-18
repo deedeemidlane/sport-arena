@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/common";
-import { userSchema, UserSchema } from "../schema";
+import { ownerSchema, OwnerSchema } from "../schema";
 import useCreateOwnerAccount from "@/hooks/authentication/useCreateOwnerAccount";
 
 export const OwnerForm = () => {
@@ -26,13 +26,13 @@ export const OwnerForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UserSchema>({
-    resolver: zodResolver(userSchema),
+  } = useForm<OwnerSchema>({
+    resolver: zodResolver(ownerSchema),
   });
 
   const { loading, createOwnerAccount } = useCreateOwnerAccount();
 
-  const onSubmit = (data: UserSchema) => {
+  const onSubmit = (data: OwnerSchema) => {
     console.log(data);
     createOwnerAccount(data);
   };

@@ -107,9 +107,6 @@ export const createCustomerAccount = async (req, res) => {
       where: { email: data.email },
     });
 
-    if (userWithDuplicatePhone || userWithDuplicateEmail) {
-    }
-
     if (userWithDuplicatePhone) {
       return res
         .status(400)

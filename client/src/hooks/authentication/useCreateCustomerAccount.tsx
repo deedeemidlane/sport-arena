@@ -24,7 +24,9 @@ const useCreateCustomerAccount = () => {
       toast.success(res.data.message);
       navigate("/verification");
     } catch (error: any) {
-      toast.error(error.message);
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
     } finally {
       setLoading(false);
     }

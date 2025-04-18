@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { UserSchema } from "@/pages/register/schema";
+import { OwnerSchema } from "@/pages/register/schema";
 import { useNavigate } from "react-router";
 
 const useCreateOwnerAccount = () => {
@@ -8,7 +8,7 @@ const useCreateOwnerAccount = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const createOwnerAccount = async (ownerData: UserSchema) => {
+  const createOwnerAccount = async (ownerData: OwnerSchema) => {
     try {
       setLoading(true);
       const res = await fetch(
