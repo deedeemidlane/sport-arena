@@ -39,7 +39,7 @@ export const ConfirmDeleteFieldModal = ({
         </div>
         <DialogFooter>
           {loading ? (
-            <Button variant={"outline"} disabled>
+            <Button variant={"outline"} disabled className="w-full">
               <Spinner />
             </Button>
           ) : (

@@ -77,6 +77,8 @@ export const createField = async (req, res) => {
 
     let newField = undefined;
 
+    const data = JSON.parse(req.body.data);
+
     if (req.file) {
       const imagePath = req.file.path;
 
@@ -86,7 +88,6 @@ export const createField = async (req, res) => {
           imagePath.indexOf("/" + req.file.filename) - 1,
         ) + 1,
       );
-      const data = JSON.parse(req.body.data);
 
       newField = await prisma.sportField.create({
         data: {
