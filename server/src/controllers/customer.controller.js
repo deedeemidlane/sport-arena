@@ -771,25 +771,37 @@ export const sendComplaint = async (req, res) => {
         .json({ error: "Unauthorized - Not customer token" });
     }
 
-    const imagePath = req.file.path;
-
-    const imageUrl = imagePath.slice(
-      imagePath.lastIndexOf(
-        "/",
-        imagePath.indexOf("/" + req.file.filename) - 1,
-      ) + 1,
-    );
-
     const { title, description } = JSON.parse(req.body.data);
 
-    const newComplaint = await prisma.complaint.create({
-      data: {
-        userId: req.payload.id,
-        title,
-        description,
-        imageUrl,
-      },
-    });
+    let newComplaint = undefined;
+
+    if (req.file) {
+      const imagePath = req.file.path;
+
+      const imageUrl = imagePath.slice(
+        imagePath.lastIndexOf(
+          "/",
+          imagePath.indexOf("/" + req.file.filename) - 1,
+        ) + 1,
+      );
+
+      newComplaint = await prisma.complaint.create({
+        data: {
+          userId: req.payload.id,
+          title,
+          description,
+          imageUrl,
+        },
+      });
+    } else {
+      newComplaint = await prisma.complaint.create({
+        data: {
+          userId: req.payload.id,
+          title,
+          description,
+        },
+      });
+    }
 
     if (newComplaint) {
       res.status(201).json({ message: "Cảm ơn bạn đã gửi khiếu nại!" });
