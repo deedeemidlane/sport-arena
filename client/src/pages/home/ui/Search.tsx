@@ -135,7 +135,7 @@ export const Search = ({
     <div className="container mx-auto pt-4 px-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="rounded-xl p-6 border border-gray-200 space-y-6">
+          <div className="rounded-xl p-6 border border-gray-200 shadow-md space-y-6">
             <div className="md:flex flex-wrap gap-4 items-end">
               <div className="flex-1 max-md:mb-2">
                 <Label className="mb-2">Tên sân</Label>
