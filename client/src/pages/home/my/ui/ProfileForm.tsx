@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,7 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -19,8 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Upload, Check, Eye, EyeOff } from "lucide-react";
-import useUpdateProfile from "@/hooks/customer/useUpdateProfile";
+import { User } from "lucide-react";
 import { ProfileFormValues, profileSchema } from "../schema";
 import { Separator } from "@/components/ui/separator";
 import { getFullImageUrl } from "@/utils/helperFunctions";
@@ -28,10 +26,10 @@ import { IUser } from "@/types/User";
 import { IBank } from "@/types/OtherTypes";
 
 export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
-  const [avatar, setAvatar] = useState<string | undefined>(authUser.avatarUrl);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [avatar, setAvatar] = useState<string | undefined>(authUser.avatarUrl);
+  // const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  // const [showNewPassword, setShowNewPassword] = useState(false);
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [banks, setBanks] = useState<IBank[]>([]);
   // Fetch banks
@@ -59,22 +57,22 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
     },
   });
 
-  const { loading } = useUpdateProfile();
+  // const { loading } = useUpdateProfile();
 
   const onSubmit = async (data: ProfileFormValues) => {
     console.log(data);
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatar(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       setAvatar(reader.result as string);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   return (
     <div className="space-y-8">
@@ -88,7 +86,7 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
         <div className="flex flex-col items-center gap-2">
           <Avatar className="w-32 h-32 border-2 border-primary">
             <AvatarImage
-              src={avatar || "/placeholder.svg"}
+              src={"/logo.png"}
               alt="Avatar"
               className="object-cover"
             />
@@ -97,7 +95,7 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
             </AvatarFallback>
           </Avatar>
 
-          <div className="relative">
+          {/* <div className="relative">
             <Input
               type="file"
               id="avatar"
@@ -114,7 +112,7 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
               <Upload className="h-4 w-4" />
               Đổi ảnh đại diện
             </Button>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex-1 w-full">
@@ -122,13 +120,18 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
+                  disabled
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Họ và tên</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nhập họ và tên" {...field} />
+                        <Input
+                          className="disabled:opacity-100"
+                          placeholder="Nhập họ và tên"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -142,11 +145,12 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
                     <FormItem>
                       <FormLabel>Giới tính</FormLabel>
                       <Select
+                        disabled
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="disabled:opacity-100">
                             <SelectValue placeholder="Chọn giới tính" />
                           </SelectTrigger>
                         </FormControl>
@@ -164,13 +168,18 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
 
               <div className="grid gap-6 sm:grid-cols-2">
                 <FormField
+                  disabled
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
+                        <Input
+                          className="disabled:opacity-100"
+                          placeholder="you@example.com"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -178,13 +187,18 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
                 />
 
                 <FormField
+                  disabled
                   control={form.control}
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Số điện thoại</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nhập số điện thoại" {...field} />
+                        <Input
+                          className="disabled:opacity-100"
+                          placeholder="Nhập số điện thoại"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -201,15 +215,16 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
                     <FormItem>
                       <FormLabel>Ngân hàng</FormLabel>
                       <Select
+                        disabled
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger
-                            className={
+                            className={`disabled:opacity-100 ${
                               form.formState.errors.acqId &&
                               "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-200"
-                            }
+                            }`}
                           >
                             <SelectValue placeholder="Chọn ngân hàng" />
                           </SelectTrigger>
@@ -232,19 +247,25 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
                   )}
                 />
                 <FormField
+                  disabled
                   control={form.control}
                   name="accountNo"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Số tài khoản</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nhập số tài khoản" {...field} />
+                        <Input
+                          className="disabled:opacity-100"
+                          placeholder="Nhập số tài khoản"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <FormField
+                  disabled
                   control={form.control}
                   name="accountName"
                   render={({ field }) => (
@@ -252,6 +273,7 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
                       <FormLabel>Tên chủ tài khoản</FormLabel>
                       <FormControl>
                         <Input
+                          className="disabled:opacity-100"
                           placeholder="Nhập tên chủ tài khoản"
                           {...field}
                         />
@@ -283,7 +305,7 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t">
+              {/* <div className="pt-4 border-t">
                 <h3 className="text-lg font-medium mb-4">Đổi mật khẩu</h3>
 
                 <div className="grid gap-6 sm:grid-cols-2">
@@ -400,7 +422,7 @@ export const ProfileForm = ({ authUser }: { authUser: IUser }) => {
                   {!loading && <Check className="h-4 w-4" />}
                   Lưu thay đổi
                 </Button>
-              </div>
+              </div> */}
             </form>
           </Form>
         </div>

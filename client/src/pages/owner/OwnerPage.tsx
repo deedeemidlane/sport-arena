@@ -5,7 +5,7 @@ export const OwnerPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/owner/fields");
+    navigate("/owner/dashboard");
   }, []);
 
   return <></>;

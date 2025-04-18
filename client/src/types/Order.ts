@@ -15,6 +15,10 @@ export interface IOrder {
   bookings: IBooking[];
   user: IUser;
   review?: IReview;
+  payment: {
+    status: string;
+    amount: number;
+  };
 }
 
 export type OrderStatus =

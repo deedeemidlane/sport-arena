@@ -1,12 +1,17 @@
 import { Header, Sidebar } from "@/components/common";
 import { useAuthContext } from "@/context/AuthContext";
-import { ScrollText, UserRoundX } from "lucide-react";
+import { ChartNoAxesCombined, ScrollText, UserRoundX } from "lucide-react";
 import { useEffect } from "react";
 import { PiCourtBasketball } from "react-icons/pi";
 import { Outlet, useNavigate } from "react-router";
 import { LuNotebookPen } from "react-icons/lu";
 
 const sidebarOptions = [
+  {
+    url: "/owner/dashboard",
+    name: "Theo dõi kinh doanh",
+    icon: <ChartNoAxesCombined className="h-5 w-5" />,
+  },
   {
     url: "/owner/fields",
     name: "Quản lý sân đấu",

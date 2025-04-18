@@ -40,7 +40,7 @@ export default function FieldPreBookingsPage() {
   useEffect(() => {
     const mergedBookingSlots: IBookingSlot[] = [];
     field.orders.forEach((order) => {
-      if (order.status !== "CANCELED") {
+      if (order.status !== "CANCELED" && order.status !== "FINISHED") {
         order.bookings.forEach((bookingSlot) => {
           mergedBookingSlots.push({
             date: bookingSlot.bookingDate,

@@ -31,6 +31,7 @@ import CreateMatchRequestPage from "./pages/home/match-requests/create";
 import CreatedMatchRequestsPage from "./pages/home/my/created-match-requests";
 import SendedMatchRequestsPage from "./pages/home/my/sended-match-requests";
 import CancelingRequestsPage from "./pages/owner/canceling-requests";
+import DashboardPage from "./pages/owner/dashboard";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -75,6 +76,7 @@ export default function App() {
 
       <Route path="owner" element={<OwnerPageLayout />}>
         <Route index element={<OwnerPage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="fields">
           <Route index element={<OwnerFieldsPage />} />
           <Route path="create" element={<CreateFieldPage />} />

@@ -4,6 +4,7 @@ import {
   getFieldDetail,
   getFields,
   getOrders,
+  getStatistics,
   preBook,
   updateField,
   updateOrderStatus,
@@ -36,5 +37,7 @@ router.patch(
 router.get("/orders", protectRoute, getOrders);
 router.patch("/orders/:orderId", protectRoute, updateOrderStatus);
 router.post("/pre-bookings", protectRoute, preBook);
+
+router.get("/statistics", protectRoute, getStatistics);
 
 export default router;

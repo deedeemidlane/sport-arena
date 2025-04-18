@@ -272,7 +272,7 @@ const ReviewItem = ({ review }: { review: IReview }) => {
             src={
               review.user.avatarUrl
                 ? getFullImageUrl(review.user.avatarUrl)
-                : "/placeholder.svg"
+                : "/logo.png"
             }
             alt={"avatar"}
             className="w-10 h-10 rounded-full object-cover"

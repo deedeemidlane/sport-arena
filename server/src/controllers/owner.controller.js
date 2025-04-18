@@ -396,3 +396,42 @@ export const preBook = async (req, res) => {
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };
+
+export const getStatistics = async (req, res) => {
+  try {
+    if (req.payload.role !== "OWNER") {
+      return res.status(401).json({ error: "Unauthorized - Not owner token" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.payload.id },
+      include: {
+        sportFields: {
+          include: {
+            orders: {
+              where: {
+                orderType: "NORMAL_BOOKING",
+                status: "CONFIRMED",
+              },
+              include: {
+                bookings: true,
+                payment: true,
+                user: true,
+              },
+            },
+            reviews: true,
+          },
+        },
+      },
+    });
+
+    if (user && user.sportFields) {
+      res.status(200).json({ fields: user.sportFields });
+    } else {
+      res.status(404).json({ error: "Không tìm thấy tài nguyên" });
+    }
+  } catch (error) {
+    console.log("Error in getFields controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
