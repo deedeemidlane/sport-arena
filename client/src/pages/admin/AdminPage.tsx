@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { MoreHorizontal, Trash2, User } from "lucide-react";
+import { MailWarning, MoreHorizontal, Trash2, User } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 import { Header, Sidebar, Spinner } from "@/components/common";
 import {
@@ -34,9 +34,14 @@ import useDeleteUser from "@/hooks/admin/useDeleteUser";
 
 const sidebarOptions = [
   {
-    url: "/admin",
+    url: "/admin/users",
     name: "Quản lý tài khoản",
     icon: <User className="h-4 w-4" />,
+  },
+  {
+    url: "/admin/complaints",
+    name: "Quản lý khiếu nại",
+    icon: <MailWarning className="h-4 w-4" />,
   },
 ];
 

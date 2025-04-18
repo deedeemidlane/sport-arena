@@ -11,6 +11,7 @@ import {
   SquarePen,
   Send,
   Swords,
+  MailWarning,
 } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -94,6 +95,15 @@ const profileOptions = [
       <>
         <Send className="h-4 w-4" />
         Yêu cầu ghép cặp đã gửi
+      </>
+    ),
+  },
+  {
+    link: "/submit-complaint",
+    content: (
+      <>
+        <MailWarning className="h-4 w-4" />
+        Gửi khiếu nại
       </>
     ),
   },

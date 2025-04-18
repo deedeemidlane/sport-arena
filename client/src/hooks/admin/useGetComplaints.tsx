@@ -1,20 +1,17 @@
 import { getToken } from "@/services/token";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
 
-const useDeleteUser = () => {
-  const navigate = useNavigate();
-
+const useGetComplaints = () => {
   const [loading, setLoading] = useState(false);
 
-  const deleteUser = async (userId: number) => {
+  const getComplaints = async () => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/admin/users/${userId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/admin/complaints`,
         {
-          method: "DELETE",
+          method: "GET",
           headers: {
             Authorization: "Bearer " + getToken(),
           },
@@ -26,8 +23,7 @@ const useDeleteUser = () => {
 
       if (!res.ok) throw new Error(data.error);
 
-      toast.success(data.message);
-      navigate("/admin/users");
+      return data;
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -35,6 +31,6 @@ const useDeleteUser = () => {
     }
   };
 
-  return { loading, deleteUser };
+  return { loading, getComplaints };
 };
-export default useDeleteUser;
+export default useGetComplaints;

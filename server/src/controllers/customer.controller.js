@@ -762,3 +762,42 @@ export const createReview = async (req, res) => {
     res.status(500).json({ error: "Lỗi hệ thống" });
   }
 };
+
+export const sendComplaint = async (req, res) => {
+  try {
+    if (req.payload.role !== "CUSTOMER") {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized - Not customer token" });
+    }
+
+    const imagePath = req.file.path;
+
+    const imageUrl = imagePath.slice(
+      imagePath.lastIndexOf(
+        "/",
+        imagePath.indexOf("/" + req.file.filename) - 1,
+      ) + 1,
+    );
+
+    const { title, description } = JSON.parse(req.body.data);
+
+    const newComplaint = await prisma.complaint.create({
+      data: {
+        userId: req.payload.id,
+        title,
+        description,
+        imageUrl,
+      },
+    });
+
+    if (newComplaint) {
+      res.status(201).json({ message: "Cảm ơn bạn đã gửi khiếu nại!" });
+    } else {
+      res.status(404).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in sendComplaint controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};

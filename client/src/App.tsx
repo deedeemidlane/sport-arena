@@ -32,6 +32,8 @@ import CreatedMatchRequestsPage from "./pages/home/my/created-match-requests";
 import SendedMatchRequestsPage from "./pages/home/my/sended-match-requests";
 import CancelingRequestsPage from "./pages/owner/canceling-requests";
 import DashboardPage from "./pages/owner/dashboard";
+import SubmitComplaintPage from "./pages/home/submit-complaint";
+import ComplaintsPage from "./pages/admin/complaints";
 
 export default function App() {
   const { isLoading } = useAuthContext();
@@ -68,11 +70,14 @@ export default function App() {
         <Route path="create" element={<CreateMatchRequestPage />} />
       </Route>
 
+      <Route path="submit-complaint" element={<SubmitComplaintPage />} />
+
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
       <Route path="verification" element={<VerificationPage />} />
 
-      <Route path="admin" element={<AdminPage />} />
+      <Route path="admin/users" element={<AdminPage />} />
+      <Route path="admin/complaints" element={<ComplaintsPage />} />
 
       <Route path="owner" element={<OwnerPageLayout />}>
         <Route index element={<OwnerPage />} />

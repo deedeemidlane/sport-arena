@@ -12,7 +12,7 @@ export default function LoginPage() {
     if (typeof authUser === "string") return;
     switch (authUser.role) {
       case "ADMIN":
-        navigate("/admin");
+        navigate("/admin/users");
         break;
       case "OWNER":
         navigate("/owner");

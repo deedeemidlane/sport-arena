@@ -17,6 +17,7 @@ import {
   readNotification,
   rejectMatchRequest,
   requestMatch,
+  sendComplaint,
 } from "../controllers/customer.controller.js";
 import protectRoute from "../middleware/protectRoute.js";
 
@@ -56,5 +57,12 @@ router.post("/deposit", protectRoute, upload.single("image"), deposit);
 router.post("/confirm-deposit", protectRoute, confirmDeposit);
 
 router.post("/reviews", protectRoute, createReview);
+
+router.post(
+  "/send-complaint",
+  protectRoute,
+  upload.single("image", sendComplaint),
+  sendComplaint,
+);
 
 export default router;
