@@ -246,6 +246,33 @@ export const updateField = async (req, res) => {
   }
 };
 
+export const deleteField = async (req, res) => {
+  try {
+    if (req.payload.role !== "OWNER") {
+      return res.status(401).json({ error: "Unauthorized - Not owner token" });
+    }
+
+    console.log("req params: ", req.params);
+
+    console.log("req body: ", req.body);
+
+    const fieldId = req.params.fieldId;
+
+    const deleteField = await prisma.sportField.delete({
+      where: { id: parseInt(fieldId) },
+    });
+
+    if (deleteField) {
+      res.status(200).json({ message: "Xoá sân thành công!" });
+    } else {
+      res.status(400).json({ error: "Dữ liệu không hợp lệ" });
+    }
+  } catch (error) {
+    console.log("Error in deleteField controller: ", error.message);
+    res.status(500).json({ error: "Lỗi hệ thống" });
+  }
+};
+
 export const getOrders = async (req, res) => {
   try {
     if (req.payload.role !== "OWNER") {

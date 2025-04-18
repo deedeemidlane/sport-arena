@@ -18,7 +18,7 @@ import {
 import { formatDate, getFullImageUrl } from "@/utils/helperFunctions";
 import useGetFields from "@/hooks/owner/useGetFields";
 import { IField } from "@/types/Field";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { Spinner } from "@/components/common";
 import {
   DropdownMenu,
@@ -26,11 +26,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ConfirmDeleteFieldModal } from "./ui";
+import useDeleteField from "@/hooks/owner/useDeleteField";
 
 export default function OwnerFieldsPage() {
   const { loading, getFields } = useGetFields();
 
   const [fields, setFields] = useState<IField[]>([]);
+
+  const [toggleReRender, setToggleReRender] = useState(false);
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -39,7 +43,7 @@ export default function OwnerFieldsPage() {
     };
 
     fetchFields();
-  }, []);
+  }, [toggleReRender]);
 
   const renderSportType = (
     sportType: "FOOTBALL" | "PICKLEBALL" | "BADMINTON"
@@ -57,6 +61,17 @@ export default function OwnerFieldsPage() {
         break;
     }
     return <></>;
+  };
+
+  const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = useState(false);
+  const [selectedFieldId, setSelectedFieldId] = useState<number>(-1);
+
+  const { loading: deleteFieldLoading, deleteField } = useDeleteField();
+
+  const handleDeleteField = async () => {
+    await deleteField(selectedFieldId);
+    setOpenConfirmDeleteModal(false);
+    setToggleReRender(!toggleReRender);
   };
 
   return (
@@ -140,12 +155,24 @@ export default function OwnerFieldsPage() {
                             <DropdownMenuItem>
                               <a
                                 href={`/owner/fields/${field.id}`}
-                                className="w-full"
+                                className="w-full flex items-center gap-2"
                               >
+                                <Pencil className="w-4 h-4" />
                                 Chỉnh sửa
                               </a>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Xóa</DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <button
+                                className="cursor-pointer w-full text-start flex items-center gap-2 text-red-500"
+                                onClick={() => {
+                                  setSelectedFieldId(field.id);
+                                  setOpenConfirmDeleteModal(true);
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" color="#fb2c36" />
+                                Xoá
+                              </button>
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -164,6 +191,13 @@ export default function OwnerFieldsPage() {
                 )}
               </TableBody>
             </Table>
+
+            <ConfirmDeleteFieldModal
+              open={openConfirmDeleteModal}
+              setOpen={setOpenConfirmDeleteModal}
+              handleDeleteField={handleDeleteField}
+              loading={deleteFieldLoading}
+            />
           </Card>
         )}
       </CardContent>

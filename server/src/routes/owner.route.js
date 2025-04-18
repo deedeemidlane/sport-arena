@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createField,
+  deleteField,
   getFieldDetail,
   getFields,
   getOrders,
@@ -33,6 +34,7 @@ router.patch(
   upload.single("image"),
   updateField,
 );
+router.delete("/fields/:fieldId", protectRoute, deleteField);
 
 router.get("/orders", protectRoute, getOrders);
 router.patch("/orders/:orderId", protectRoute, updateOrderStatus);
