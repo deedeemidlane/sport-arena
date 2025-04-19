@@ -6,13 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ChartContainer,
@@ -60,8 +53,6 @@ export default function DashboardPage() {
 
     fetchFields();
   }, []);
-
-  const [timeRange, setTimeRange] = useState("month");
 
   const totalConfirmedOrders = useMemo(() => {
     return fields.reduce((sum, field) => {
@@ -254,7 +245,7 @@ export default function DashboardPage() {
                 Theo dõi hoạt động và doanh thu của sân thể thao
               </p>
             </div>
-            <div className="mt-4 md:mt-0 flex items-center gap-2">
+            {/* <div className="mt-4 md:mt-0 flex items-center gap-2">
               <Select value={timeRange} onValueChange={setTimeRange}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Chọn khung thời gian" />
@@ -266,7 +257,7 @@ export default function DashboardPage() {
                   <SelectItem value="year">1 Năm Qua</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
